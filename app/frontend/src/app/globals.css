@@ -1,0 +1,577 @@
+@import "tailwindcss";
+
+/* ============================================
+   Tokens de diseño — identidad visual "Friendly Rounded"
+   (formas redondeadas) + paleta "Cancha" (verde + amarillo).
+   Paleta actualizada (2026-09-05) a pedido del usuario, a partir del
+   mockup del marcador en vivo (US-2.7) — verde oscuro de cartel de
+   cancha + amarillo de pelota de pádel como identidad de toda la app,
+   no solo del marcador. Ver estado-tecnico-proyecto.md.
+   ============================================ */
+
+/* Modo claro (por defecto) */
+:root {
+  --bg: #eaf3ec;
+  --surface: #ffffff;
+  --ink: #14261f;
+  --muted: #5f7d70;
+  --accent: #f2c53d;
+  --accent-ink: #1a1305;
+  /* Colores secundarios (2026-09-06, a pedido del usuario): la paleta
+     "Cancha" original (verde+amarillo) se sentía monótona en pantallas
+     con muchos botones -- se suman dos acentos más para diferenciar
+     categorías (social/comunidad = turquesa, utilidades = coral), sin
+     romper la identidad general. */
+  --accent-2: #2fb5ad;
+  --accent-2-ink: #062421;
+  --accent-3: #f2814f;
+  --accent-3-ink: #331002;
+  --outline: #14261f;
+  --shadow-color: rgba(20, 38, 31, 1);
+  /* Nav de abajo (2026-09-13, a pedido del usuario: "que no se confunda
+     con el fondo") -- un poco más gris que --surface (blanco puro), así
+     no se pierde contra --bg (verde muy pálido) ni se ve un blanco
+     genérico desentonado del resto de la paleta. */
+  --nav-bg: #f0f1ee;
+}
+
+/* Modo oscuro elegido a mano por la persona usuaria (gana siempre) */
+:root[data-theme="dark"] {
+  --bg: #0f2e29;
+  --surface: #154139;
+  --ink: #eaf4f0;
+  --muted: #8fb6ae;
+  --accent: #f2c53d;
+  --accent-ink: #1a1305;
+  --accent-2: #3fd0c7;
+  --accent-2-ink: #062421;
+  --accent-3: #f2955f;
+  --accent-3-ink: #331002;
+  --outline: #eaf4f0;
+  --shadow-color: rgba(4, 14, 11, 0.6);
+  /* Un poco más CLARO que --surface acá (al revés que en modo claro),
+     para que se despegue de --bg (que es casi negro) en vez de fundirse. */
+  --nav-bg: #1c4f45;
+}
+
+/* Ya NO se sigue la preferencia de modo oscuro del sistema (2026-09-19, a
+   pedido del usuario: "que esté por defecto siempre en modo claro, a
+   menos que el usuario lo cambie") -- antes había un bloque acá que
+   aplicaba modo oscuro automático según `prefers-color-scheme`, incluso
+   sin que la persona tocara nada. Ahora el único disparador del oscuro
+   es el toggle de arriba (:root[data-theme="dark"]), a mano. */
+
+/* Color de acento elegible desde /configuracion (2026-09-12, a pedido del
+   usuario: "el selector de colores debería cambiar el estilo de TODA la
+   app al de verde oscuro") -- pisa --accent/--accent-ink directamente, no
+   una variable aparte, para que TODO lo que ya usa bg-accent/text-accent-ink
+   en cualquier pantalla (no solo el Home) cambie solo, sin tocar archivo
+   por archivo. El tablero del Marcadorcito en sí queda afuera a propósito
+   (usa colores fijos, no estas variables -- es su propia identidad "cartel
+   de cancha", ver Marcador.module.css). Va DESPUÉS de los bloques de
+   claro/oscuro a propósito -- misma especificidad (:root + un atributo),
+   así que el orden en el archivo es lo que decide cuál gana, y este tiene
+   que ganar siempre, prenda quien prenda el modo oscuro. */
+:root[data-accent-cta="verde"] {
+  --accent: #154139;
+  --accent-ink: #eaf4f0;
+}
+:root[data-accent-cta="turquesa"] {
+  --accent: var(--accent-2);
+  --accent-ink: var(--accent-2-ink);
+}
+
+/* Mapeo de los tokens de arriba al sistema de temas de Tailwind v4,
+   para poder usarlos como clases: bg-surface, text-ink, border-outline, etc. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-2: var(--accent-2);
+  --color-accent-2-ink: var(--accent-2-ink);
+  --color-accent-3: var(--accent-3);
+  --color-accent-3-ink: var(--accent-3-ink);
+  --color-outline: var(--outline);
+  --font-heading: var(--font-archivo);
+  --font-body: var(--font-archivo);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body), sans-serif;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* Los titulos (h1/h2/h3) no son texto para seleccionar/copiar -- sacamos
+   el cursor de "texto" (la rayita tipo I) que el navegador les pone por
+   defecto al pasar el mouse por encima, para que no se vea como si
+   hubiera algo para tocar/editar ahi. */
+h1, h2, h3 {
+  cursor: default;
+}
+
+/* ============================================
+   Interaccion de botones: hover de "anillo/glow de foco" -- aplicado
+   globalmente a todos los <button> de la app (en vez de repetir esto
+   en cada componente). Cursor: el normal del sistema (sin cursor
+   personalizado).
+   ============================================ */
+button:not(:disabled) {
+  transition: box-shadow 0.15s ease;
+}
+
+/* Sombra suave SOLO al pasar el mouse/tocar (2026-09-12, a pedido del
+   usuario: "que no tenga sombreado y que, cuando se vaya a clickear
+   algo, ahí sí se note ese sombreado, pero no antes") -- reemplaza el
+   offset duro de 3px que quedaba de la estética vieja de "cartel", que
+   ya no combina con las tarjetas claras de sombra suave. En reposo los
+   botones no tienen sombra propia (o la suave de su tarjeta); al
+   interactuar, se nota que es clickeable. */
+button:not(:disabled):hover {
+  box-shadow: 0 2px 8px rgba(20, 38, 31, 0.18), 0 0 0 3px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+/* Los botones que YA tienen fondo accent o rojo usan un anillo de otro
+   color (si no, el anillo amarillo se mezclaria con el fondo amarillo
+   y no se notaria el efecto) */
+button.bg-accent:not(:disabled):hover,
+button.bg-red-600:not(:disabled):hover {
+  box-shadow: 0 2px 8px rgba(20, 38, 31, 0.18), 0 0 0 3px color-mix(in srgb, var(--ink) 35%, transparent);
+}
+
+/* ============================================
+   Loader: pelotita de tenis picando, para mostrar en botones mientras
+   se espera una respuesta (en vez de solo texto "Cargando...").
+   ============================================ */
+.pelota-loader {
+  position: relative;
+  display: inline-block;
+  width: 18px;
+  height: 24px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.pelota-loader__pelota {
+  position: absolute;
+  left: 2px;
+  top: 0;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #d4f000;
+  border: 1.5px solid var(--ink);
+  animation: pelota-picar 0.6s cubic-bezier(0.5, 0, 1, 0.5) infinite alternate;
+}
+
+.pelota-loader__sombra {
+  position: absolute;
+  bottom: 0;
+  left: 3px;
+  width: 11px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 50%;
+  animation: pelota-sombra 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes pelota-picar {
+  0% { top: 0; }
+  100% { top: 11px; }
+}
+
+@keyframes pelota-sombra {
+  0% { transform: scale(0.55); opacity: 0.2; }
+  100% { transform: scale(1); opacity: 0.4; }
+}
+
+/* Ícono de "Crear partido": se agranda y aparece un tilde, como si
+   acabara de anotar la fecha (2026-09-13, idea original del usuario). */
+.icono-calendario-anim {
+  position: relative;
+  display: inline-flex;
+}
+.icono-calendario-anim svg {
+  transition: transform 0.25s ease;
+}
+.icono-calendario-anim::after {
+  content: "✓";
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  color: var(--accent-2-ink);
+  font-size: 9px;
+  line-height: 12px;
+  text-align: center;
+  font-weight: 700;
+  transform: scale(0);
+  transition: transform 0.2s ease 0.15s;
+}
+button:hover .icono-calendario-anim svg,
+.icono-calendario-anim.anim-activa svg {
+  transform: scale(1.2) rotate(-8deg);
+}
+button:hover .icono-calendario-anim::after,
+.icono-calendario-anim.anim-activa::after {
+  transform: scale(1);
+}
+
+/* Ícono de "Partidos abiertos": la lupa escanea de lado a lado y termina
+   haciendo foco (zoom in) corto. */
+.icono-lupa-anim svg {
+  transition: transform 0.2s ease;
+}
+button:hover .icono-lupa-anim svg,
+.icono-lupa-anim.anim-activa svg {
+  animation: lupa-escanea 0.7s ease;
+}
+@keyframes lupa-escanea {
+  0% { transform: translateX(0) scale(1); }
+  25% { transform: translateX(-3px) scale(1); }
+  50% { transform: translateX(3px) scale(1); }
+  75% { transform: translateX(0) scale(1); }
+  100% { transform: translateX(0) scale(1.25); }
+}
+
+/* Trofeo del último partido jugado: festejo chiquito (solo cuando ganaste
+   -- la clase la agrega el componente solo en ese caso). */
+.icono-trofeo-festejo {
+  display: inline-flex;
+}
+div:hover .icono-trofeo-festejo {
+  animation: trofeo-wobble 0.5s ease;
+}
+@keyframes trofeo-wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-12deg) scale(1.1); }
+  75% { transform: rotate(12deg) scale(1.1); }
+}
+
+/* "Pop" de entrada para tarjetas que no tienen hover en celular
+   (2026-09-13, a pedido del usuario: "no hay mouse over en celular") --
+   se dispara solo cuando la tarjeta aparece en pantalla al hacer scroll
+   (useEnPantalla.js), no con el mouse ni el toque. */
+.icono-pop {
+  transform: scale(0.5);
+  opacity: 0;
+}
+.icono-pop.visible {
+  animation: icono-pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes icono-pop-in {
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Pulso lento y continuo para lo que todavía no está disponible
+   ("Se viene"): transmite "en construcción", no roto. */
+.icono-pulso-suave {
+  animation: pulso-suave 2.4s ease-in-out infinite;
+}
+@keyframes pulso-suave {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+.tarjeta-entra {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.tarjeta-entra.visible {
+  animation: tarjeta-entra-in 0.35s ease both;
+}
+@keyframes tarjeta-entra-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icono-pop { opacity: 1 !important; transform: none !important; animation: none !important; }
+  .icono-pulso-suave { animation: none !important; }
+  .tarjeta-entra { opacity: 1 !important; transform: none !important; animation: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icono-calendario-anim svg,
+  .icono-calendario-anim::after,
+  .icono-lupa-anim svg,
+  .icono-trofeo-festejo { animation: none !important; transition: none !important; }
+}
+
+/* Efecto de desplazamiento entre pestañas (2026-09-13), ver
+   PageTransition.js -- deslizamiento chico + fade, no un swipe de
+   pantalla completa (eso exigiría sincronizar el ancho/alto exacto
+   entre pantallas distintas y arriesga saltos raros de layout). */
+.page-transition {
+  animation-duration: 220ms;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+.page-transition-adelante {
+  animation-name: pagina-entra-derecha;
+}
+.page-transition-atras {
+  animation-name: pagina-entra-izquierda;
+}
+@keyframes pagina-entra-derecha {
+  from { transform: translateX(28px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes pagina-entra-izquierda {
+  from { transform: translateX(-28px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.page-transition-sube {
+  animation-name: pagina-sube;
+}
+.page-transition-vuelve {
+  animation-name: pagina-vuelve;
+}
+@keyframes pagina-sube {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes pagina-vuelve {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-transition { animation: none !important; }
+}
+
+/* Feedback táctil global en botones (2026-09-13, a pedido del usuario:
+   "animaciones cuando nos movemos en la app") -- un achique chiquito al
+   tocar, para que CUALQUIER botón de la app se sienta "vivo" al apretarlo,
+   sin tener que tocar cada componente uno por uno. */
+button:not(:disabled) {
+  transition: transform 0.12s ease;
+}
+button:not(:disabled):active {
+  transform: scale(0.96);
+}
+
+/* Entrada escalonada de filas de lista (ranking, historial de partidos) --
+   ver el prop `style={{ animationDelay }}` en cada uso. */
+@keyframes lista-item-entra {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.lista-item-entra {
+  animation: lista-item-entra 0.28s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button:not(:disabled):active { transform: none; }
+  .lista-item-entra { animation: none; }
+}
+
+/* Animaciones en loop de las tarjetas del Home (2026-09-13, a pedido del
+   usuario: "todo lo que sea seleccionable" ya tiene toggles, ahora las
+   tarjetas de acceso rápido tienen su propio gesto en bucle -- da vida
+   sin depender de hover/tap, útil sobre todo en celular). Cada una vive
+   en su propia clase para no afectar el ícono en otros usos (los mismos
+   componentes de Icons.js se reutilizan en Perfil, nav, etc.). */
+
+/* Jugadores: el trofeo se hamaca. */
+.icono-trofeo-loop svg {
+  animation: trofeo-loop 2.6s ease-in-out infinite;
+  transform-origin: 50% 85%;
+}
+@keyframes trofeo-loop {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-10deg); }
+  40% { transform: rotate(8deg); }
+  60% { transform: rotate(-6deg); }
+  80% { transform: rotate(4deg); }
+}
+
+/* Invitaciones: la solapa del sobre se abre y se cierra -- cada mitad
+   rota alrededor de su esquina fija (no se traslada la línea entera,
+   eso la despegaba de las esquinas del sobre y se veía roto). */
+.icono-sobre-loop .sobre-solapa {
+  transform-box: view-box;
+}
+.icono-sobre-loop .sobre-solapa-izq {
+  transform-origin: 4px 6.5px;
+  animation: sobre-solapa-izq-loop 2.2s ease-in-out infinite;
+}
+.icono-sobre-loop .sobre-solapa-der {
+  transform-origin: 20px 6.5px;
+  animation: sobre-solapa-der-loop 2.2s ease-in-out infinite;
+}
+@keyframes sobre-solapa-izq-loop {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-14deg); }
+}
+@keyframes sobre-solapa-der-loop {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(14deg); }
+}
+
+/* Mensajes: puntitos de "escribiendo..." que se prenden de a uno,
+   formando la idea de una palabra apareciendo letra por letra. */
+.icono-mensaje-loop .mensaje-punto {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0.25;
+  animation: mensaje-punto-loop 1.4s ease-in-out infinite;
+}
+.icono-mensaje-loop .mensaje-punto-1 { animation-delay: 0s; }
+.icono-mensaje-loop .mensaje-punto-2 { animation-delay: 0.2s; }
+.icono-mensaje-loop .mensaje-punto-3 { animation-delay: 0.4s; }
+@keyframes mensaje-punto-loop {
+  0%, 60%, 100% { opacity: 0.25; transform: scale(1); }
+  30% { opacity: 1; transform: scale(1.35); }
+}
+
+/* Compañero fijo: las dos personas se acercan y se separan (abrazo). */
+.icono-duo-loop .duo-persona {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation-duration: 2.4s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.icono-duo-loop .duo-persona-1 { animation-name: duo-acerca-1; }
+.icono-duo-loop .duo-persona-2 { animation-name: duo-acerca-2; }
+@keyframes duo-acerca-1 {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(1.8px); }
+}
+@keyframes duo-acerca-2 {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-1.8px); }
+}
+
+/* Mi perfil: la personita corre (rebote + inclinación alternada). */
+.icono-persona-corre svg {
+  animation: persona-corre 0.6s ease-in-out infinite;
+}
+@keyframes persona-corre {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-2px) rotate(-6deg); }
+  50% { transform: translateY(0) rotate(0deg); }
+  75% { transform: translateY(-2px) rotate(6deg); }
+}
+
+/* Partidos abiertos: la lupa recorre la tarjeta de lado a lado, como
+   buscando -- en un wrapper propio para no chocar con `.icono-lupa-anim`
+   (el zoom corto que ya existía para el tap antes de navegar). */
+.icono-lupa-loop {
+  display: inline-flex;
+  animation: lupa-busca-loop 2.6s ease-in-out infinite;
+}
+@keyframes lupa-busca-loop {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(6px) rotate(8deg); }
+  75% { transform: translateX(-6px) rotate(-8deg); }
+}
+
+/* Canchas: el pin se agranda y se achica (pulso), como marcando su
+   ubicación en el mapa. */
+.icono-pin-loop svg {
+  animation: pin-pulso-loop 1.8s ease-in-out infinite;
+}
+@keyframes pin-pulso-loop {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+}
+
+/* Pelotita que pica cruzando una tarjeta, en loop continuo (2026-09-13,
+   a pedido del usuario para el podio de Jugadores, la tarjeta de
+   "Registrá un partido" y la tarjeta de perfil) -- versión reutilizable
+   de un solo elemento, para una tarjeta aislada (para varias tarjetas NO
+   contiguas en secuencia, ver PelotaViajera.js). Necesita `position:
+   relative; overflow: hidden` en el contenedor, ya incluidos acá. */
+.tarjeta-pelota-loop {
+  position: relative;
+  overflow: hidden;
+}
+.tarjeta-pelota-loop::after {
+  content: "";
+  position: absolute;
+  left: -8%;
+  bottom: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #d4f000;
+  border: 1.5px solid var(--ink);
+  pointer-events: none;
+  z-index: 5;
+  animation: pelota-cruza-loop 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+.tarjeta-pelota-loop::before {
+  content: "";
+  position: absolute;
+  left: -8%;
+  bottom: 9px;
+  width: 12px;
+  height: 3.5px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  z-index: 4;
+  animation: pelota-cruza-loop-sombra 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes pelota-cruza-loop {
+  0%   { left: -8%;  bottom: 10px; }
+  12%  { bottom: 32px; }
+  25%  { left: 22%;  bottom: 10px; }
+  37%  { bottom: 32px; }
+  50%  { left: 50%;  bottom: 10px; }
+  62%  { bottom: 32px; }
+  75%  { left: 78%;  bottom: 10px; }
+  87%  { bottom: 32px; }
+  100% { left: 104%; bottom: 10px; }
+}
+@keyframes pelota-cruza-loop-sombra {
+  0%   { left: -8%;  transform: scale(1);   opacity: 0.4; }
+  12%  { transform: scale(0.5); opacity: 0.15; }
+  25%  { left: 22%;  transform: scale(1);   opacity: 0.4; }
+  37%  { transform: scale(0.5); opacity: 0.15; }
+  50%  { left: 50%;  transform: scale(1);   opacity: 0.4; }
+  62%  { transform: scale(0.5); opacity: 0.15; }
+  75%  { left: 78%;  transform: scale(1);   opacity: 0.4; }
+  87%  { transform: scale(0.5); opacity: 0.15; }
+  100% { left: 104%; transform: scale(1);   opacity: 0.4; }
+}
+
+/* Estrellas de nivel del perfil: se van rellenando una por una en vez de
+   aparecer todas juntas (2026-09-13, a pedido del usuario -- "primero se
+   rellena una con amarillo, después dos, después tres, hasta llegar a
+   las que corresponden según el nivel"). Entrada única al cargar el
+   perfil, no un loop -- como ContadorNumero, es una revelación de un
+   dato fijo, no un adorno continuo. El delay entre estrella y estrella
+   lo pone el `style={{ animationDelay }}` en cada una. */
+@keyframes estrella-llena-entra {
+  0% { transform: scale(0.3); opacity: 0; }
+  60% { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.estrella-llena-entra {
+  display: inline-block;
+  animation: estrella-llena-entra 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .estrella-llena-entra { animation: none !important; }
+  .icono-trofeo-loop svg,
+  .icono-sobre-loop .sobre-solapa-izq,
+  .icono-sobre-loop .sobre-solapa-der,
+  .icono-mensaje-loop .mensaje-punto,
+  .icono-duo-loop .duo-persona,
+  .icono-persona-corre svg,
+  .icono-pin-loop svg,
+  .icono-lupa-loop,
+  .tarjeta-pelota-loop::after,
+  .tarjeta-pelota-loop::before {
+    animation: none !important;
+  }
+}

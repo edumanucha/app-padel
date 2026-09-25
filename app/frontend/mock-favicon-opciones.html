@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Archivo+Black&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #eaf3ec; font-family: 'Archivo', sans-serif; padding: 32px 20px 50px; }
+  h1 { font-family: 'Archivo Black', sans-serif; font-size: 22px; color: #14261f; text-align: center; margin: 0 0 6px; }
+  p.sub { text-align: center; color: #4d5f56; font-size: 13px; margin: 0 0 32px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; max-width: 920px; margin: 0 auto; }
+  .card { background: #fff; border-radius: 18px; padding: 18px; box-shadow: 0 1px 3px rgba(20,38,31,0.1); display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .card h2 { font-size: 13px; font-weight: 800; color: #14261f; margin: 0; text-align: center; }
+  .card p.desc { font-size: 11px; color: #4d5f56; text-align: center; margin: 0; line-height: 1.4; }
+
+  /* Mock de pestaña del navegador, para ver el ícono a tamaño real */
+  .tab-mock {
+    display: flex; align-items: center; gap: 6px;
+    background: #dee1e6; border-radius: 8px 8px 0 0; padding: 7px 10px;
+    width: 150px; border-bottom: 2px solid #fff;
+  }
+  .tab-mock .favicon { width: 16px; height: 16px; border-radius: 4px; flex-shrink: 0; overflow: hidden; }
+  .tab-mock .favicon svg { width: 100%; height: 100%; display: block; }
+  .tab-mock span { font-size: 10px; color: #3c4043; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .icono-grande { width: 84px; height: 84px; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.18); }
+  .icono-grande svg { width: 100%; height: 100%; display: block; }
+</style>
+</head>
+<body>
+
+<h1>Ícono de pestaña / PWA -- 4 opciones</h1>
+<p class="sub">Cada una se ve a tamaño real de pestaña (16px) arriba, y agrandada abajo para el detalle.</p>
+
+<div class="grid">
+
+  <!-- A: Pelota clásica, más marcada -->
+  <div class="card">
+    <div class="tab-mock">
+      <span class="favicon">
+        <svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#154139"/><circle cx="50" cy="50" r="42" fill="#f2c53d"/><path d="M20 12c13 13 13 63 0 76M80 12c-13 13-13 63 0 76" fill="none" stroke="#154139" stroke-width="7" stroke-linecap="round"/></svg>
+      </span>
+      <span>Padelito</span>
+    </div>
+    <div class="icono-grande">
+      <svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#154139"/><circle cx="50" cy="50" r="42" fill="#f2c53d"/><path d="M20 12c13 13 13 63 0 76M80 12c-13 13-13 63 0 76" fill="none" stroke="#154139" stroke-width="7" stroke-linecap="round"/></svg>
+    </div>
+    <h2>A. Pelota sólida</h2>
+    <p class="desc">La pelota de siempre, pero AMARILLA y sólida (no solo el contorno) -- mucho más legible en 16px que la versión actual.</p>
+  </div>
+
+  <!-- B: Pala de pádel -->
+  <div class="card">
+    <div class="tab-mock">
+      <span class="favicon">
+        <svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#154139"/>
+          <ellipse cx="50" cy="38" rx="26" ry="32" fill="#f2c53d"/>
+          <ellipse cx="50" cy="38" rx="26" ry="32" fill="none" stroke="#154139" stroke-width="4"/>
+          <rect x="44" y="66" width="12" height="26" rx="6" fill="#f2c53d"/>
+        </svg>
+      </span>
+      <span>Padelito</span>
+    </div>
+    <div class="icono-grande">
+      <svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#154139"/>
+        <ellipse cx="50" cy="38" rx="26" ry="32" fill="#f2c53d"/>
+        <ellipse cx="50" cy="38" rx="26" ry="32" fill="none" stroke="#154139" stroke-width="4"/>
+        <rect x="44" y="66" width="12" height="26" rx="6" fill="#f2c53d"/>
+      </svg>
+    </div>
+    <h2>B. Pala de pádel</h2>
+    <p class="desc">Silueta de pala en vez de pelota -- más específico de pádel (una pelota sola se confunde con tenis).</p>
+  </div>
+
+  <!-- C: Monograma P -->
+  <div class="card">
+    <div class="tab-mock">
+      <span class="favicon">
+        <svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#154139"/>
+          <text x="50" y="72" font-family="Arial Black, sans-serif" font-weight="900" font-size="66" fill="#f2c53d" text-anchor="middle">P</text>
+        </svg>
+      </span>
+      <span>Padelito</span>
+    </div>
+    <div class="icono-grande">
+      <svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#154139"/>
+        <text x="50" y="72" font-family="Arial Black, sans-serif" font-weight="900" font-size="66" fill="#f2c53d" text-anchor="middle">P</text>
+      </svg>
+    </div>
+    <h2>C. Monograma "P"</h2>
+    <p class="desc">Una letra grande y sólida -- el tipo de ícono que más se lee a tamaño mínimo, estilo apps como Pinterest/Podium.</p>
+  </div>
+
+  <!-- D: Pala + pelota combinadas -->
+  <div class="card">
+    <div class="tab-mock">
+      <span class="favicon">
+        <svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#154139"/>
+          <ellipse cx="42" cy="42" rx="30" ry="36" fill="#f2c53d"/>
+          <rect x="36" y="74" width="12" height="22" rx="6" fill="#f2c53d"/>
+          <circle cx="76" cy="76" r="18" fill="#3fd0c7" stroke="#154139" stroke-width="4"/>
+        </svg>
+      </span>
+      <span>Padelito</span>
+    </div>
+    <div class="icono-grande">
+      <svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#154139"/>
+        <ellipse cx="42" cy="42" rx="30" ry="36" fill="#f2c53d"/>
+        <rect x="36" y="74" width="12" height="22" rx="6" fill="#f2c53d"/>
+        <circle cx="76" cy="76" r="18" fill="#3fd0c7" stroke="#154139" stroke-width="4"/>
+      </svg>
+    </div>
+    <h2>D. Pala + pelota</h2>
+    <p class="desc">Combina las dos: pala amarilla grande de fondo, pelota turquesa (mismo color que ya usan los carteles del marcador) en la esquina.</p>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,158 @@
+/* Efectos visuales del marcador de prueba (validados como mockup por el
+   usuario el 2026-09-08 antes de sumarlos acá). Se manipulan por
+   ref+classList en vez de por estado de React porque son animaciones
+   "fire and forget" que se tienen que poder disparar de nuevo aunque el
+   mismo equipo puntúe dos veces seguidas -- con clases controladas por
+   estado, React no vuelve a montar la animación si la clase no cambia. */
+
+.marcadorBox {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.lado {
+  position: relative;
+  z-index: 1;
+  border-radius: 14px;
+}
+
+.pop {
+  animation: popBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popBounce {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.55); }
+  60% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+.flashA { animation: flashBgA 0.6s ease; }
+.flashB { animation: flashBgB 0.6s ease; }
+@keyframes flashBgA {
+  0% { background: transparent; }
+  30% { background: color-mix(in srgb, var(--accent) 55%, transparent); }
+  100% { background: transparent; }
+}
+@keyframes flashBgB {
+  0% { background: transparent; }
+  30% { background: color-mix(in srgb, var(--accent-2) 55%, transparent); }
+  100% { background: transparent; }
+}
+
+.shake { animation: shake 0.45s ease; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px) rotate(-1deg); }
+  40% { transform: translateX(7px) rotate(1deg); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(4px); }
+}
+
+.ball {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 26px;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.toA { animation: ballToA 0.7s cubic-bezier(0.3, 0.6, 0.4, 1) forwards; }
+.toB { animation: ballToB 0.7s cubic-bezier(0.3, 0.6, 0.4, 1) forwards; }
+@keyframes ballToA {
+  0%   { opacity: 1; transform: translate(-50%, -50%) translateX(0) translateY(0) rotate(0deg); }
+  30%  { transform: translate(-50%, -50%) translateX(-70px) translateY(-38px) rotate(-140deg); }
+  60%  { transform: translate(-50%, -50%) translateX(-115px) translateY(-6px) rotate(-260deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) translateX(-130px) translateY(10px) rotate(-320deg); }
+}
+@keyframes ballToB {
+  0%   { opacity: 1; transform: translate(-50%, -50%) translateX(0) translateY(0) rotate(0deg); }
+  30%  { transform: translate(-50%, -50%) translateX(70px) translateY(-38px) rotate(140deg); }
+  60%  { transform: translate(-50%, -50%) translateX(115px) translateY(-6px) rotate(260deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) translateX(130px) translateY(10px) rotate(320deg); }
+}
+
+.bigText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.4);
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  z-index: 4;
+  text-shadow: 3px 3px 0 var(--shadow-color);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.showA {
+  color: var(--accent-ink);
+  background: var(--accent);
+  animation: textPop 1s ease forwards;
+  padding: 6px 16px;
+  border-radius: 14px;
+  border: 3px solid var(--outline);
+}
+.showB {
+  color: var(--accent-2-ink);
+  background: var(--accent-2);
+  animation: textPop 1s ease forwards;
+  padding: 6px 16px;
+  border-radius: 14px;
+  border: 3px solid var(--outline);
+}
+.showUndo {
+  color: #fff;
+  background: #d1453b;
+  animation: textPop 0.8s ease forwards;
+  padding: 6px 16px;
+  border-radius: 14px;
+  border: 3px solid var(--outline);
+  font-size: 18px;
+}
+.showCorreccion {
+  color: var(--accent-3-ink);
+  background: var(--accent-3);
+  animation: textPop 1.1s ease forwards;
+  padding: 6px 16px;
+  border-radius: 14px;
+  border: 3px solid var(--outline);
+  font-size: 16px;
+}
+.showGame {
+  color: var(--accent-ink);
+  background: var(--accent);
+  animation: textPop 1.3s ease forwards;
+  padding: 8px 22px;
+  border-radius: 16px;
+  border: 4px solid var(--outline);
+  font-size: 28px;
+}
+@keyframes textPop {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.4) rotate(-6deg); }
+  15%  { opacity: 1; transform: translate(-50%, -50%) scale(1.15) rotate(2deg); }
+  25%  { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+  75%  { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9) rotate(0deg); }
+}
+
+.undoMark {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  font-size: 18px;
+  color: #ff6b60;
+  opacity: 0;
+  z-index: 4;
+}
+.undoShow { animation: undoFlash 0.9s ease forwards; }
+@keyframes undoFlash {
+  0% { opacity: 0; transform: scale(0.5) rotate(-20deg); }
+  30% { opacity: 1; transform: scale(1.3) rotate(0deg); }
+  50% { transform: scale(1) rotate(0deg); }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}

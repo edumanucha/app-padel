@@ -1,0 +1,15 @@
+# Dependencias instaladas (se reconstruyen con npm install)
+node_modules/
+
+# Variables de entorno reales - NUNCA se suben al repo
+.env
+.env.local
+
+# Archivos de build
+.next/
+dist/
+build/
+
+# Logs y archivos del sistema operativo
+*.log
+.DS_Store

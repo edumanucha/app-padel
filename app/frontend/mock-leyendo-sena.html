@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Archivo+Black&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #05100d; font-family: 'Archivo', sans-serif; padding: 24px 0 40px; }
+  .fila { display: flex; gap: 14px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+  .paso { width: 150px; }
+  .titulo { color: #6f9d90; font-size: 10px; font-weight: 700; text-align: center; margin-bottom: 10px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .board { background: #154139; border-radius: 18px; padding: 12px; }
+  .puntos-val { font-size: 22px; font-weight: 800; color: #fde047; text-align: right; font-variant-numeric: tabular-nums; margin-bottom: 8px; }
+
+  /* La MISMA cápsula cuadrada en las 4 etapas -- nunca cambia de forma ni
+     tamaño. Lo que crece es la mancha de color, desde el centro, hasta
+     cubrir los 4 rincones (radial-gradient con "farthest-corner": al
+     100% el color llega solo a las esquinas, sin necesitar otro elemento
+     ni cambiar de forma). */
+  .capsula {
+    width: 100%; height: 168px; border-radius: 20px;
+    background-color: rgba(10, 22, 19, 0.74);
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s linear;
+  }
+  .contenido { display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative; z-index: 1; }
+  .eyebrow { color: #9fd8d0; font-size: 10.5px; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+  .icono { font-size: 26px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
+  .accion-chica { font-weight: 800; color: #fff; font-size: 14px; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+
+  .confirmado .contenido { gap: 4px; }
+  .check { font-size: 30px; }
+  .texto-grande {
+    font-family: 'Archivo Black', sans-serif;
+    color: #062421; font-size: 21px; text-align: center; line-height: 1.05;
+  }
+
+  .caption { color: #6f9d90; font-size: 10.5px; text-align: center; margin-top: 8px; padding: 0 2px; line-height: 1.35; }
+</style>
+</head>
+<body>
+
+<div class="fila">
+  <div class="paso">
+    <div class="titulo">1 · 15%</div>
+    <div class="board">
+      <div class="puntos-val">30 - 15</div>
+      <div class="capsula" style="background: radial-gradient(circle at center, #3fd0c7 0% 15%, rgba(10,22,19,0.74) 25% 100%);">
+        <div class="contenido">
+          <span class="eyebrow">👀 Leyendo seña...</span>
+          <span class="icono">✋</span>
+          <span class="accion-chica">Punto A</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="paso">
+    <div class="titulo">2 · 50%</div>
+    <div class="board">
+      <div class="puntos-val">30 - 15</div>
+      <div class="capsula" style="background: radial-gradient(circle at center, #3fd0c7 0% 50%, rgba(10,22,19,0.74) 60% 100%);">
+        <div class="contenido">
+          <span class="eyebrow">👀 Leyendo seña...</span>
+          <span class="icono">✋</span>
+          <span class="accion-chica">Punto A</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="paso">
+    <div class="titulo">3 · 85%</div>
+    <div class="board">
+      <div class="puntos-val">30 - 15</div>
+      <div class="capsula" style="background: radial-gradient(circle at center, #3fd0c7 0% 85%, rgba(10,22,19,0.74) 95% 100%);">
+        <div class="contenido">
+          <span class="eyebrow">👀 Leyendo seña...</span>
+          <span class="icono">✋</span>
+          <span class="accion-chica">Punto A</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption">Casi llega a las 4 esquinas del cuadrado (radial-gradient con alcance "farthest-corner").</div>
+  </div>
+
+  <div class="paso">
+    <div class="titulo">4 · 100% → confirmado</div>
+    <div class="board">
+      <div class="puntos-val">30 - 15</div>
+      <div class="capsula confirmado" style="background: #3fd0c7; border: 3px solid #0a211e;">
+        <div class="contenido">
+          <span class="check">✅</span>
+          <span class="texto-grande">¡PUNTO A!</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption">Cubrió las 4 esquinas: es la MISMA cápsula, ahora toda sólida, sin cambiar de forma ni tamaño en ningún momento.</div>
+  </div>
+</div>
+
+</body>
+</html>

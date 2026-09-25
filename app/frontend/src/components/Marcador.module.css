@@ -1,0 +1,951 @@
+/* Estilo confirmado por el usuario (2026-09-05): cartel de cancha tipo
+   Wimbledon, verde oscuro + placas amarillas + dígitos armados con puntos
+   redondos ("pelotitas de tenis"). Ver el mockup de referencia (Artifact)
+   para el diseño original. */
+
+/* Apaisado (2026-09-10, a pedido del usuario). Se probó primero el truco de
+   CSS "rotar el contenido con transform" para forzar landscape incluso con
+   el teléfono agarrado en vertical -- se descartó en su momento porque
+   dependía de detectarlo solo por `@media (orientation: ...)`, que para
+   la mayoría (auto-rotate activado) ya giraba bien solo, y para el resto
+   (auto-rotate desactivado) esa media query NUNCA se entera de nada,
+   porque el viewport lógico sigue siendo portrait aunque el usuario gire
+   el teléfono -- el modo apaisado quedaba inutilizable justo para quienes
+   más lo necesitaban. Solución (2026-09-13, a pedido del usuario): un
+   BOTÓN manual prende `.forzarApaisado` -- el truco de rotar con
+   transform vuelve, pero ahora es opt-in (quien lo toca ya sabe que
+   después tiene que girar el teléfono), no una detección automática que
+   le erraba a la mitad de la gente. */
+.avisoGirar {
+  display: none;
+}
+
+/* El wrapper entero (incluye el botón "Volver" y el tablero) se estira a
+   las dimensiones de un rectángulo apaisado usando vh/vw cruzados, y se
+   rota 90° para que quede legible una vez que el usuario gira el
+   teléfono de verdad. `position: fixed` para no arrastrar el layout
+   portrait (scroll, BottomNav) debajo. */
+.forzarApaisado {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vh;
+  height: 100vw;
+  transform-origin: top left;
+  transform: rotate(90deg) translateY(-100%);
+  z-index: 40;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  box-sizing: border-box;
+}
+/* Que el tablero use TODO el alto disponible una vez apaisado (2026-09-13,
+   a pedido del usuario: "que use todo el espacio disponible... como los
+   teléfonos que tienen 16:9") -- sin esto, `.board` quedaba con su alto
+   de contenido nomás y sobraba un montón de pantalla vacía al costado. */
+.forzarApaisado .board {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  justify-content: space-between;
+}
+
+@keyframes girar {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(90deg); }
+}
+
+/* Mismo ajuste de tamaños "para que no se corte en una pantalla bajita"
+   que antes vivía en @media (orientation: landscape), ahora atado a
+   `.forzarApaisado` en vez de a la orientación real del viewport -- OJO:
+   adentro de un contenedor rotado 90°, lo que se VE como "alto" del
+   rectángulo apaisado es en realidad el `vw` real de la pantalla (no el
+   vh), porque el viewport lógico del navegador sigue en portrait. Por
+   eso acá los clamp() que antes usaban vh pasan a usar vw. */
+.forzarApaisado .board {
+  padding: clamp(6px, 2vw, 14px);
+  gap: clamp(6px, 1.4vw, 12px);
+}
+.forzarApaisado .header {
+  padding-bottom: clamp(4px, 1vw, 8px);
+}
+.forzarApaisado .matchLabel {
+  font-size: clamp(12px, 2.2vw, 16px);
+}
+/* Las píldoras del header (cámara activa, escuchando, timer, cambiar
+   saque, opciones) a tamaño normal ya usan todo el presupuesto vertical
+   de apaisado con una sola -- varias juntas se envuelven a 2/3 líneas y
+   empujan los botones de puntos fuera de la pantalla, obligando a
+   scrollear para verlos (bug real, 2026-09-19: "no se ve los botones de
+   puntos abajo"). Achicadas para que entren en una sola línea. */
+.forzarApaisado .statusCluster {
+  gap: 4px;
+}
+.forzarApaisado .pill {
+  padding: 3px 8px;
+  font-size: 10px;
+}
+/* La raíz del problema de por qué Sets/Games no se veían más grandes por
+   más que se agrandara `.dotdigit`: la GRILLA de la fila los encierra en
+   una columna de ancho FIJO 56px (`.row`/`.tableHead` en la base del
+   archivo) -- sea lo que sea que pida `.bigDigit .dotdigit` más abajo,
+   no puede crecer más que esa columna. Acá se reparte la fila de nuevo
+   para apaisado: "Pareja" (el nombre, que ahora es secundario) baja de
+   2.6fr a 1fr, "Sets"/"Games" pasan de 56px fijos a columnas flexibles
+   de verdad. */
+.forzarApaisado .tableHead,
+.forzarApaisado .row {
+  grid-template-columns: minmax(36px, 0.55fr) minmax(70px, 1fr) minmax(60px, 0.95fr) minmax(60px, 0.95fr);
+  gap: clamp(4px, 1vw, 10px);
+}
+.forzarApaisado .tableHead {
+  padding: 0;
+}
+.forzarApaisado .tableHead span {
+  font-size: 10px;
+}
+.forzarApaisado .scoreTable {
+  gap: 4px;
+}
+/* Tamaños relativos ajustados a mano (2026-09-14, a pedido del usuario,
+   con marcas de referencia sobre una captura real): los marcadores
+   (sets jugados, columnas SETS/GAMES, y los puntos grandes del medio)
+   tienen que ser más grandes -- son el dato que de verdad importa
+   mirar de lejos en la cancha -- y a cambio la placa amarilla con los
+   nombres de la pareja se achica, porque ocupaba más lugar del que
+   aporta. */
+.forzarApaisado .digitCell,
+.forzarApaisado .bigDigit {
+  padding: 3px;
+}
+.forzarApaisado .bigDigit .dotdigit {
+  width: clamp(34px, 7.2vw, 56px);
+}
+.forzarApaisado .digitCell .dotdigit {
+  max-width: 30px;
+}
+.forzarApaisado .players {
+  padding: 2px 8px;
+  /* Que la placa amarilla ocupe solo lo que el nombre necesita, no toda
+     la columna (2026-09-14: "innecesariamente grande y largo... que
+     ocupe el lugar de los nombres") -- por default un item de grid se
+     estira a lo ancho de su columna aunque el contenido sea corto. */
+  justify-self: start;
+  max-width: 100%;
+  width: fit-content;
+}
+.forzarApaisado .name {
+  font-size: clamp(9px, 1.5vw, 11px);
+}
+.forzarApaisado .pointsHero {
+  padding: clamp(4px, 1.4vw, 10px) 0;
+  gap: 2px;
+}
+.forzarApaisado .pointsLabel {
+  font-size: 9px;
+}
+.forzarApaisado .pointsValue .dotdigit {
+  width: clamp(46px, 10.5vw, 84px);
+}
+.forzarApaisado .pointsSep {
+  font-size: clamp(16px, 3.5vw, 26px);
+}
+.forzarApaisado .who {
+  font-size: clamp(10px, 1.8vw, 13px);
+}
+.forzarApaisado .ctrlBtnBig {
+  font-size: 14px;
+  padding: 8px 14px;
+  min-width: 60px;
+}
+.forzarApaisado .ctrlBtnPunto {
+  width: 96px;
+  min-width: 96px;
+  padding: 6px 6px;
+}
+.forzarApaisado .caption {
+  font-size: 10px;
+}
+/* `position: sticky` para clavar los botones abajo se probó acá
+   (2026-09-14) y se sacó: `.forzarApaisado` (el contenedor con scroll)
+   tiene `transform: rotate(...)`, y sticky calculado contra un ancestro
+   TRANSFORMADO es un caso borde que varios navegadores rendereizan mal
+   -- terminaba superponiendo los botones sobre los puntos en vez de
+   clavarlos abajo. La solución real es que TODO entre sin necesitar
+   scroll (ver los tamaños de más arriba); `.forzarApaisado` ya tiene
+   `overflow-y: auto` como red de contención si de última no entra. */
+
+.botonApaisado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Tema del tablero, en variables CSS (2026-09-13, a pedido del usuario:
+   "poder elegir otro estilo, que se pueda ser totalmente distinto") --
+   MarcadorForm.js pisa estas variables agregando `.temaNeon` cuando el
+   usuario elige el tema retro/arcade en vez de tocar cada regla suelta. */
+.board {
+  --tab-bg-1: #154139;
+  --tab-bg-2: #123430;
+  --tab-bg-3: #0f2e29;
+  --tab-borde-marco: #0a211e;
+  --tab-texto: #eaf4f0;
+  --tab-muted: #8fb6ae;
+  --tab-panel-bg: #0c2320;
+  --tab-panel-borde: #1f5049;
+  --tab-acento: #f2c53d;
+  --tab-acento-texto: #1a1305;
+  --tab-dot-off: #20321f;
+  --tab-dot-on-1: #f4ff9a;
+  --tab-dot-on-2: #d7e34a;
+  --tab-dot-on-3: #96a824;
+  --tab-dot-glow: rgba(215, 227, 74, 0.7);
+
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.12) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, var(--tab-bg-1) 0%, var(--tab-bg-2) 55%, var(--tab-bg-3) 100%);
+  border: 10px solid var(--tab-borde-marco);
+  border-radius: 14px;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.65), inset 0 0 0 2px rgba(255, 255, 255, 0.03);
+  padding: clamp(14px, 2.4vw, 30px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vw, 22px);
+  color: var(--tab-texto);
+  font-family: var(--font-body), sans-serif;
+}
+
+/* Tema retro/arcade (2026-09-13, a pedido del usuario, elegido sobre un
+   mockup con 3 opciones: "el retro creo que es lo mejor") -- fondo negro
+   absoluto + dígitos verde neón con resplandor, en vez de rediseñar cada
+   regla, solo pisa las variables de `.board` de más arriba. */
+.temaNeon {
+  --tab-bg-1: #0a0a0a;
+  --tab-bg-2: #050505;
+  --tab-bg-3: #000000;
+  --tab-borde-marco: #1a1a1a;
+  --tab-texto: #39ff88;
+  --tab-muted: #2b8a56;
+  --tab-panel-bg: #0d0d0d;
+  --tab-panel-borde: #1f5a3a;
+  --tab-acento: #39ff88;
+  --tab-acento-texto: #04140a;
+  --tab-dot-off: #10201a;
+  --tab-dot-on-1: #baffcf;
+  --tab-dot-on-2: #39ff88;
+  --tab-dot-on-3: #12a852;
+  --tab-dot-glow: rgba(57, 255, 136, 0.75);
+}
+.temaNeon .players {
+  box-shadow: 0 0 14px rgba(57, 255, 136, 0.35), 0 2px 0 rgba(0, 0, 0, 0.5);
+}
+.temaNeon .matchLabel,
+.temaNeon .showGame {
+  text-shadow: 0 0 10px rgba(57, 255, 136, 0.7);
+}
+
+/* Tema alto contraste (2026-09-14, a pedido del usuario: "por si jode la
+   luz solar o nocturna" -- fondos claros/grises y negro para el
+   contenido, en vez del verde oscuro de siempre, que se lava con sol
+   directo). Sin resplandores ni sombras de texto a propósito (serían
+   ruido visual, no ayudan a la legibilidad que es el objetivo acá) --
+   solo pisa las variables, igual que `.temaNeon`. */
+.temaAltoContraste {
+  --tab-bg-1: #f4f4f2;
+  --tab-bg-2: #e8e8e4;
+  --tab-bg-3: #dcdcd6;
+  --tab-borde-marco: #111111;
+  --tab-texto: #111111;
+  --tab-muted: #4d4d4d;
+  --tab-panel-bg: #ffffff;
+  --tab-panel-borde: #b8b8b0;
+  --tab-acento: #111111;
+  --tab-acento-texto: #ffffff;
+  --tab-dot-off: #d6d6d0;
+  --tab-dot-on-1: #3a3a3a;
+  --tab-dot-on-2: #161616;
+  --tab-dot-on-3: #000000;
+  --tab-dot-glow: rgba(0, 0, 0, 0.25);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-bottom: 2px solid var(--tab-panel-borde);
+  padding-bottom: clamp(10px, 1.6vw, 16px);
+}
+.matchLabel {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: clamp(14px, 1.8vw, 18px);
+  text-transform: uppercase;
+}
+.matchSub {
+  font-size: 12px;
+  color: var(--tab-muted);
+  letter-spacing: 0.05em;
+}
+.statusCluster {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--tab-panel-bg);
+  border: 1px solid var(--tab-panel-borde);
+}
+.pillMic {
+  color: #57e08c;
+}
+.pillMicOff {
+  color: var(--tab-muted);
+}
+.pillDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+.pillTimer {
+  color: #d7e34a;
+  font-variant-numeric: tabular-nums;
+}
+
+.tableHead {
+  display: grid;
+  grid-template-columns: minmax(80px, 1fr) minmax(140px, 2.6fr) 56px 56px;
+  gap: clamp(6px, 1.4vw, 16px);
+  padding: 0 clamp(4px, 1vw, 10px);
+}
+.tableHead span {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--tab-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+.tableHead span.playersHead {
+  text-align: left;
+}
+.scoreTable {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.row {
+  display: grid;
+  grid-template-columns: minmax(80px, 1fr) minmax(140px, 2.6fr) 56px 56px;
+  gap: clamp(6px, 1.4vw, 16px);
+  align-items: center;
+}
+.prevSets {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  /* Sin wrap (2026-09-12, a pedido del usuario: "que se achiquen los
+     cuadrados... para entrar en ese lugar determinado") -- con hasta 3
+     sets jugados, antes se cortaban a una segunda línea si no entraban a
+     tamaño fijo; ahora cada caja se achica lo que haga falta para que
+     siempre entren todas en una sola fila. */
+  flex-wrap: nowrap;
+  width: 100%;
+}
+.digitCell {
+  background: var(--tab-panel-bg);
+  border: 1px solid var(--tab-panel-borde);
+  border-radius: 8px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.players {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--tab-acento);
+  color: var(--tab-acento-texto);
+  border-radius: 6px;
+  padding: 6px 14px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+.name {
+  font-weight: 700;
+  font-size: clamp(13px, 1.6vw, 18px);
+  line-height: 1.15;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.serveBall {
+  font-size: 11px;
+  color: #ff6a3d;
+  filter: drop-shadow(0 0 3px #ff6a3d);
+}
+.bigDigit {
+  background: var(--tab-panel-bg);
+  border: 1px solid var(--tab-panel-borde);
+  border-radius: 8px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Resalta quién ganó cada set jugado (2026-09-11, a pedido del usuario:
+   "que se marque el ganador... resalte quién ganó cada set") -- se aplica
+   tanto a los sets ya en "Anteriores" como al último set una vez que el
+   partido termina. */
+.digitCellGanado, .bigDigitGanado {
+  border-color: var(--tab-acento);
+  border-width: 2px;
+  background: rgba(242, 197, 61, 0.16);
+  box-shadow: 0 0 0 1px rgba(242, 197, 61, 0.4) inset;
+}
+
+.pointsHero {
+  margin-top: 2px;
+  border-top: 2px solid var(--tab-panel-borde);
+  border-bottom: 2px solid var(--tab-panel-borde);
+  padding: clamp(12px, 2.4vw, 24px) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.pointsLabel {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--tab-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.pointsRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 3vw, 28px);
+  width: 100%;
+}
+.pointsSide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.who {
+  font-size: clamp(12px, 1.5vw, 16px);
+  font-weight: 600;
+  color: var(--tab-muted);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.pointsValue {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 2vw, 20px);
+}
+.pointsSep {
+  font-size: clamp(22px, 4vw, 44px);
+  color: var(--tab-muted);
+  font-weight: 700;
+}
+
+/* dot-matrix (pelotitas de tenis) */
+.dotdigit {
+  display: inline-grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap: 11%;
+  aspect-ratio: 5 / 7;
+  /* Habilita `cqw` en `.numeroSolido` de acá abajo -- el tamaño de fuente
+     del número sólido se escala contra el ANCHO REAL de esta caja, sea
+     cual sea el contexto (bigDigit/pointsValue/digitCell/etc. cada uno
+     ya le pone su propio ancho a `.dotdigit`), sin tener que duplicar
+     esas reglas de tamaño para el modo sólido. */
+  container-type: inline-size;
+}
+/* Número sólido (tema alto contraste, ver DotDigit.js `solido`): mismo
+   tamaño de caja que la grilla de puntos, pero adentro un dígito grueso
+   de tipografía real -- más legible con sol directo que puntos
+   individuales con huecos entre sí. */
+.numeroSolido {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--tab-texto);
+  font-size: 78cqw;
+}
+.dot {
+  border-radius: 50%;
+  background: var(--tab-dot-off, #20321f);
+  box-shadow: inset 0 0 0.14em rgba(0, 0, 0, 0.55);
+}
+.dotOn {
+  background: radial-gradient(
+    circle at 34% 30%,
+    var(--tab-dot-on-1, #f4ff9a) 0%,
+    var(--tab-dot-on-2, #d7e34a) 40%,
+    var(--tab-dot-on-3, #96a824) 100%
+  );
+  box-shadow: 0 0 0.5em var(--tab-dot-glow, rgba(215, 227, 74, 0.7)), 0 0 0.08em rgba(0, 0, 0, 0.4) inset;
+}
+.bigDigit .dotdigit {
+  width: clamp(28px, 3.6vw, 44px);
+}
+/* Mismo tamaño MÁXIMO que .bigDigit, pero flexible hacia abajo (2026-09-12):
+   "que se achiquen los cuadrados... para entrar en ese lugar determinado"
+   -- con 1 set jugado se ve tan grande como Sets/Games, pero con 2 o 3 se
+   achica lo necesario para entrar siempre en una sola fila (el .digitCell
+   padre ya se reparte el ancho disponible vía flex). */
+.digitCell .dotdigit {
+  width: 100%;
+  max-width: 44px;
+}
+.pointsValue .dotdigit {
+  width: clamp(56px, 11vw, 130px);
+}
+.miniPreview .dotdigit {
+  width: 13px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.controlGroup {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ctrlBtn {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  font-size: 13px;
+  color: var(--tab-texto);
+  background: var(--tab-panel-bg);
+  border: 1px solid var(--tab-panel-borde);
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.ctrlBtn:hover {
+  background: #123933;
+}
+.ctrlBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ctrlBtnWarn {
+  color: #ff5252;
+  border-color: rgba(255, 82, 82, 0.4);
+}
+.ctrlBtnSmall {
+  font-size: 12px;
+  padding: 6px 10px;
+  min-width: 34px;
+}
+/* Botones grandes de +1 A / +1 B / Deshacer (2026-09-11, a pedido del
+   usuario: "que estén centrados y más grandes") -- son la acción principal
+   durante el partido, se agrandan bien por encima del resto de los
+   controles de "⚙️ Opciones" para que sean fáciles de tocar en cancha. */
+.ctrlBtnBig {
+  font-size: 20px;
+  padding: 18px 28px;
+  min-width: 84px;
+  border-radius: 14px;
+}
+/* Botones de puntaje "descriptivos" (2026-09-11, opción F elegida por el
+   usuario): dos líneas -- etiqueta chica arriba, nombre de la pareja abajo
+   -- en vez de "+1 A"/"+1 B" pelado. Ancho fijo para los 3 (los 2 de sumar
+   punto + Deshacer), para que no cambien de tamaño según el largo del
+   nombre -- el nombre se corta con "…" si no entra. */
+.ctrlBtnPunto {
+  flex-direction: column;
+  gap: 2px;
+  width: 132px;
+  min-width: 132px;
+  padding: 12px 8px;
+}
+.ctrlBtnPuntoLabel {
+  font-size: 10px;
+  color: var(--tab-muted);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.ctrlBtnPuntoNombre {
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Pantallas angostas (celular): las 4 columnas del cabezal/filas no
+   entraban cómodas -- "Sets anteriores" se cortaba raro. Se angostan las
+   columnas fijas y se abrevian las etiquetas.
+   Fix 2026-09-10: la columna "Anteriores" quedaba en 44px mínimo, que
+   apenas alcanza para 1 dígito -- con 2 sets ya jugados (lo normal al
+   entrar al 3er set), el segundo se apretaba/cortaba y daba la sensación
+   de que no se había guardado. Se sube a 62px (alcanza para 2 dígitos
+   chicos con gap) y se reduce el tamaño de esos dígitos puntualmente acá. */
+/* El apaisado real (2026-09-13, a pedido del usuario) ya no depende de
+   `@media (orientation: landscape)` -- ver `.forzarApaisado` más arriba,
+   que trae exactamente este mismo ajuste de tamaños atado al botón
+   manual en vez de a la orientación física del viewport. */
+
+@media (max-width: 420px) {
+  .tableHead,
+  .row {
+    /* Ensanchado (2026-09-12): "Sets jugados" ahora siempre puede tener
+       hasta 3 cajitas (todos los sets, no solo los anteriores) -- 62px
+       apenas alcanzaba para 2. */
+    grid-template-columns: minmax(78px, 0.95fr) minmax(90px, 2fr) 40px 40px;
+    gap: 6px;
+  }
+  .tableHead span {
+    font-size: 9px;
+    letter-spacing: 0.02em;
+  }
+  .prevSets {
+    gap: 2px;
+  }
+  .prevSets .digitCell {
+    padding: 2px;
+  }
+  /* Ya no se fuerza un ancho fijo acá (2026-09-12) -- el dígito se achica
+     solo según el espacio real que le toca (ver .digitCell .dotdigit más
+     arriba), así entran 1, 2 o 3 sin cortarse en dos líneas. */
+}
+
+.caption {
+  text-align: center;
+  font-size: 12px;
+  color: var(--tab-muted);
+}
+
+.finalBanner {
+  text-align: center;
+  font-weight: 700;
+  font-size: clamp(16px, 2.2vw, 22px);
+  color: #f4ff9a;
+  animation: finalBannerSube 0.4s ease both;
+}
+
+/* El resultado final "sube" como una hoja en vez de aparecer de golpe
+   (2026-09-13, a pedido del usuario: "animaciones cuando nos movemos en
+   la app"). */
+@keyframes finalBannerSube {
+  from { transform: translateY(14px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .finalBanner { animation: none; }
+}
+
+/* Efectos de punto/game/deshacer -- portados 1:1 de
+   PruebaManosLibres.module.css (validados como mockup el 2026-09-08) para
+   reusarlos en la demo autoplay del Marcadorcito real (US-2.7). Se
+   manipulan por ref+classList, no por estado de React: son animaciones
+   "fire and forget" que tienen que poder repetirse aunque el mismo equipo
+   sume dos veces seguidas, y React no vuelve a montarlas si la clase no
+   cambia. */
+.pointsHero {
+  position: relative;
+}
+.pop {
+  animation: popBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popBounce {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.5); }
+  60% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+.flashA { animation: flashBgA 0.6s ease; border-radius: 10px; }
+.flashB { animation: flashBgB 0.6s ease; border-radius: 10px; }
+@keyframes flashBgA {
+  0% { background: transparent; }
+  30% { background: rgba(63, 208, 199, 0.35); }
+  100% { background: transparent; }
+}
+@keyframes flashBgB {
+  0% { background: transparent; }
+  30% { background: rgba(242, 149, 95, 0.35); }
+  100% { background: transparent; }
+}
+.shake { animation: shake 0.45s ease; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-7px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(3px); }
+}
+.ball {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 30px;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.toA { animation: ballToA 0.7s cubic-bezier(0.3, 0.6, 0.4, 1) forwards; }
+.toB { animation: ballToB 0.7s cubic-bezier(0.3, 0.6, 0.4, 1) forwards; }
+@keyframes ballToA {
+  0% { opacity: 1; transform: translate(-50%, -50%); }
+  30% { transform: translate(-50%, -50%) translate(-60px, -32px) rotate(-140deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) translate(-100px, 8px) rotate(-320deg); }
+}
+@keyframes ballToB {
+  0% { opacity: 1; transform: translate(-50%, -50%); }
+  30% { transform: translate(-50%, -50%) translate(60px, -32px) rotate(140deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) translate(100px, 8px) rotate(320deg); }
+}
+.bigText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.4);
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  z-index: 4;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.showA, .showB, .showUndo, .showGame {
+  animation: textPop 1s ease forwards;
+  padding: 8px 20px;
+  border-radius: 14px;
+  border: 3px solid #0a211e;
+}
+.showA { color: #062421; background: #3fd0c7; }
+.showB { color: #331002; background: #f2955f; }
+.showUndo { color: #fff; background: #d1453b; font-size: 22px; }
+.showGame { color: var(--tab-acento-texto); background: var(--tab-acento); font-size: 32px; padding: 10px 24px; animation-duration: 1.3s; }
+/* Cápsula "Leyendo seña..." (2026-09-18, rediseñada a pedido del usuario:
+   "una sola cápsula, mismo tamaño siempre, que se va llenando y al
+   completarse se transforma en la confirmación" -- una mancha de color
+   crece DESDE EL CENTRO hacia afuera hasta cubrir las 4 esquinas del
+   cuadro, y esa MISMA cápsula pasa a mostrar
+   "¡PUNTO A!"/"¡PUNTO B!"/"¡DESHECHO!" al completarse -- nunca hay dos
+   carteles distintos superpuestos.
+   La mancha es un `.leyendoRelleno` circular con `transform: scale()`,
+   NO un `radial-gradient` recalculado por cuadro -- la primera versión
+   (gradiente reescrito ~30-60 veces por segundo, a la par del
+   procesamiento de la cámara) se sentía trabada en el celular real; un
+   `transform` es composición de GPU, mucho más liviano, y con
+   `transition` de verdad entre cuadros queda fluido. */
+.leyendoOverlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 152px;
+  height: 140px;
+  padding: 0 12px;
+  border-radius: 22px;
+  background: rgba(10, 22, 19, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  text-align: center;
+  overflow: hidden;
+}
+.leyendoOverlay.leyendoVisible { display: flex; }
+.leyendoRelleno {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 230px;
+  height: 230px;
+  margin: -115px 0 0 -115px;
+  border-radius: 50%;
+  transform: scale(0);
+  transform-origin: center;
+  /* Sin `transition`: el suavizado lo hace el loop de rAF propio en JS
+     (`loopSuavizadoLeyendo` en MarcadorForm.js), a 60fps reales e
+     independiente del loop de cámara -- una `transition` CSS encima
+     solo sumaba un segundo suavizado sobre el del JS y lo hacía sentir
+     más lento/mushy en vez de más fluido. */
+  will-change: transform;
+}
+.leyendoEyebrow {
+  position: relative;
+  z-index: 1;
+  color: #9fd8d0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+.leyendoIcon {
+  position: relative;
+  z-index: 1;
+  font-size: 26px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+.leyendoAccion {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  color: #fff;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+/* Instante confirmado: la mancha ya cubrió las 4 esquinas -- mismo
+   tamaño de cápsula, ahora sólida, con el ícono y el texto más grandes. */
+.leyendoConfirmado { border: 3px solid #0a211e; }
+.leyendoConfirmado .leyendoRelleno { transform: scale(1); transition: none; }
+.leyendoConfirmado .leyendoEyebrow { display: none; }
+.leyendoConfirmado .leyendoIcon { font-size: 30px; text-shadow: none; filter: none; }
+.leyendoConfirmado .leyendoAccion { color: inherit; font-size: 19px; text-shadow: none; }
+.leyendoConfirmado .leyendoEyebrow { display: none; }
+.leyendoConfirmado .leyendoIcon { font-size: 30px; text-shadow: none; filter: none; }
+.leyendoConfirmado .leyendoAccion { color: inherit; font-size: 19px; text-shadow: none; }
+@keyframes textPop {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+  15% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+  25% { transform: translate(-50%, -50%) scale(1); }
+  75% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+}
+.miniCartelSet {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  z-index: 20;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: 6px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: var(--tab-acento-texto, #1a1305);
+  background: var(--tab-acento, #f2c53d);
+  border: 1px solid var(--tab-borde-marco, #0a211e);
+  border-radius: 6px;
+  padding: 2px 5px;
+  animation: miniCartelPop 1.4s ease forwards;
+  pointer-events: none;
+}
+@keyframes miniCartelPop {
+  0% { opacity: 0; transform: translateX(-50%) scale(0.4); }
+  15% { opacity: 1; transform: translateX(-50%) scale(1.08); }
+  25% { transform: translateX(-50%) scale(1); }
+  75% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) scale(0.95); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pop, .flashA, .flashB, .shake, .toA, .toB, .showA, .showB, .showUndo, .showGame, .miniCartelSet { animation: none !important; }
+}
+
+/* Chips de modo (Cámara/Voz/Botones) + texto explicativo rotando, usados
+   en la demo autoplay -- diseño aprobado como Artifact antes de esta
+   integración. */
+.modoFila {
+  display: flex;
+  gap: 8px;
+}
+.modoChip {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 8px 6px;
+  border-radius: 12px;
+  border: 2px solid var(--outline);
+  background: var(--surface);
+  color: var(--ink);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+.modoChipOn {
+  background: var(--accent-2);
+  color: var(--accent-2-ink);
+}
+.explicacion {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--accent-2-ink);
+  background: var(--accent-2);
+  border: 3px solid var(--outline);
+  border-radius: 14px;
+  padding: 10px 14px;
+  box-shadow: 3px 3px 0 var(--shadow-color);
+  transition: opacity 0.15s ease;
+}
+.explicacionCambiando {
+  opacity: 0;
+}

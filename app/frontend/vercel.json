@@ -1,0 +1,9 @@
+{
+  "installCommand": "npm install --ignore-scripts",
+  "crons": [
+    {
+      "path": "/api/keep-alive",
+      "schedule": "0 12 * * *"
+    }
+  ]
+}

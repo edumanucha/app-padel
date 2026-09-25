@@ -1,0 +1,23 @@
+# Dependencias y builds
+node_modules/
+.next/
+out/
+build/
+coverage/
+
+# Variables de entorno con claves reales -- NUNCA se suben
+.env
+.env.*
+!.env.example
+
+# Vercel (vínculo local del proyecto)
+.vercel/
+
+# Configuración local de Claude
+.claude/settings.local.json
+
+# Varios
+.DS_Store
+Thumbs.db
+~$*
+*.log
