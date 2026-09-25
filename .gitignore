@@ -24,3 +24,15 @@ Thumbs.db
 
 # Notas locales con secretos -- nunca al repo
 docs/*.txt
+
+# Credenciales y claves (por si alguna vez se descarga una a la carpeta)
+*.pem
+*.key
+*.p12
+*.pfx
+*credential*
+*credencial*
+*secret*
+*secreto*
+client_secret*.json
+service-account*.json
