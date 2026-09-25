@@ -21,3 +21,6 @@ coverage/
 Thumbs.db
 ~$*
 *.log
+
+# Notas locales con secretos -- nunca al repo
+docs/*.txt

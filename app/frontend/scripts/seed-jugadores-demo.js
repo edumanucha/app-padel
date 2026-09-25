@@ -28,6 +28,14 @@ function cargarEnvLocal() {
 const env = cargarEnvLocal();
 const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
+// La contraseña de las cuentas demo vive en .env.local (SEED_DEMO_PASSWORD),
+// no en el código: el repo es público (2026-09-25).
+const PASSWORD_DEMO = env.SEED_DEMO_PASSWORD;
+if (!PASSWORD_DEMO) {
+  console.error("Falta SEED_DEMO_PASSWORD en .env.local");
+  process.exit(1);
+}
+
 const NOMBRES = [
   "Lucas", "Martina", "Facundo", "Valentina", "Nicolás", "Camila", "Tomás", "Sofía",
   "Agustín", "Julieta", "Franco", "Micaela", "Bruno", "Antonella", "Ignacio", "Delfina",
@@ -58,7 +66,7 @@ function generarJugador(i) {
   return {
     nombreCompleto: `${nombre} ${apellido} (demo ${i})`,
     email: `demo.jugador.${i}@seed.local`,
-    password: process.env.SEED_DEMO_PASSWORD,
+    password: PASSWORD_DEMO,
     sexo: elegir(SEXOS),
     zona: elegir(ZONAS),
     nivel: 1 + Math.floor(Math.random() * 7),
