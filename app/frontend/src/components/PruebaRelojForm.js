@@ -28,10 +28,14 @@ function textosReloj(est, minutos) {
   const { a, b } = setsGanados(est.setsA, est.setsB);
   const gA = est.setsA[est.setsA.length - 1];
   const gB = est.setsB[est.setsB.length - 1];
-  const titulo = est.finalizado
+  // Renglones invertidos (2026-09-30, pedido del usuario): el de arriba
+  // (título) usa letra grande y se mueve tipo marquesina si no entra; el de
+  // abajo queda quieto -- ahí va lo que más cambia y hay que leer rápido,
+  // el tanteador del game.
+  const puntos = est.finalizado
     ? `Final ${a}-${b} Marcadorcito`
     : `${est.tiebreak ? "TB " : ""}${textoA}-${textoB} Marcadorcito`;
-  return { titulo, subtitulo: `${gA}-${gB} · Sets ${a}-${b} · ${minutos}'` };
+  return { titulo: `${gA}-${gB} · Sets ${a}-${b} · ${minutos}'`, subtitulo: puntos };
 }
 
 export default function PruebaRelojForm() {
@@ -207,7 +211,7 @@ export default function PruebaRelojForm() {
     <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-xl font-semibold">
-          ⌚ Simulador modo Reloj <span className="text-xs text-muted font-normal">v9</span>
+          ⌚ Simulador modo Reloj <span className="text-xs text-muted font-normal">v10</span>
         </h1>
         <button
           onClick={() => router.push("/")}

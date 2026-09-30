@@ -1249,8 +1249,8 @@ export default function MarcadorForm({ partidoId }) {
   // dos <audio>: el que entra empieza a sonar, recién ahí se pausa el otro
   // y se ponen los metadatos nuevos -- el sistema lo toma como "tema nuevo".
   // Formato pedido por el usuario (2026-09-30), en 2 renglones:
-  //   "40-15 Marcadorcito"         (game en curso + la marca, siempre)
-  //   "3-2 · Sets 1-0 · 45'"       (games del set · sets · minutos jugados)
+  //   "3-2 · Sets 1-0 · 45'"       (arriba: games del set · sets · minutos)
+  //   "40-15 Marcadorcito"         (abajo, quieto: game en curso + la marca)
   // Los minutos salen del mismo created_at que usa el timer de la pantalla
   // y el título se refresca una vez por minuto (dep. minutosReloj).
   const minutosReloj = resultado?.created_at
@@ -1263,10 +1263,12 @@ export default function MarcadorForm({ partidoId }) {
     const { a, b } = setsGanados(est.setsA, est.setsB);
     const gA = est.setsA[est.setsA.length - 1];
     const gB = est.setsB[est.setsB.length - 1];
-    const titulo = resultado.finalizado
+    // Renglones invertidos (pedido del usuario, 2026-09-30): arriba se mueve
+    // tipo marquesina si no entra; abajo queda quieto -> ahí el tanteador.
+    const subtitulo = resultado.finalizado
       ? `Final ${a}-${b} Marcadorcito`
       : `${est.tiebreak ? "TB " : ""}${textoA}-${textoB} Marcadorcito`;
-    const subtitulo = `${gA}-${gB} · Sets ${a}-${b} · ${minutosReloj}'`;
+    const titulo = `${gA}-${gB} · Sets ${a}-${b} · ${minutosReloj}'`;
     const sale = relojSonandoRef.current;
     const entra = sale === relojAudioRef.current ? relojAudio2Ref.current : relojAudioRef.current;
     if (!entra) return;
