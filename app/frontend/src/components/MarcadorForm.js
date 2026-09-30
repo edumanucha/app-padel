@@ -1178,12 +1178,13 @@ export default function MarcadorForm({ partidoId }) {
   // recuerda en el celu). Las dos que eligió el usuario en /pruebas-reloj:
   //   "games-arriba": "Games 2-0 · Sets 0-0 · 1'" / "30-15 Marcadorcito"
   //   "puntos-solos": "30-15" / "2-0 · S 0-0 · 1' · Marcadorcito"
+  // Default "puntos-solos" (el favorito del usuario, 2026-09-30: "el más limpio").
   const [formatoReloj, setFormatoReloj] = useState(() => {
-    if (typeof window === "undefined") return "games-arriba";
+    if (typeof window === "undefined") return "puntos-solos";
     try {
-      return localStorage.getItem("marcadorcito_formato_reloj") || "games-arriba";
+      return localStorage.getItem("marcadorcito_formato_reloj") || "puntos-solos";
     } catch {
-      return "games-arriba";
+      return "puntos-solos";
     }
   });
   function elegirFormatoReloj(valor) {
@@ -1995,8 +1996,8 @@ export default function MarcadorForm({ partidoId }) {
                   <span className="text-xs text-muted pl-1">Qué se ve en el reloj (● = quién saca):</span>
                   <div className="flex flex-col gap-1.5">
                     {[
-                      ["games-arriba", "Games 2-0 · Sets 0-0 · 1'", "●30-15 Marcadorcito"],
                       ["puntos-solos", "●30-15", "2-0 · S 0-0 · 1' · Marcadorcito"],
+                      ["games-arriba", "Games 2-0 · Sets 0-0 · 1'", "●30-15 Marcadorcito"],
                       ["puntos-y-todo", "●30-15 Marcadorcito", "30-15 · G 2-0 · S 0-0 · 1'"],
                     ].map(([valor, arriba, abajo]) => (
                       <button
