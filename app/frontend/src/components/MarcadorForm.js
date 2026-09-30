@@ -594,6 +594,110 @@ export default function MarcadorForm({ partidoId }) {
     setResultado(nuevo);
   }
 
+  // Blindaje sin señal (2026-09-30, antes del primer partido real): cada
+  // cambio se guarda PRIMERO en el celular (localStorage) como "pendiente"
+  // y después se manda a Supabase. Si falla la red, queda pendiente y se
+  // reintenta solo (cada 5 s y apenas vuelve la conexión); mientras haya
+  // algo pendiente, un cartelito fijo avisa "sin señal". Como cada envío
+  // manda el estado COMPLETO, alcanza con guardar el último (el más nuevo
+  // pisa al anterior). Si la página se recarga con señal, cargarTodo()
+  // recupera el pendiente y lo sube. Límite: si se recarga SIN señal, la
+  // página no llega a cargar -- por eso también el Wake Lock de más abajo.
+  const clavePendiente = `marcadorcito_pendiente_${partidoId}`;
+  const [sinSincronizar, setSinSincronizar] = useState(false);
+  const enviandoRef = useRef(false);
+
+  function leerPendiente() {
+    try {
+      const crudo = localStorage.getItem(clavePendiente);
+      return crudo ? JSON.parse(crudo) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  async function enviarPendiente() {
+    const pendiente = leerPendiente();
+    if (!pendiente || enviandoRef.current) return;
+    enviandoRef.current = true;
+    const { error: updateError } = await supabase
+      .from("resultados_partido")
+      .update({ estado: pendiente.estado, finalizado: pendiente.finalizado, ganador: pendiente.ganador })
+      .eq("partido_id", partidoId);
+    enviandoRef.current = false;
+    if (updateError) {
+      setSinSincronizar(true);
+      return;
+    }
+    // Solo se borra si no llegó otro punto más nuevo mientras viajaba este.
+    if (leerPendiente()?.ts === pendiente.ts) {
+      try { localStorage.removeItem(clavePendiente); } catch {}
+      setSinSincronizar(false);
+    } else {
+      enviarPendiente();
+    }
+  }
+
+  // Reintento automático: cada 5 s mientras haya algo pendiente, y al toque
+  // cuando el celular avisa que volvió la conexión.
+  useEffect(() => {
+    if (!sinSincronizar) return;
+    const id = setInterval(enviarPendiente, 5000);
+    window.addEventListener("online", enviarPendiente);
+    return () => {
+      clearInterval(id);
+      window.removeEventListener("online", enviarPendiente);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sinSincronizar]);
+
+  // Pantalla siempre prendida mientras el marcador está abierto (Wake Lock
+  // API, Chrome Android). El sistema la suelta sola si la app pasa a
+  // segundo plano, así que se vuelve a pedir al volver a primer plano.
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("wakeLock" in navigator)) return;
+    let lock = null;
+    let cancelado = false;
+    async function pedir() {
+      try {
+        lock = await navigator.wakeLock.request("screen");
+        if (cancelado) lock.release();
+      } catch {
+        // sin permiso / batería muy baja: se sigue sin wake lock
+      }
+    }
+    function alVolver() {
+      if (document.visibilityState === "visible") pedir();
+    }
+    pedir();
+    document.addEventListener("visibilitychange", alVolver);
+    return () => {
+      cancelado = true;
+      document.removeEventListener("visibilitychange", alVolver);
+      if (lock) lock.release().catch(() => {});
+    };
+  }, []);
+
+  // Nivel de batería para el consejo del selector de modo (solo Chrome).
+  const [bateria, setBateria] = useState(null);
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !navigator.getBattery) return;
+    let bat = null;
+    const actualizar = () => bat && setBateria({ nivel: Math.round(bat.level * 100), cargando: bat.charging });
+    navigator.getBattery().then((b) => {
+      bat = b;
+      actualizar();
+      b.addEventListener("levelchange", actualizar);
+      b.addEventListener("chargingchange", actualizar);
+    }).catch(() => {});
+    return () => {
+      if (bat) {
+        bat.removeEventListener("levelchange", actualizar);
+        bat.removeEventListener("chargingchange", actualizar);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     async function iniciar() {
       const {
@@ -696,7 +800,22 @@ export default function MarcadorForm({ partidoId }) {
       return;
     }
 
-    actualizarResultadoLocal(resultadoRes.data);
+    // Si quedó un punto sin subir (se recargó la página sin haber podido
+    // sincronizar), manda lo guardado en el celular -- es más nuevo que lo
+    // que tiene Supabase.
+    const pendiente = leerPendiente();
+    if (pendiente) {
+      actualizarResultadoLocal({
+        ...resultadoRes.data,
+        estado: pendiente.estado,
+        finalizado: pendiente.finalizado,
+        ganador: pendiente.ganador,
+      });
+      setSinSincronizar(true);
+      enviarPendiente();
+    } else {
+      actualizarResultadoLocal(resultadoRes.data);
+    }
     setCargando(false);
   }
 
@@ -708,7 +827,12 @@ export default function MarcadorForm({ partidoId }) {
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "resultados_partido", filter: `partido_id=eq.${partidoId}` },
-        (payload) => actualizarResultadoLocal(payload.new)
+        (payload) => {
+          // Con puntos todavía sin subir, lo local es más nuevo que lo que
+          // llega del servidor: no pisarlo (se pisa recién al sincronizar).
+          if (leerPendiente()) return;
+          actualizarResultadoLocal(payload.new);
+        }
       )
       .subscribe();
 
@@ -784,11 +908,21 @@ export default function MarcadorForm({ partidoId }) {
     const base = resultadoRef.current;
     if (base) actualizarResultadoLocal({ ...base, estado: nuevoEstado, finalizado, ganador });
 
-    const { error: updateError } = await supabase
-      .from("resultados_partido")
-      .update({ estado: nuevoEstado, finalizado, ganador })
-      .eq("partido_id", partidoId);
-    if (updateError) setError(`No se pudo guardar el marcador: ${updateError.message}`);
+    // Primero al celular, después a la red (ver "Blindaje sin señal" arriba).
+    // Si falla, ya no se muestra un error que empuja el tablero: queda
+    // pendiente, se reintenta solo y lo avisa el cartelito de "sin señal".
+    try {
+      localStorage.setItem(clavePendiente, JSON.stringify({ estado: nuevoEstado, finalizado, ganador, ts: Date.now() }));
+    } catch {
+      // Sin almacenamiento local (caso raro): se envía directo, como antes.
+      const { error: updateError } = await supabase
+        .from("resultados_partido")
+        .update({ estado: nuevoEstado, finalizado, ganador })
+        .eq("partido_id", partidoId);
+      setSinSincronizar(!!updateError);
+      return;
+    }
+    await enviarPendiente();
   }
 
   const handleSumarPunto = useCallback(
@@ -1435,6 +1569,13 @@ export default function MarcadorForm({ partidoId }) {
 
   return (
     <div className={`w-full flex flex-col gap-3 items-center ${modoApaisado ? styles.forzarApaisado : ""}`}>
+      {/* Cartelito "sin señal": posición fija, fuera del flujo, para no
+          sumar altura al apaisado (ver regla de 0px de margen en el CSS). */}
+      {sinSincronizar && (
+        <div className="fixed top-1.5 left-1.5 z-50 pointer-events-none rounded-full bg-amber-400 text-black text-[11px] font-semibold px-2.5 py-1 shadow">
+          📶 Sin señal · puntos guardados en el celu
+        </div>
+      )}
       <div className="w-full flex items-center justify-between gap-2 flex-wrap">
         <button
           onClick={() => router.push(`/partido/${partidoId}`)}
@@ -1482,6 +1623,14 @@ export default function MarcadorForm({ partidoId }) {
           <p className="text-sm text-muted">
             Elegí cómo preferís cantar los puntos en este partido. Podés cambiarlo después desde &quot;⚙️ Opciones&quot;.
           </p>
+          {bateria && (
+            <p className={`text-xs rounded-[12px] px-3 py-2 ${!bateria.cargando && bateria.nivel < 50 ? "bg-amber-100 text-amber-900" : "bg-bg text-muted"}`}>
+              🔋 Batería: {bateria.nivel}%{bateria.cargando ? " (cargando)" : ""}.{" "}
+              {!bateria.cargando && bateria.nivel < 50
+                ? "La cámara consume bastante: para un partido entero conviene arrancar con más de 50%, o usar voz/botones."
+                : "La pantalla va a quedar prendida mientras dure el partido."}
+            </p>
+          )}
           <button
             onClick={() => {
               setModoElegido("camara");
