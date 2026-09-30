@@ -1004,7 +1004,11 @@ export default function MarcadorForm({ partidoId }) {
       {
         const evPartido = eventos.find((e) => e.tipo === "partido");
         if (evPartido) {
-          const detalle = nuevoCore.setsA.map((g, i) => `${g}-${nuevoCore.setsB[i]}`).join("  ");
+          const sets = nuevoCore.setsA.map((g, i) => `${g}-${nuevoCore.setsB[i]}`).join("  ");
+          const desde = resultadoRef.current?.created_at ? new Date(resultadoRef.current.created_at).getTime() : Date.now();
+          const min = Math.max(0, Math.floor((Date.now() - desde) / 60000));
+          const duracion = min >= 60 ? `${Math.floor(min / 60)}h ${String(min % 60).padStart(2, "0")}'` : `${min}'`;
+          const detalle = `${sets} · ⏱️ ${duracion}`;
           const mio = miEquipoRef.current;
           const titulo = mio
             ? mio === evPartido.ganador ? "🏆 ¡Ganaste!" : "Perdiste"
@@ -1284,11 +1288,20 @@ export default function MarcadorForm({ partidoId }) {
     const gB = est.setsB[est.setsB.length - 1];
     // Renglones invertidos (pedido del usuario, 2026-09-30): arriba se mueve
     // tipo marquesina si no entra; abajo queda quieto -> ahí el tanteador.
-    const pts = resultado.finalizado ? `Final ${a}-${b}` : `${est.tiebreak ? "TB " : ""}${textoA}-${textoB}`;
+    // ● marca quién saca (pedido del usuario): "●30-15" saca A, "30-15●" saca B.
+    const tb = est.tiebreak ? "TB " : "";
+    const pts = resultado.finalizado
+      ? `Final ${a}-${b}`
+      : est.saque === "B"
+        ? `${tb}${textoA}-${textoB}●`
+        : `${tb}●${textoA}-${textoB}`;
+    const ptsSinSaque = resultado.finalizado ? `Final ${a}-${b}` : `${tb}${textoA}-${textoB}`;
     const [titulo, subtitulo] =
       formatoReloj === "puntos-solos"
         ? [pts, `${gA}-${gB} · S ${a}-${b} · ${minutosReloj}' · Marcadorcito`]
-        : [`Games ${gA}-${gB} · Sets ${a}-${b} · ${minutosReloj}'`, `${pts} Marcadorcito`];
+        : formatoReloj === "puntos-y-todo"
+          ? [`${pts} Marcadorcito`, `${ptsSinSaque} · G ${gA}-${gB} · S ${a}-${b} · ${minutosReloj}'`]
+          : [`Games ${gA}-${gB} · Sets ${a}-${b} · ${minutosReloj}'`, `${pts} Marcadorcito`];
     const sale = relojSonandoRef.current;
     const entra = sale === relojAudioRef.current ? relojAudio2Ref.current : relojAudioRef.current;
     if (!entra) return;
@@ -1979,11 +1992,12 @@ export default function MarcadorForm({ partidoId }) {
               {relojActivo && (
                 <>
                   <span className="text-xs text-muted pl-1">⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer. Tanteador en vivo en el reloj y aviso al terminar el partido.</span>
-                  <span className="text-xs text-muted pl-1">Qué se ve en el reloj:</span>
+                  <span className="text-xs text-muted pl-1">Qué se ve en el reloj (● = quién saca):</span>
                   <div className="flex flex-col gap-1.5">
                     {[
-                      ["games-arriba", "Games 2-0 · Sets 0-0 · 1'", "30-15 Marcadorcito"],
-                      ["puntos-solos", "30-15", "2-0 · S 0-0 · 1' · Marcadorcito"],
+                      ["games-arriba", "Games 2-0 · Sets 0-0 · 1'", "●30-15 Marcadorcito"],
+                      ["puntos-solos", "●30-15", "2-0 · S 0-0 · 1' · Marcadorcito"],
+                      ["puntos-y-todo", "●30-15 Marcadorcito", "30-15 · G 2-0 · S 0-0 · 1'"],
                     ].map(([valor, arriba, abajo]) => (
                       <button
                         key={valor}

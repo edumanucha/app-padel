@@ -32,6 +32,7 @@ const DISTRIBUCIONES = [
   ["puntos-arriba", "2) Puntos arriba · games abajo"],
   ["puntos-solos", "3) Solo puntos arriba · todo lo demás abajo"],
   ["marca-arriba", "4) Marca y minutos arriba · puntos y games abajo"],
+  ["puntos-y-todo", "5) Puntos + marca arriba · todo abajo"],
 ];
 
 function textosReloj(est, minutos, distribucion = "games-arriba") {
@@ -39,13 +40,18 @@ function textosReloj(est, minutos, distribucion = "games-arriba") {
   const { a, b } = setsGanados(est.setsA, est.setsB);
   const gA = est.setsA[est.setsA.length - 1];
   const gB = est.setsB[est.setsB.length - 1];
-  const pts = est.finalizado ? `Final ${a}-${b}` : `${est.tiebreak ? "TB " : ""}${textoA}-${textoB}`;
+  const tb = est.tiebreak ? "TB " : "";
+  const ptsSinSaque = est.finalizado ? `Final ${a}-${b}` : `${tb}${textoA}-${textoB}`;
+  // ● = quién saca ("●30-15" saca A, "30-15●" saca B)
+  const pts = est.finalizado ? ptsSinSaque : est.saque === "B" ? `${tb}${textoA}-${textoB}●` : `${tb}●${textoA}-${textoB}`;
   const games = `Games ${gA}-${gB} · Sets ${a}-${b}`;
   switch (distribucion) {
     case "puntos-arriba":
       return { titulo: `${pts} Marcadorcito`, subtitulo: `${games} · ${minutos}'` };
     case "puntos-solos":
       return { titulo: pts, subtitulo: `${gA}-${gB} · S ${a}-${b} · ${minutos}' · Marcadorcito` };
+    case "puntos-y-todo":
+      return { titulo: `${pts} Marcadorcito`, subtitulo: `${ptsSinSaque} · G ${gA}-${gB} · S ${a}-${b} · ${minutos}'` };
     case "marca-arriba":
       return { titulo: `Marcadorcito · ${minutos}'`, subtitulo: `${pts} · ${gA}-${gB} · S ${a}-${b}` };
     default:
@@ -130,7 +136,7 @@ export default function PruebaRelojForm() {
     const evJuego = evs.find((e) => e.tipo === "juego");
     if (evPartido) {
       // Único aviso al reloj: el final (en la prueba, "vos" = pareja A).
-      const detalle = nuevo.setsA.map((g, i) => `${g}-${nuevo.setsB[i]}`).join("  ");
+      const detalle = `${nuevo.setsA.map((g, i) => `${g}-${nuevo.setsB[i]}`).join("  ")} · ⏱️ ${minutos}'`;
       notificar(evPartido.ganador === "A" ? "🏆 ¡Ganaste!" : "Perdiste", detalle);
       anotar(`🏁 Partido para ${evPartido.ganador} (${detalle})`);
     } else if (evSet) {
@@ -225,7 +231,7 @@ export default function PruebaRelojForm() {
     <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-xl font-semibold">
-          ⌚ Simulador modo Reloj <span className="text-xs text-muted font-normal">v11</span>
+          ⌚ Simulador modo Reloj <span className="text-xs text-muted font-normal">v12</span>
         </h1>
         <button
           onClick={() => router.push("/")}
@@ -275,7 +281,7 @@ export default function PruebaRelojForm() {
         </div>
         {[["A", "⏭️", setsA, gamesA, textoA], ["B", "⏮️", setsB, gamesB, textoB]].map(([lado, icono, s, g, p]) => (
           <div key={lado} className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 items-center">
-            <span className="font-heading font-semibold">Pareja {lado} <span className="text-xs opacity-60">{icono}</span></span>
+            <span className="font-heading font-semibold">Pareja {lado} {estado.saque === lado && !estado.finalizado && <span className="text-[#e8ff5a]">●</span>} <span className="text-xs opacity-60">{icono}</span></span>
             <span className="font-heading text-2xl tabular-nums text-center">{s}</span>
             <span className="font-heading text-2xl tabular-nums text-center">{g}</span>
             <span className="font-heading text-4xl font-bold tabular-nums text-right min-w-[3ch]">{p}</span>
