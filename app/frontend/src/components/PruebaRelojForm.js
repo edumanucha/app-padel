@@ -176,7 +176,7 @@ export default function PruebaRelojForm() {
   return (
     <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-xl font-semibold">⌚ Reloj / auriculares (prueba) <span className="text-xs text-muted font-normal">v6</span></h1>
+        <h1 className="font-heading text-xl font-semibold">⌚ Reloj / auriculares (prueba) <span className="text-xs text-muted font-normal">v7</span></h1>
         <button
           onClick={() => router.push("/")}
           className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
@@ -224,6 +224,24 @@ export default function PruebaRelojForm() {
             {activo ? "Detener prueba" : "Iniciar prueba"}
           </button>
           {error && <p className="text-sm text-red-600">{error}</p>}
+
+          {/* Mini marcador (pedido del usuario): lo que se ve cambiar acá con
+              cada toque del reloj es lo que en el modo real suma puntos. */}
+          <div className="bg-[#0f2a1f] text-white rounded-[16px] p-4 flex items-center justify-around">
+            <div className="flex flex-col items-center">
+              <span className="text-xs opacity-70">Pareja A · ⏭️</span>
+              <span className="font-heading text-5xl font-bold tabular-nums">{conteo.nexttrack || 0}</span>
+            </div>
+            <span className="text-2xl opacity-50">–</span>
+            <div className="flex flex-col items-center">
+              <span className="text-xs opacity-70">Pareja B · ⏮️</span>
+              <span className="font-heading text-5xl font-bold tabular-nums">{conteo.previoustrack || 0}</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-xs opacity-70">Deshacer · ⏸️</span>
+              <span className="font-heading text-2xl font-bold tabular-nums">{(conteo.pause || 0) + (conteo.play || 0)}</span>
+            </div>
+          </div>
 
           <div className="grid grid-cols-2 gap-2">
             {ACCIONES.map(([accion, etiqueta]) => (

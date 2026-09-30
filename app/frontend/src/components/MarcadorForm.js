@@ -886,6 +886,30 @@ export default function MarcadorForm({ partidoId }) {
     window.speechSynthesis.speak(utterance);
   }, []);
 
+  // Notificaciones al reloj (modo "⌚ Reloj", 2026-09-30): Mi Fitness espeja
+  // las notificaciones del celu al Redmi Watch, así que al terminar cada
+  // game/set/partido le vibra la muñeca con el resultado. (Se probó mostrar
+  // el tanteador como "título de la canción" en el reloj, pero ese reloj
+  // no refresca el título -- ver /pruebas-reloj.) En Android, Chrome solo
+  // deja notificar desde el service worker (sw.js ya está registrado).
+  const relojActivoRef = useRef(false);
+  const notificarReloj = useCallback((titulo, cuerpo) => {
+    if (!relojActivoRef.current) return;
+    if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
+    if (!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.ready
+      .then((reg) =>
+        reg.showNotification(titulo, {
+          body: cuerpo,
+          tag: "marcadorcito",
+          renotify: true,
+          vibrate: [150, 80, 150],
+          icon: "/pwa-icon?size=192",
+        })
+      )
+      .catch(() => {});
+  }, []);
+
   const nombreEquipo = useCallback(
     (lado) => (lado === "A" ? equipoA.join(" / ") : equipoB.join(" / ")) || `Pareja ${lado}`,
     [equipoA, equipoB]
@@ -970,6 +994,25 @@ export default function MarcadorForm({ partidoId }) {
 
       efectoPunto(lado);
 
+      // Al reloj: un solo aviso por punto, el más importante (si el game
+      // cerró también el set o el partido, va ese y no el del game).
+      {
+        const { a, b } = setsGanados(nuevoCore.setsA, nuevoCore.setsB);
+        const evPartido = eventos.find((e) => e.tipo === "partido");
+        const evSet = eventos.find((e) => e.tipo === "set");
+        const evJuego = eventos.find((e) => e.tipo === "juego");
+        if (evPartido) {
+          const detalle = nuevoCore.setsA.map((g, i) => `${g}-${nuevoCore.setsB[i]}`).join("  ");
+          notificarReloj(`🏁 Partido para ${nombreEquipoVoz(evPartido.ganador)}`, `Sets ${a}-${b} · ${detalle}`);
+        } else if (evSet) {
+          notificarReloj(`🏆 Set para ${nombreEquipoVoz(evSet.ganador)}`, `Sets ${a}-${b}`);
+        } else if (evJuego) {
+          const gA = nuevoCore.setsA[nuevoCore.setsA.length - 1];
+          const gB = nuevoCore.setsB[nuevoCore.setsB.length - 1];
+          notificarReloj(`🎾 Game ${nombreEquipoVoz(evJuego.ganador)} · ${gA}-${gB}`, `Sets ${a}-${b}`);
+        }
+      }
+
       eventos.forEach((ev) => {
         if (ev.tipo === "juego") {
           // Se dispara un toque después del efecto de punto (mismo timing
@@ -998,7 +1041,7 @@ export default function MarcadorForm({ partidoId }) {
         anunciar(`${nombreEquipoVoz("A")}, ${textoA}. ${nombreEquipoVoz("B")}, ${textoB}.`);
       }
     },
-    [anunciar, nombreEquipoVoz]
+    [anunciar, nombreEquipoVoz, notificarReloj]
   );
 
   // Pisa los games del set actual de una sola vez ("juegos 6 4"), en vez
@@ -1115,6 +1158,97 @@ export default function MarcadorForm({ partidoId }) {
     efectoDeshacer();
     anunciar("Corregido.");
   }
+
+  // ---------- Modo "⌚ Reloj / auriculares" (2026-09-30) ----------
+  // Una página no puede leer los botones del reloj, pero sí los comandos de
+  // música del sistema (Media Session API) mientras reproduce audio -- se
+  // reproduce en loop un silencio de 12 s (public/sonidos/silencio.wav) y
+  // se mapean: ⏭️ siguiente = punto A, ⏮️ anterior = punto B, ⏸️/▶️ =
+  // deshacer. Probado con el Redmi Watch 5 Lite del usuario en
+  // /pruebas-reloj (volumen +/- NO llega a la página: lo maneja el sistema).
+  // Los handlers de media se registran una sola vez, por eso llaman a las
+  // versiones más nuevas de sumar/deshacer a través de refs.
+  const relojAudioRef = useRef(null);
+  const [relojActivo, setRelojActivo] = useState(false);
+  const [errorReloj, setErrorReloj] = useState("");
+  const sumarPuntoRelojRef = useRef(null);
+  const deshacerRelojRef = useRef(null);
+  const ultimoToqueRelojRef = useRef(0);
+  useEffect(() => {
+    sumarPuntoRelojRef.current = handleSumarPunto;
+    deshacerRelojRef.current = handleDeshacer;
+  });
+
+  async function activarReloj() {
+    setErrorReloj("");
+    if (!("mediaSession" in navigator)) {
+      setErrorReloj("Este navegador no permite controlar con el reloj. Usá Chrome en Android.");
+      return;
+    }
+    try {
+      const audio = relojAudioRef.current;
+      audio.loop = true;
+      await audio.play();
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: "Marcadorcito",
+        artist: "⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer",
+        album: "Padelito",
+      });
+      const conAntiRebote = (fn) => () => {
+        // Anti doble toque: un toque sin querer repetido cuenta una vez.
+        const ahora = Date.now();
+        if (ahora - ultimoToqueRelojRef.current >= 1000) {
+          ultimoToqueRelojRef.current = ahora;
+          fn();
+        }
+        // Mantener la "reproducción" viva aunque el botón sea pausa: si no,
+        // el sistema saca el control y el reloj deja de mandar comandos.
+        relojAudioRef.current?.play().catch(() => {});
+        navigator.mediaSession.playbackState = "playing";
+      };
+      const acciones = {
+        nexttrack: conAntiRebote(() => sumarPuntoRelojRef.current?.("A")),
+        previoustrack: conAntiRebote(() => sumarPuntoRelojRef.current?.("B")),
+        pause: conAntiRebote(() => deshacerRelojRef.current?.()),
+        play: conAntiRebote(() => deshacerRelojRef.current?.()),
+      };
+      for (const [accion, fn] of Object.entries(acciones)) {
+        try { navigator.mediaSession.setActionHandler(accion, fn); } catch {}
+      }
+      navigator.mediaSession.playbackState = "playing";
+      relojActivoRef.current = true;
+      setRelojActivo(true);
+      // Permiso para los avisos de game/set/partido en la muñeca (se pide
+      // acá porque necesita un toque real del usuario).
+      if (typeof Notification !== "undefined" && Notification.permission === "default") {
+        Notification.requestPermission().catch(() => {});
+      }
+    } catch (e) {
+      setErrorReloj(`No se pudo activar el reloj: ${e.message}`);
+    }
+  }
+
+  function desactivarReloj() {
+    relojAudioRef.current?.pause();
+    if (typeof navigator !== "undefined" && "mediaSession" in navigator) {
+      for (const accion of ["nexttrack", "previoustrack", "pause", "play"]) {
+        try { navigator.mediaSession.setActionHandler(accion, null); } catch {}
+      }
+      navigator.mediaSession.playbackState = "none";
+    }
+    relojActivoRef.current = false;
+    setRelojActivo(false);
+  }
+
+  // Al salir del marcador, soltar el control del reloj.
+  useEffect(() => () => {
+    relojAudioRef.current?.pause();
+    if ("mediaSession" in navigator) {
+      for (const accion of ["nexttrack", "previoustrack", "pause", "play"]) {
+        try { navigator.mediaSession.setActionHandler(accion, null); } catch {}
+      }
+    }
+  }, []);
 
   async function activarCamara() {
     obtenerAudioCtx(); // despierta el audio ahora, con un click real
@@ -1615,6 +1749,8 @@ export default function MarcadorForm({ partidoId }) {
           loopGesto/frame() para procesar cada cuadro), solo que oculto de
           nuevo. */}
       <video ref={videoRef} muted playsInline className="hidden" />
+      {/* Silencio en loop para el modo Reloj (ver activarReloj). */}
+      <audio ref={relojAudioRef} src="/sonidos/silencio.wav" preload="auto" className="hidden" />
       <canvas ref={canvasRef} className="hidden" />
 
       {mostrarChooser && (
@@ -1648,6 +1784,15 @@ export default function MarcadorForm({ partidoId }) {
             className="font-heading font-semibold text-sm px-4 py-3 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
           >
             🗣️ Por voz
+          </button>
+          <button
+            onClick={() => {
+              setModoElegido("reloj");
+              activarReloj();
+            }}
+            className="font-heading font-semibold text-sm px-4 py-3 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          >
+            ⌚ Con el reloj / auriculares
           </button>
           <button
             onClick={() => setModoElegido("botones")}
@@ -1761,6 +1906,14 @@ export default function MarcadorForm({ partidoId }) {
               )}
               {ultimoGesto && <span className="text-xs text-muted pl-1">Último gesto: {ultimoGesto}</span>}
               {errorCamara && <span className="text-xs text-red-600 pl-1">{errorCamara}</span>}
+
+              <FilaOpcion etiqueta="⌚ Reloj / auriculares">
+                <Toggle checked={relojActivo} onChange={(v) => (v ? activarReloj() : desactivarReloj())} />
+              </FilaOpcion>
+              {relojActivo && (
+                <span className="text-xs text-muted pl-1">⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer. Avisos de game/set en la muñeca.</span>
+              )}
+              {errorReloj && <span className="text-xs text-red-600 pl-1">{errorReloj}</span>}
 
               {vozDisponible ? (
                 <FilaOpcion etiqueta="🎙️ Voz">
