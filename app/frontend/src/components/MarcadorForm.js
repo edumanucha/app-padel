@@ -1178,13 +1178,14 @@ export default function MarcadorForm({ partidoId }) {
   // recuerda en el celu). Las dos que eligió el usuario en /pruebas-reloj:
   //   "games-arriba": "Games 2-0 · Sets 0-0 · 1'" / "30-15 Marcadorcito"
   //   "puntos-solos": "30-15" / "2-0 · S 0-0 · 1' · Marcadorcito"
-  // Default "puntos-solos" (el favorito del usuario, 2026-09-30: "el más limpio").
+  // Default "corto-letras" (el favorito final del usuario, 2026-09-30): corto
+  // para que ningún renglón se mueva tipo marquesina en el reloj.
   const [formatoReloj, setFormatoReloj] = useState(() => {
-    if (typeof window === "undefined") return "puntos-solos";
+    if (typeof window === "undefined") return "corto-letras";
     try {
-      return localStorage.getItem("marcadorcito_formato_reloj") || "puntos-solos";
+      return localStorage.getItem("marcadorcito_formato_reloj") || "corto-letras";
     } catch {
-      return "puntos-solos";
+      return "corto-letras";
     }
   });
   function elegirFormatoReloj(valor) {
@@ -1298,7 +1299,9 @@ export default function MarcadorForm({ partidoId }) {
         : `${tb}●${textoA}-${textoB}`;
     const ptsSinSaque = resultado.finalizado ? `Final ${a}-${b}` : `${tb}${textoA}-${textoB}`;
     const [titulo, subtitulo] =
-      formatoReloj === "puntos-solos"
+      formatoReloj === "corto-letras"
+        ? [pts, `G ${gA}-${gB} · S ${a}-${b}`]
+        : formatoReloj === "puntos-solos"
         ? [pts, `${gA}-${gB} · S ${a}-${b} · ${minutosReloj}' · Marcadorcito`]
         : formatoReloj === "puntos-y-todo"
           ? [`${pts} Marcadorcito`, `${ptsSinSaque} · G ${gA}-${gB} · S ${a}-${b} · ${minutosReloj}'`]
@@ -2015,6 +2018,7 @@ export default function MarcadorForm({ partidoId }) {
                   <span className="text-xs text-muted pl-1">Qué se ve en el reloj (● = quién saca):</span>
                   <div className="flex flex-col gap-1.5">
                     {[
+                      ["corto-letras", "●30-15", "G 2-0 · S 0-0"],
                       ["puntos-solos", "●30-15", "2-0 · S 0-0 · 1' · Marcadorcito"],
                       ["games-arriba", "Games 2-0 · Sets 0-0 · 1'", "●30-15 Marcadorcito"],
                       ["puntos-y-todo", "●30-15 Marcadorcito", "30-15 · G 2-0 · S 0-0 · 1'"],
