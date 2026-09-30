@@ -39,6 +39,22 @@ export default function PruebaRelojForm() {
   // Al salir de la página, soltar el control de reproducción.
   useEffect(() => () => detener(), []);
 
+  // El reloj (Mi Fitness) parece refrescar el texto solo cuando "cambia la
+  // canción", no cuando cambian los metadatos. Truco: reiniciar la
+  // reproducción (volver a 0 + pausa/play corto) para que el sistema
+  // publique un "tema nuevo" y el reloj vuelva a leer el título.
+  function forzarRefrescoReloj() {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.currentTime = 0;
+    audio.pause();
+    navigator.mediaSession.playbackState = "paused";
+    setTimeout(() => {
+      audio.play().catch(() => {});
+      navigator.mediaSession.playbackState = "playing";
+    }, 250);
+  }
+
   function registrar(accion) {
     const etiqueta = ACCIONES.find(([a]) => a === accion)?.[1] ?? accion;
     const hora = new Date().toLocaleTimeString("es-AR");
@@ -53,6 +69,7 @@ export default function PruebaRelojForm() {
           artist: `Pausas: ${nuevo.pause || 0} · ${hora}`,
           album: "Padelito",
         });
+        forzarRefrescoReloj();
       } catch {}
       return nuevo;
     });
@@ -111,7 +128,7 @@ export default function PruebaRelojForm() {
   return (
     <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-xl font-semibold">⌚ Reloj / auriculares (prueba)</h1>
+        <h1 className="font-heading text-xl font-semibold">⌚ Reloj / auriculares (prueba) <span className="text-xs text-muted font-normal">v3</span></h1>
         <button
           onClick={() => router.push("/")}
           className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
