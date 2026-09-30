@@ -1170,6 +1170,22 @@ export default function MarcadorForm({ partidoId }) {
   // versiones más nuevas de sumar/deshacer a través de refs.
   const relojAudioRef = useRef(null);
   const relojAudio2Ref = useRef(null);
+  // Cómo se reparten los 2 renglones del reloj (elegido en ⚙️ Opciones, se
+  // recuerda en el celu). Las dos que eligió el usuario en /pruebas-reloj:
+  //   "games-arriba": "Games 2-0 · Sets 0-0 · 1'" / "30-15 Marcadorcito"
+  //   "puntos-solos": "30-15" / "2-0 · S 0-0 · 1' · Marcadorcito"
+  const [formatoReloj, setFormatoReloj] = useState(() => {
+    if (typeof window === "undefined") return "games-arriba";
+    try {
+      return localStorage.getItem("marcadorcito_formato_reloj") || "games-arriba";
+    } catch {
+      return "games-arriba";
+    }
+  });
+  function elegirFormatoReloj(valor) {
+    setFormatoReloj(valor);
+    try { localStorage.setItem("marcadorcito_formato_reloj", valor); } catch {}
+  }
   // Cuál de los dos <audio> está sonando ahora (ver actualizarTituloReloj).
   const relojSonandoRef = useRef(null);
   const [relojActivo, setRelojActivo] = useState(false);
@@ -1268,10 +1284,11 @@ export default function MarcadorForm({ partidoId }) {
     const gB = est.setsB[est.setsB.length - 1];
     // Renglones invertidos (pedido del usuario, 2026-09-30): arriba se mueve
     // tipo marquesina si no entra; abajo queda quieto -> ahí el tanteador.
-    const subtitulo = resultado.finalizado
-      ? `Final ${a}-${b} Marcadorcito`
-      : `${est.tiebreak ? "TB " : ""}${textoA}-${textoB} Marcadorcito`;
-    const titulo = `Games ${gA}-${gB} · Sets ${a}-${b} · ${minutosReloj}'`;
+    const pts = resultado.finalizado ? `Final ${a}-${b}` : `${est.tiebreak ? "TB " : ""}${textoA}-${textoB}`;
+    const [titulo, subtitulo] =
+      formatoReloj === "puntos-solos"
+        ? [pts, `${gA}-${gB} · S ${a}-${b} · ${minutosReloj}' · Marcadorcito`]
+        : [`Games ${gA}-${gB} · Sets ${a}-${b} · ${minutosReloj}'`, `${pts} Marcadorcito`];
     const sale = relojSonandoRef.current;
     const entra = sale === relojAudioRef.current ? relojAudio2Ref.current : relojAudioRef.current;
     if (!entra) return;
@@ -1285,7 +1302,7 @@ export default function MarcadorForm({ partidoId }) {
         navigator.mediaSession.playbackState = "playing";
       })
       .catch(() => {});
-  }, [resultado, relojActivo, minutosReloj]);
+  }, [resultado, relojActivo, minutosReloj, formatoReloj]);
 
   // Al salir del marcador, soltar el control del reloj.
   useEffect(() => () => {
@@ -1960,7 +1977,25 @@ export default function MarcadorForm({ partidoId }) {
                 <Toggle checked={relojActivo} onChange={(v) => (v ? activarReloj() : desactivarReloj())} />
               </FilaOpcion>
               {relojActivo && (
-                <span className="text-xs text-muted pl-1">⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer. Tanteador en vivo en el reloj y aviso al terminar el partido.</span>
+                <>
+                  <span className="text-xs text-muted pl-1">⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer. Tanteador en vivo en el reloj y aviso al terminar el partido.</span>
+                  <span className="text-xs text-muted pl-1">Qué se ve en el reloj:</span>
+                  <div className="flex flex-col gap-1.5">
+                    {[
+                      ["games-arriba", "Games 2-0 · Sets 0-0 · 1'", "30-15 Marcadorcito"],
+                      ["puntos-solos", "30-15", "2-0 · S 0-0 · 1' · Marcadorcito"],
+                    ].map(([valor, arriba, abajo]) => (
+                      <button
+                        key={valor}
+                        onClick={() => elegirFormatoReloj(valor)}
+                        className={`text-left rounded-[12px] px-3 py-2 border-2 cursor-pointer ${formatoReloj === valor ? "border-accent bg-bg" : "border-outline bg-surface"}`}
+                      >
+                        <span className="block text-sm font-semibold">{arriba}</span>
+                        <span className="block text-xs text-muted">{abajo}</span>
+                      </button>
+                    ))}
+                  </div>
+                </>
               )}
               {errorReloj && <span className="text-xs text-red-600 pl-1">{errorReloj}</span>}
 
