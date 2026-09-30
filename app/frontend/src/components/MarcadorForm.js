@@ -1859,8 +1859,8 @@ export default function MarcadorForm({ partidoId }) {
               },
               {
                 modo: "camara",
-                icono: "📷",
-                nombre: "Cámara",
+                icono: "✋",
+                nombre: "Gestos (cámara)",
                 detalle: "✋ Mano abierta del lado de cada pareja · 👍 deshacer",
                 activar: () => {
                   setModoElegido("camara");
