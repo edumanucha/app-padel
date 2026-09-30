@@ -1835,10 +1835,11 @@ export default function MarcadorForm({ partidoId }) {
 
       {mostrarChooser && (
         <div className="w-full max-w-sm bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
-          <h1 className="font-heading text-xl font-semibold">🎥 Vamos a activar tu cámara para llevar los puntos</h1>
-          <p className="text-sm text-muted">
-            Elegí cómo preferís cantar los puntos en este partido. Podés cambiarlo después desde &quot;⚙️ Opciones&quot;.
-          </p>
+          {/* Selector de modo (2026-09-30, pedido del usuario): las 4 formas de
+              llevar los puntos, todas iguales y bien claras -- antes el
+              título empujaba la cámara y el manual quedaba escondido. */}
+          <h1 className="font-heading text-xl font-semibold">¿Cómo querés llevar los puntos?</h1>
+          <p className="text-sm text-muted -mt-2">Podés cambiarlo en cualquier momento desde &quot;⚙️ Opciones&quot;.</p>
           {bateria && (
             <p className={`text-xs rounded-[12px] px-3 py-2 ${!bateria.cargando && bateria.nivel < 50 ? "bg-amber-100 text-amber-900" : "bg-bg text-muted"}`}>
               🔋 Batería: {bateria.nivel}%{bateria.cargando ? " (cargando)" : ""}.{" "}
@@ -1847,39 +1848,57 @@ export default function MarcadorForm({ partidoId }) {
                 : "La pantalla va a quedar prendida mientras dure el partido."}
             </p>
           )}
-          <button
-            onClick={() => {
-              setModoElegido("camara");
-              activarCamara();
-            }}
-            className="font-heading font-semibold text-sm px-4 py-3 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
-          >
-            ✊ Por gesto (cámara) -- recomendado
-          </button>
-          <button
-            onClick={() => {
-              setModoElegido("voz");
-              setEscuchando(true);
-            }}
-            className="font-heading font-semibold text-sm px-4 py-3 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
-          >
-            🗣️ Por voz
-          </button>
-          <button
-            onClick={() => {
-              setModoElegido("reloj");
-              activarReloj();
-            }}
-            className="font-heading font-semibold text-sm px-4 py-3 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
-          >
-            ⌚ Con el reloj / auriculares
-          </button>
-          <button
-            onClick={() => setModoElegido("botones")}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-muted border-2 border-outline cursor-pointer"
-          >
-            🔘 Prefiero los botones
-          </button>
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              {
+                modo: "botones",
+                icono: "🔘",
+                nombre: "Manual",
+                detalle: "Tocás los botones de la pantalla",
+                activar: () => setModoElegido("botones"),
+              },
+              {
+                modo: "camara",
+                icono: "📷",
+                nombre: "Cámara",
+                detalle: "✋ Mano abierta del lado de cada pareja · 👍 deshacer",
+                activar: () => {
+                  setModoElegido("camara");
+                  activarCamara();
+                },
+              },
+              {
+                modo: "voz",
+                icono: "🗣️",
+                nombre: "Voz",
+                detalle: "Decí “marcador punto A” o “punto B”",
+                activar: () => {
+                  setModoElegido("voz");
+                  setEscuchando(true);
+                },
+              },
+              {
+                modo: "reloj",
+                icono: "⌚",
+                nombre: "Reloj",
+                detalle: "⏭️ punto A · ⏮️ punto B · ⏸️ deshacer",
+                activar: () => {
+                  setModoElegido("reloj");
+                  activarReloj();
+                },
+              },
+            ].map((op) => (
+              <button
+                key={op.modo}
+                onClick={op.activar}
+                className="flex flex-col items-center text-center gap-1 rounded-[16px] border-2 border-outline bg-bg px-3 py-4 cursor-pointer hover:border-accent"
+              >
+                <span className="text-3xl">{op.icono}</span>
+                <span className="font-heading font-semibold">{op.nombre}</span>
+                <span className="text-xs text-muted leading-snug">{op.detalle}</span>
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
