@@ -39,40 +39,35 @@ export default function PruebaRelojForm() {
   // Al salir de la página, soltar el control de reproducción.
   useEffect(() => () => detener(), []);
 
-  // El reloj (Mi Fitness) parece refrescar el texto solo cuando "cambia la
-  // canción", no cuando cambian los metadatos. Truco: reiniciar la
-  // reproducción (volver a 0 + pausa/play corto) para que el sistema
-  // publique un "tema nuevo" y el reloj vuelva a leer el título.
-  function forzarRefrescoReloj() {
+  // v4 (2026-09-30): con solo cambiar los metadatos (v2) o reiniciar la
+  // reproducción (v3) el reloj NO refrescaba el título. Ahora cada toque
+  // carga una "canción" nueva de verdad (misma pista de silencio con otra
+  // URL) y recién cuando empieza a sonar se ponen los metadatos nuevos --
+  // lo más parecido a pasar de tema en Spotify.
+  const conteoRef = useRef({});
+
+  function nuevaCancion(titulo, subtitulo) {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.currentTime = 0;
-    audio.pause();
-    navigator.mediaSession.playbackState = "paused";
-    setTimeout(() => {
-      audio.play().catch(() => {});
-      navigator.mediaSession.playbackState = "playing";
-    }, 250);
+    audio.src = `/sonidos/silencio.wav?n=${Date.now()}`;
+    audio.load();
+    audio
+      .play()
+      .then(() => {
+        navigator.mediaSession.metadata = new MediaMetadata({ title: titulo, artist: subtitulo, album: "Padelito" });
+        navigator.mediaSession.playbackState = "playing";
+      })
+      .catch(() => {});
   }
 
   function registrar(accion) {
     const etiqueta = ACCIONES.find(([a]) => a === accion)?.[1] ?? accion;
     const hora = new Date().toLocaleTimeString("es-AR");
     setEventos((ev) => [{ etiqueta, hora, id: Date.now() + Math.random() }, ...ev].slice(0, 15));
-    setConteo((c) => {
-      const nuevo = { ...c, [accion]: (c[accion] || 0) + 1 };
-      // Prueba de refresco del texto en el reloj (2026-09-30): si el reloj
-      // actualiza esto al instante, en el modo real se muestra el tanteador.
-      try {
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: `A ${nuevo.nexttrack || 0} – ${nuevo.previoustrack || 0} B`,
-          artist: `Pausas: ${nuevo.pause || 0} · ${hora}`,
-          album: "Padelito",
-        });
-        forzarRefrescoReloj();
-      } catch {}
-      return nuevo;
-    });
+    const c = { ...conteoRef.current, [accion]: (conteoRef.current[accion] || 0) + 1 };
+    conteoRef.current = c;
+    setConteo(c);
+    nuevaCancion(`A ${c.nexttrack || 0} – ${c.previoustrack || 0} B`, `Pausas: ${c.pause || 0} · ${hora}`);
     if (navigator.vibrate) navigator.vibrate(60);
   }
 
@@ -96,11 +91,9 @@ export default function PruebaRelojForm() {
       for (const [accion] of ACCIONES) {
         try {
           navigator.mediaSession.setActionHandler(accion, () => {
+            // registrar() carga una "canción" nueva y la pone a sonar, así la
+            // reproducción sigue viva aunque el botón sea pausa/stop.
             registrar(accion);
-            // Mantener la "reproducción" viva aunque el botón sea pausa/stop,
-            // si no el sistema saca el control y el reloj deja de mandar comandos.
-            audio.play().catch(() => {});
-            navigator.mediaSession.playbackState = "playing";
           });
         } catch {
           // algunos navegadores no soportan todas las acciones: se ignora
@@ -128,7 +121,7 @@ export default function PruebaRelojForm() {
   return (
     <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-xl font-semibold">⌚ Reloj / auriculares (prueba) <span className="text-xs text-muted font-normal">v3</span></h1>
+        <h1 className="font-heading text-xl font-semibold">⌚ Reloj / auriculares (prueba) <span className="text-xs text-muted font-normal">v4</span></h1>
         <button
           onClick={() => router.push("/")}
           className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
