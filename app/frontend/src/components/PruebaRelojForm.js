@@ -33,6 +33,8 @@ const DISTRIBUCIONES = [
   ["puntos-solos", "3) Solo puntos arriba · todo lo demás abajo"],
   ["marca-arriba", "4) Marca y minutos arriba · puntos y games abajo"],
   ["puntos-y-todo", "5) Puntos + marca arriba · todo abajo"],
+  ["corto-letras", "6) Corto: ●40-15 / G 1-0 · S 1-0"],
+  ["corto-palabras", "7) Corto: ●40-15 / Games 1-0 · Sets 1-0"],
 ];
 
 function textosReloj(est, minutos, distribucion = "games-arriba") {
@@ -50,6 +52,13 @@ function textosReloj(est, minutos, distribucion = "games-arriba") {
       return { titulo: `${pts} Marcadorcito`, subtitulo: `${games} · ${minutos}'` };
     case "puntos-solos":
       return { titulo: pts, subtitulo: `${gA}-${gB} · S ${a}-${b} · ${minutos}' · Marcadorcito` };
+    // 6 y 7 (2026-09-30): versiones cortas para que ningún renglón se mueva
+    // tipo marquesina -- sin minutos ni marca. Games = solo los del set en
+    // curso; los sets ya terminados se ven en "S".
+    case "corto-letras":
+      return { titulo: pts, subtitulo: `G ${gA}-${gB} · S ${a}-${b}` };
+    case "corto-palabras":
+      return { titulo: pts, subtitulo: `Games ${gA}-${gB} · Sets ${a}-${b}` };
     case "puntos-y-todo":
       return { titulo: `${pts} Marcadorcito`, subtitulo: `${ptsSinSaque} · G ${gA}-${gB} · S ${a}-${b} · ${minutos}'` };
     case "marca-arriba":
@@ -231,7 +240,7 @@ export default function PruebaRelojForm() {
     <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-xl font-semibold">
-          ⌚ Simulador modo Reloj <span className="text-xs text-muted font-normal">v12</span>
+          ⌚ Simulador modo Reloj <span className="text-xs text-muted font-normal">v13</span>
         </h1>
         <button
           onClick={() => router.push("/")}
