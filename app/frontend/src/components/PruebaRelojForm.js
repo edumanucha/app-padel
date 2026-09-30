@@ -72,25 +72,45 @@ export default function PruebaRelojForm() {
   // Al salir de la página, soltar el control de reproducción.
   useEffect(() => () => detener(), []);
 
-  // v4 (2026-09-30): con solo cambiar los metadatos (v2) o reiniciar la
-  // reproducción (v3) el reloj NO refrescaba el título. Ahora cada toque
-  // carga una "canción" nueva de verdad (misma pista de silencio con otra
-  // URL) y recién cuando empieza a sonar se ponen los metadatos nuevos --
-  // lo más parecido a pasar de tema en Spotify.
+  // v6 (2026-09-30): ni cambiar metadatos (v2), ni reiniciar (v3), ni
+  // recargar la misma pista (v4) hicieron que el Redmi Watch refresque el
+  // título. Se prueban 3 estrategias más, elegibles en pantalla:
+  //   1) "titulo": sin metadatos -- Chrome usa document.title como nombre.
+  //   2) "reproductores": alternar entre dos <audio> distintos.
+  //   3) "pistas": alternar entre dos archivos de distinta duración.
   const conteoRef = useRef({});
+  const audio2Ref = useRef(null);
+  const turnoRef = useRef(0);
+  const [estrategia, setEstrategia] = useState("titulo");
+  const estrategiaRef = useRef("titulo");
 
   function nuevaCancion(titulo, subtitulo) {
+    const modo = estrategiaRef.current;
+    const ponerMetadatos = () => {
+      navigator.mediaSession.metadata = new MediaMetadata({ title: titulo, artist: subtitulo, album: "Padelito" });
+      navigator.mediaSession.playbackState = "playing";
+    };
+    if (modo === "titulo") {
+      navigator.mediaSession.metadata = null;
+      document.title = `${titulo} · ${subtitulo}`;
+      audioRef.current?.play().catch(() => {});
+      return;
+    }
+    turnoRef.current += 1;
+    if (modo === "reproductores") {
+      const [sale, entra] = turnoRef.current % 2 ? [audioRef.current, audio2Ref.current] : [audio2Ref.current, audioRef.current];
+      if (!sale || !entra) return;
+      entra.loop = true;
+      entra.currentTime = 0;
+      entra.play().then(() => { sale.pause(); ponerMetadatos(); }).catch(() => {});
+      return;
+    }
+    // "pistas": mismo reproductor, archivo distinto (12 s / 17 s)
     const audio = audioRef.current;
     if (!audio) return;
-    audio.src = `/sonidos/silencio.wav?n=${Date.now()}`;
+    audio.src = turnoRef.current % 2 ? "/sonidos/silencio2.wav" : "/sonidos/silencio.wav";
     audio.load();
-    audio
-      .play()
-      .then(() => {
-        navigator.mediaSession.metadata = new MediaMetadata({ title: titulo, artist: subtitulo, album: "Padelito" });
-        navigator.mediaSession.playbackState = "playing";
-      })
-      .catch(() => {});
+    audio.play().then(ponerMetadatos).catch(() => {});
   }
 
   function registrar(accion) {
@@ -142,6 +162,8 @@ export default function PruebaRelojForm() {
   function detener() {
     const audio = audioRef.current;
     if (audio) audio.pause();
+    audio2Ref.current?.pause();
+    document.title = "Padelito";
     if (typeof navigator !== "undefined" && "mediaSession" in navigator) {
       for (const [accion] of ACCIONES) {
         try { navigator.mediaSession.setActionHandler(accion, null); } catch {}
@@ -154,7 +176,7 @@ export default function PruebaRelojForm() {
   return (
     <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-xl font-semibold">⌚ Reloj / auriculares (prueba) <span className="text-xs text-muted font-normal">v5</span></h1>
+        <h1 className="font-heading text-xl font-semibold">⌚ Reloj / auriculares (prueba) <span className="text-xs text-muted font-normal">v6</span></h1>
         <button
           onClick={() => router.push("/")}
           className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
@@ -164,6 +186,27 @@ export default function PruebaRelojForm() {
       </div>
 
       <audio ref={audioRef} src="/sonidos/silencio.wav" preload="auto" />
+      <audio ref={audio2Ref} src="/sonidos/silencio2.wav" preload="auto" />
+
+      <div className="flex flex-col gap-2 bg-bg rounded-[14px] p-3">
+        <span className="text-xs text-muted uppercase tracking-wide">Estrategia para el título del reloj</span>
+        {[
+          ["titulo", "1) Título de la página"],
+          ["reproductores", "2) Dos reproductores alternados"],
+          ["pistas", "3) Pistas de distinta duración"],
+        ].map(([valor, texto]) => (
+          <label key={valor} className="text-sm flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="estrategia"
+              checked={estrategia === valor}
+              onChange={() => { setEstrategia(valor); estrategiaRef.current = valor; }}
+            />
+            {texto}
+          </label>
+        ))}
+        <span className="text-xs text-muted">Elegí una, tocá ⏭️ en el reloj 2-3 veces y fijate si el título cambia a &quot;A 1 – 0 B&quot;. Después probá la siguiente.</span>
+      </div>
 
       {(
         <>
