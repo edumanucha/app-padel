@@ -1251,6 +1251,14 @@ export default function MarcadorForm({ partidoId }) {
   // /pruebas-reloj (estrategia 2, elegida por el usuario) es alternar entre
   // dos <audio>: el que entra empieza a sonar, recién ahí se pausa el otro
   // y se ponen los metadatos nuevos -- el sistema lo toma como "tema nuevo".
+  // Formato pedido por el usuario (2026-09-30), en 2 renglones:
+  //   "40-15 Marcadorcito"         (game en curso + la marca, siempre)
+  //   "3-2 · Sets 1-0 · 45'"       (games del set · sets · minutos jugados)
+  // Los minutos salen del mismo created_at que usa el timer de la pantalla
+  // y el título se refresca una vez por minuto (dep. minutosReloj).
+  const minutosReloj = resultado?.created_at
+    ? Math.max(0, Math.floor((ahora - new Date(resultado.created_at).getTime()) / 60000))
+    : 0;
   useEffect(() => {
     if (!relojActivo || !resultado) return;
     const est = resultado.estado;
@@ -1258,8 +1266,10 @@ export default function MarcadorForm({ partidoId }) {
     const { a, b } = setsGanados(est.setsA, est.setsB);
     const gA = est.setsA[est.setsA.length - 1];
     const gB = est.setsB[est.setsB.length - 1];
-    const titulo = resultado.finalizado ? `Final · Sets ${a}-${b}` : `A ${textoA} – ${textoB} B`;
-    const subtitulo = `Games ${gA}-${gB} · Sets ${a}-${b}${est.tiebreak ? " · Tie-break" : ""}`;
+    const titulo = resultado.finalizado
+      ? `Final ${a}-${b} Marcadorcito`
+      : `${est.tiebreak ? "TB " : ""}${textoA}-${textoB} Marcadorcito`;
+    const subtitulo = `${gA}-${gB} · Sets ${a}-${b} · ${minutosReloj}'`;
     const sale = relojSonandoRef.current;
     const entra = sale === relojAudioRef.current ? relojAudio2Ref.current : relojAudioRef.current;
     if (!entra) return;
@@ -1273,7 +1283,7 @@ export default function MarcadorForm({ partidoId }) {
         navigator.mediaSession.playbackState = "playing";
       })
       .catch(() => {});
-  }, [resultado, relojActivo]);
+  }, [resultado, relojActivo, minutosReloj]);
 
   // Al salir del marcador, soltar el control del reloj.
   useEffect(() => () => {
