@@ -1169,6 +1169,9 @@ export default function MarcadorForm({ partidoId }) {
   // Los handlers de media se registran una sola vez, por eso llaman a las
   // versiones más nuevas de sumar/deshacer a través de refs.
   const relojAudioRef = useRef(null);
+  const relojAudio2Ref = useRef(null);
+  // Cuál de los dos <audio> está sonando ahora (ver actualizarTituloReloj).
+  const relojSonandoRef = useRef(null);
   const [relojActivo, setRelojActivo] = useState(false);
   const [errorReloj, setErrorReloj] = useState("");
   const sumarPuntoRelojRef = useRef(null);
@@ -1188,7 +1191,9 @@ export default function MarcadorForm({ partidoId }) {
     try {
       const audio = relojAudioRef.current;
       audio.loop = true;
+      relojAudio2Ref.current.loop = true;
       await audio.play();
+      relojSonandoRef.current = audio;
       navigator.mediaSession.metadata = new MediaMetadata({
         title: "Marcadorcito",
         artist: "⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer",
@@ -1203,7 +1208,7 @@ export default function MarcadorForm({ partidoId }) {
         }
         // Mantener la "reproducción" viva aunque el botón sea pausa: si no,
         // el sistema saca el control y el reloj deja de mandar comandos.
-        relojAudioRef.current?.play().catch(() => {});
+        relojSonandoRef.current?.play().catch(() => {});
         navigator.mediaSession.playbackState = "playing";
       };
       const acciones = {
@@ -1230,6 +1235,7 @@ export default function MarcadorForm({ partidoId }) {
 
   function desactivarReloj() {
     relojAudioRef.current?.pause();
+    relojAudio2Ref.current?.pause();
     if (typeof navigator !== "undefined" && "mediaSession" in navigator) {
       for (const accion of ["nexttrack", "previoustrack", "pause", "play"]) {
         try { navigator.mediaSession.setActionHandler(accion, null); } catch {}
@@ -1240,9 +1246,39 @@ export default function MarcadorForm({ partidoId }) {
     setRelojActivo(false);
   }
 
+  // Tanteador en vivo en el título del reloj. Cambiar solo los metadatos NO
+  // alcanza con el Redmi Watch (no refresca); lo que sí funcionó en
+  // /pruebas-reloj (estrategia 2, elegida por el usuario) es alternar entre
+  // dos <audio>: el que entra empieza a sonar, recién ahí se pausa el otro
+  // y se ponen los metadatos nuevos -- el sistema lo toma como "tema nuevo".
+  useEffect(() => {
+    if (!relojActivo || !resultado) return;
+    const est = resultado.estado;
+    const { textoA, textoB } = formatearPuntos(est);
+    const { a, b } = setsGanados(est.setsA, est.setsB);
+    const gA = est.setsA[est.setsA.length - 1];
+    const gB = est.setsB[est.setsB.length - 1];
+    const titulo = resultado.finalizado ? `Final · Sets ${a}-${b}` : `A ${textoA} – ${textoB} B`;
+    const subtitulo = `Games ${gA}-${gB} · Sets ${a}-${b}${est.tiebreak ? " · Tie-break" : ""}`;
+    const sale = relojSonandoRef.current;
+    const entra = sale === relojAudioRef.current ? relojAudio2Ref.current : relojAudioRef.current;
+    if (!entra) return;
+    entra.currentTime = 0;
+    entra
+      .play()
+      .then(() => {
+        if (sale && sale !== entra) sale.pause();
+        relojSonandoRef.current = entra;
+        navigator.mediaSession.metadata = new MediaMetadata({ title: titulo, artist: subtitulo, album: "Marcadorcito" });
+        navigator.mediaSession.playbackState = "playing";
+      })
+      .catch(() => {});
+  }, [resultado, relojActivo]);
+
   // Al salir del marcador, soltar el control del reloj.
   useEffect(() => () => {
     relojAudioRef.current?.pause();
+    relojAudio2Ref.current?.pause();
     if ("mediaSession" in navigator) {
       for (const accion of ["nexttrack", "previoustrack", "pause", "play"]) {
         try { navigator.mediaSession.setActionHandler(accion, null); } catch {}
@@ -1751,6 +1787,7 @@ export default function MarcadorForm({ partidoId }) {
       <video ref={videoRef} muted playsInline className="hidden" />
       {/* Silencio en loop para el modo Reloj (ver activarReloj). */}
       <audio ref={relojAudioRef} src="/sonidos/silencio.wav" preload="auto" className="hidden" />
+      <audio ref={relojAudio2Ref} src="/sonidos/silencio2.wav" preload="auto" className="hidden" />
       <canvas ref={canvasRef} className="hidden" />
 
       {mostrarChooser && (
