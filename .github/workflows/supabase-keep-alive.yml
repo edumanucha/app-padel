@@ -1,0 +1,31 @@
+# Segunda fuente del keep-alive de Supabase (la primera es el cron diario de
+# Vercel). Le pega directo a Supabase, sin pasar por Vercel, cada 2 días.
+# Si falla (proyecto pausado, error de red, etc.), el job queda en rojo y
+# GitHub manda un mail automático avisando -- así nos enteramos el mismo día.
+name: supabase-keep-alive
+on:
+  schedule:
+    - cron: "0 15 */2 * *"   # cada 2 días, 12:00 hora Argentina
+  workflow_dispatch:          # permite correrlo a mano desde la pestaña Actions
+permissions:
+  contents: read
+jobs:
+  latido:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Latido a Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          respuesta=$(curl -sS -w "\n%{http_code}" -X POST "$SUPABASE_URL/rest/v1/rpc/latido" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"p_origen":"github"}')
+          codigo=$(echo "$respuesta" | tail -n1)
+          echo "Respuesta: $(echo "$respuesta" | head -n1) (HTTP $codigo)"
+          if [ "$codigo" != "200" ]; then
+            echo "::error::El latido a Supabase falló (HTTP $codigo). Revisá si el proyecto está pausado."
+            exit 1
+          fi
