@@ -1298,7 +1298,7 @@ export default function MarcadorForm({ partidoId }) {
         ? `${tb}${textoA}-${textoB}●`
         : `${tb}●${textoA}-${textoB}`;
     const ptsSinSaque = resultado.finalizado ? `Final ${a}-${b}` : `${tb}${textoA}-${textoB}`;
-    const [titulo, subtitulo] =
+    let [titulo, subtitulo] =
       formatoReloj === "corto-letras"
         ? [pts, `G ${gA}-${gB} · S ${a}-${b}`]
         : formatoReloj === "puntos-solos"
@@ -1306,6 +1306,15 @@ export default function MarcadorForm({ partidoId }) {
         : formatoReloj === "puntos-y-todo"
           ? [`${pts} Marcadorcito`, `${ptsSinSaque} · G ${gA}-${gB} · S ${a}-${b} · ${minutosReloj}'`]
           : [`Games ${gA}-${gB} · Sets ${a}-${b} · ${minutosReloj}'`, `${pts} Marcadorcito`];
+    // Pantalla final en el reloj (pedido del usuario): "Partido ganado" /
+    // "Partido perdido" arriba y los games de cada set abajo, en cualquier
+    // formato. Si quien opera no juega, "Ganó A"/"Ganó B".
+    if (resultado.finalizado) {
+      const mio = miEquipoRef.current;
+      const ganador = resultado.ganador;
+      titulo = mio ? (mio === ganador ? "Partido ganado" : "Partido perdido") : `Ganó ${ganador ?? ""}`.trim();
+      subtitulo = est.setsA.map((g, i) => `${g}-${est.setsB[i]}`).join("  ");
+    }
     const sale = relojSonandoRef.current;
     const entra = sale === relojAudioRef.current ? relojAudio2Ref.current : relojAudioRef.current;
     if (!entra) return;

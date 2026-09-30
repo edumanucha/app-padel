@@ -47,6 +47,13 @@ function textosReloj(est, minutos, distribucion = "games-arriba") {
   // ● = quién saca ("●30-15" saca A, "30-15●" saca B)
   const pts = est.finalizado ? ptsSinSaque : est.saque === "B" ? `${tb}${textoA}-${textoB}●` : `${tb}●${textoA}-${textoB}`;
   const games = `Games ${gA}-${gB} · Sets ${a}-${b}`;
+  // Pantalla final (en la prueba, "vos" = pareja A).
+  if (est.finalizado) {
+    return {
+      titulo: est.ganador === "A" ? "Partido ganado" : "Partido perdido",
+      subtitulo: est.setsA.map((g, i) => `${g}-${est.setsB[i]}`).join("  "),
+    };
+  }
   switch (distribucion) {
     case "puntos-arriba":
       return { titulo: `${pts} Marcadorcito`, subtitulo: `${games} · ${minutos}'` };
@@ -240,7 +247,7 @@ export default function PruebaRelojForm() {
     <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-xl font-semibold">
-          ⌚ Simulador modo Reloj <span className="text-xs text-muted font-normal">v13</span>
+          ⌚ Simulador modo Reloj <span className="text-xs text-muted font-normal">v14</span>
         </h1>
         <button
           onClick={() => router.push("/")}
