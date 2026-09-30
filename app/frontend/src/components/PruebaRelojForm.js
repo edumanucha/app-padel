@@ -118,7 +118,8 @@ export default function PruebaRelojForm() {
     } else if (evJuego) {
       const gA = nuevo.setsA[nuevo.setsA.length - 1];
       const gB = nuevo.setsB[nuevo.setsB.length - 1];
-      notificar(`🎾 Game pareja ${evJuego.ganador} · ${gA}-${gB}`, `Sets ${a}-${b}`);
+      // Sin aviso por game (2026-09-30, pedido del usuario): el tanteador ya
+      // se ve punto a punto en el título del reloj. Solo set y partido.
       anotar(`🎾 Game para ${evJuego.ganador} (${gA}-${gB})`);
     } else {
       anotar(`Punto ${lado}`);
@@ -206,7 +207,7 @@ export default function PruebaRelojForm() {
     <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-xl font-semibold">
-          ⌚ Simulador modo Reloj <span className="text-xs text-muted font-normal">v8</span>
+          ⌚ Simulador modo Reloj <span className="text-xs text-muted font-normal">v9</span>
         </h1>
         <button
           onClick={() => router.push("/")}
@@ -220,7 +221,7 @@ export default function PruebaRelojForm() {
       <audio ref={audio2Ref} src="/sonidos/silencio2.wav" preload="auto" />
 
       <p className="text-sm text-muted">
-        En el reloj: <b>⏭️ punto A</b> · <b>⏮️ punto B</b> · <b>⏸️ deshacer</b>. Al cerrar cada game o set te vibra la muñeca con el aviso.
+        En el reloj: <b>⏭️ punto A</b> · <b>⏮️ punto B</b> · <b>⏸️ deshacer</b>. Al cerrar cada set o el partido te vibra la muñeca con el aviso.
       </p>
 
       <div className="flex gap-2">

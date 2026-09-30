@@ -1000,17 +1000,14 @@ export default function MarcadorForm({ partidoId }) {
         const { a, b } = setsGanados(nuevoCore.setsA, nuevoCore.setsB);
         const evPartido = eventos.find((e) => e.tipo === "partido");
         const evSet = eventos.find((e) => e.tipo === "set");
-        const evJuego = eventos.find((e) => e.tipo === "juego");
         if (evPartido) {
           const detalle = nuevoCore.setsA.map((g, i) => `${g}-${nuevoCore.setsB[i]}`).join("  ");
           notificarReloj(`🏁 Partido para ${nombreEquipoVoz(evPartido.ganador)}`, `Sets ${a}-${b} · ${detalle}`);
         } else if (evSet) {
           notificarReloj(`🏆 Set para ${nombreEquipoVoz(evSet.ganador)}`, `Sets ${a}-${b}`);
-        } else if (evJuego) {
-          const gA = nuevoCore.setsA[nuevoCore.setsA.length - 1];
-          const gB = nuevoCore.setsB[nuevoCore.setsB.length - 1];
-          notificarReloj(`🎾 Game ${nombreEquipoVoz(evJuego.ganador)} · ${gA}-${gB}`, `Sets ${a}-${b}`);
         }
+        // Sin aviso por game (2026-09-30, pedido del usuario): el tanteador ya
+        // se ve punto a punto en el título del reloj.
       }
 
       eventos.forEach((ev) => {
@@ -1958,7 +1955,7 @@ export default function MarcadorForm({ partidoId }) {
                 <Toggle checked={relojActivo} onChange={(v) => (v ? activarReloj() : desactivarReloj())} />
               </FilaOpcion>
               {relojActivo && (
-                <span className="text-xs text-muted pl-1">⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer. Avisos de game/set en la muñeca.</span>
+                <span className="text-xs text-muted pl-1">⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer. Tanteador en el reloj y aviso al cerrar cada set.</span>
               )}
               {errorReloj && <span className="text-xs text-red-600 pl-1">{errorReloj}</span>}
 
