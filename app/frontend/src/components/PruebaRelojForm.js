@@ -23,19 +23,34 @@ import { crearEstadoInicial, sumarPunto, setsGanados, formatearPuntos } from "@/
 // Formato en el reloj (pedido del usuario): "40-15 Marcadorcito" arriba y
 // "3-2 · Sets 1-0 · 45'" abajo.
 
-function textosReloj(est, minutos) {
+// Distribuciones de los 2 renglones del reloj, elegibles en pantalla para
+// comparar (pedido del usuario, 2026-09-30). En el Redmi Watch el renglón
+// de arriba (título) tiene letra grande y se mueve si no entra; el de
+// abajo queda quieto.
+const DISTRIBUCIONES = [
+  ["games-arriba", "1) Games arriba · puntos abajo"],
+  ["puntos-arriba", "2) Puntos arriba · games abajo"],
+  ["puntos-solos", "3) Solo puntos arriba · todo lo demás abajo"],
+  ["marca-arriba", "4) Marca y minutos arriba · puntos y games abajo"],
+];
+
+function textosReloj(est, minutos, distribucion = "games-arriba") {
   const { textoA, textoB } = formatearPuntos(est);
   const { a, b } = setsGanados(est.setsA, est.setsB);
   const gA = est.setsA[est.setsA.length - 1];
   const gB = est.setsB[est.setsB.length - 1];
-  // Renglones invertidos (2026-09-30, pedido del usuario): el de arriba
-  // (título) usa letra grande y se mueve tipo marquesina si no entra; el de
-  // abajo queda quieto -- ahí va lo que más cambia y hay que leer rápido,
-  // el tanteador del game.
-  const puntos = est.finalizado
-    ? `Final ${a}-${b} Marcadorcito`
-    : `${est.tiebreak ? "TB " : ""}${textoA}-${textoB} Marcadorcito`;
-  return { titulo: `${gA}-${gB} · Sets ${a}-${b} · ${minutos}'`, subtitulo: puntos };
+  const pts = est.finalizado ? `Final ${a}-${b}` : `${est.tiebreak ? "TB " : ""}${textoA}-${textoB}`;
+  const games = `Games ${gA}-${gB} · Sets ${a}-${b}`;
+  switch (distribucion) {
+    case "puntos-arriba":
+      return { titulo: `${pts} Marcadorcito`, subtitulo: `${games} · ${minutos}'` };
+    case "puntos-solos":
+      return { titulo: pts, subtitulo: `${gA}-${gB} · S ${a}-${b} · ${minutos}' · Marcadorcito` };
+    case "marca-arriba":
+      return { titulo: `Marcadorcito · ${minutos}'`, subtitulo: `${pts} · ${gA}-${gB} · S ${a}-${b}` };
+    default:
+      return { titulo: `${games} · ${minutos}'`, subtitulo: `${pts} Marcadorcito` };
+  }
 }
 
 export default function PruebaRelojForm() {
@@ -53,6 +68,7 @@ export default function PruebaRelojForm() {
   const [inicio, setInicio] = useState(null);
   const [ahora, setAhora] = useState(0);
   const [eventos, setEventos] = useState([]);
+  const [distribucion, setDistribucion] = useState("games-arriba");
 
   const minutos = inicio ? Math.max(0, Math.floor((ahora - inicio) / 60000)) : 0;
 
@@ -70,7 +86,7 @@ export default function PruebaRelojForm() {
   // vez por minuto (dep. minutos).
   useEffect(() => {
     if (!activo) return;
-    const { titulo, subtitulo } = textosReloj(estado, minutos);
+    const { titulo, subtitulo } = textosReloj(estado, minutos, distribucion);
     const sale = sonandoRef.current;
     const entra = sale === audio1Ref.current ? audio2Ref.current : audio1Ref.current;
     if (!entra) return;
@@ -84,7 +100,7 @@ export default function PruebaRelojForm() {
         navigator.mediaSession.playbackState = "playing";
       })
       .catch(() => {});
-  }, [estado, minutos, activo]);
+  }, [estado, minutos, activo, distribucion]);
 
   function anotar(texto) {
     const hora = new Date().toLocaleTimeString("es-AR");
@@ -109,21 +125,19 @@ export default function PruebaRelojForm() {
     historialRef.current = [...historialRef.current, actual].slice(-50);
     const { estado: nuevo, eventos: evs } = sumarPunto(actual, lado);
     cambiarEstado(nuevo);
-    const { a, b } = setsGanados(nuevo.setsA, nuevo.setsB);
     const evPartido = evs.find((e) => e.tipo === "partido");
     const evSet = evs.find((e) => e.tipo === "set");
     const evJuego = evs.find((e) => e.tipo === "juego");
     if (evPartido) {
-      notificar(`🏁 Partido para la pareja ${evPartido.ganador}`, `Sets ${a}-${b}`);
-      anotar(`🏁 Partido para ${evPartido.ganador}`);
+      // Único aviso al reloj: el final (en la prueba, "vos" = pareja A).
+      const detalle = nuevo.setsA.map((g, i) => `${g}-${nuevo.setsB[i]}`).join("  ");
+      notificar(evPartido.ganador === "A" ? "🏆 ¡Ganaste!" : "Perdiste", detalle);
+      anotar(`🏁 Partido para ${evPartido.ganador} (${detalle})`);
     } else if (evSet) {
-      notificar(`🏆 Set para la pareja ${evSet.ganador}`, `Sets ${a}-${b}`);
       anotar(`🏆 Set para ${evSet.ganador}`);
     } else if (evJuego) {
       const gA = nuevo.setsA[nuevo.setsA.length - 1];
       const gB = nuevo.setsB[nuevo.setsB.length - 1];
-      // Sin aviso por game (2026-09-30, pedido del usuario): el tanteador ya
-      // se ve punto a punto en el título del reloj. Solo set y partido.
       anotar(`🎾 Game para ${evJuego.ganador} (${gA}-${gB})`);
     } else {
       anotar(`Punto ${lado}`);
@@ -205,13 +219,13 @@ export default function PruebaRelojForm() {
   const { a: setsA, b: setsB } = setsGanados(estado.setsA, estado.setsB);
   const gamesA = estado.setsA[estado.setsA.length - 1];
   const gamesB = estado.setsB[estado.setsB.length - 1];
-  const vistaReloj = textosReloj(estado, minutos);
+  const vistaReloj = textosReloj(estado, minutos, distribucion);
 
   return (
     <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-xl font-semibold">
-          ⌚ Simulador modo Reloj <span className="text-xs text-muted font-normal">v10</span>
+          ⌚ Simulador modo Reloj <span className="text-xs text-muted font-normal">v11</span>
         </h1>
         <button
           onClick={() => router.push("/")}
@@ -225,7 +239,7 @@ export default function PruebaRelojForm() {
       <audio ref={audio2Ref} src="/sonidos/silencio2.wav" preload="auto" />
 
       <p className="text-sm text-muted">
-        En el reloj: <b>⏭️ punto A</b> · <b>⏮️ punto B</b> · <b>⏸️ deshacer</b>. Al cerrar cada set o el partido te vibra la muñeca con el aviso.
+        En el reloj: <b>⏭️ punto A</b> · <b>⏮️ punto B</b> · <b>⏸️ deshacer</b>. Al terminar el partido te vibra la muñeca con el resultado (acá vos sos la pareja A).
       </p>
 
       <div className="flex gap-2">
@@ -243,6 +257,16 @@ export default function PruebaRelojForm() {
         </button>
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
+
+      <div className="flex flex-col gap-1.5 bg-bg rounded-[14px] p-3">
+        <span className="text-xs text-muted uppercase tracking-wide">Cómo se reparte en el reloj</span>
+        {DISTRIBUCIONES.map(([valor, texto]) => (
+          <label key={valor} className="text-sm flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="distribucion" checked={distribucion === valor} onChange={() => setDistribucion(valor)} />
+            {texto}
+          </label>
+        ))}
+      </div>
 
       {/* Mini marcador */}
       <div className="bg-[#0f2a1f] text-white rounded-[16px] p-4 flex flex-col gap-2">

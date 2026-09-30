@@ -775,6 +775,9 @@ export default function MarcadorForm({ partidoId }) {
 
     const nombreDe = (f) => f.perfiles?.nombre ?? f.invitado_nombre ?? "Jugador";
     setEquipoA(filas.filter((f) => f.equipo === "A").map(nombreDe));
+    // En qué pareja juega el usuario (para el aviso final del modo Reloj:
+    // "Ganaste"/"Perdiste"). Null si opera el marcador sin jugar.
+    miEquipoRef.current = filas.find((f) => f.jugador_id === usuarioId)?.equipo ?? null;
     setEquipoB(filas.filter((f) => f.equipo === "B").map(nombreDe));
 
     let resultadoRes = resultadoResInicial;
@@ -893,6 +896,7 @@ export default function MarcadorForm({ partidoId }) {
   // no refresca el título -- ver /pruebas-reloj.) En Android, Chrome solo
   // deja notificar desde el service worker (sw.js ya está registrado).
   const relojActivoRef = useRef(false);
+  const miEquipoRef = useRef(null);
   const notificarReloj = useCallback((titulo, cuerpo) => {
     if (!relojActivoRef.current) return;
     if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
@@ -994,20 +998,19 @@ export default function MarcadorForm({ partidoId }) {
 
       efectoPunto(lado);
 
-      // Al reloj: un solo aviso por punto, el más importante (si el game
-      // cerró también el set o el partido, va ese y no el del game).
+      // Al reloj: un único aviso, al final del partido (2026-09-30, pedido
+      // del usuario -- el tanteador ya se ve en vivo en el título, los avisos
+      // de game/set sobraban). "Ganaste"/"Perdiste" si el usuario juega.
       {
-        const { a, b } = setsGanados(nuevoCore.setsA, nuevoCore.setsB);
         const evPartido = eventos.find((e) => e.tipo === "partido");
-        const evSet = eventos.find((e) => e.tipo === "set");
         if (evPartido) {
           const detalle = nuevoCore.setsA.map((g, i) => `${g}-${nuevoCore.setsB[i]}`).join("  ");
-          notificarReloj(`🏁 Partido para ${nombreEquipoVoz(evPartido.ganador)}`, `Sets ${a}-${b} · ${detalle}`);
-        } else if (evSet) {
-          notificarReloj(`🏆 Set para ${nombreEquipoVoz(evSet.ganador)}`, `Sets ${a}-${b}`);
+          const mio = miEquipoRef.current;
+          const titulo = mio
+            ? mio === evPartido.ganador ? "🏆 ¡Ganaste!" : "Perdiste"
+            : `🏁 Ganó ${nombreEquipoVoz(evPartido.ganador)}`;
+          notificarReloj(titulo, detalle);
         }
-        // Sin aviso por game (2026-09-30, pedido del usuario): el tanteador ya
-        // se ve punto a punto en el título del reloj.
       }
 
       eventos.forEach((ev) => {
@@ -1268,7 +1271,7 @@ export default function MarcadorForm({ partidoId }) {
     const subtitulo = resultado.finalizado
       ? `Final ${a}-${b} Marcadorcito`
       : `${est.tiebreak ? "TB " : ""}${textoA}-${textoB} Marcadorcito`;
-    const titulo = `${gA}-${gB} · Sets ${a}-${b} · ${minutosReloj}'`;
+    const titulo = `Games ${gA}-${gB} · Sets ${a}-${b} · ${minutosReloj}'`;
     const sale = relojSonandoRef.current;
     const entra = sale === relojAudioRef.current ? relojAudio2Ref.current : relojAudioRef.current;
     if (!entra) return;
@@ -1957,7 +1960,7 @@ export default function MarcadorForm({ partidoId }) {
                 <Toggle checked={relojActivo} onChange={(v) => (v ? activarReloj() : desactivarReloj())} />
               </FilaOpcion>
               {relojActivo && (
-                <span className="text-xs text-muted pl-1">⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer. Tanteador en el reloj y aviso al cerrar cada set.</span>
+                <span className="text-xs text-muted pl-1">⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer. Tanteador en vivo en el reloj y aviso al terminar el partido.</span>
               )}
               {errorReloj && <span className="text-xs text-red-600 pl-1">{errorReloj}</span>}
 
