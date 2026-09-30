@@ -32,16 +32,12 @@ export default function PruebaRelojForm() {
   const router = useRouter();
   const audioRef = useRef(null);
   const [activo, setActivo] = useState(false);
-  const [soportado, setSoportado] = useState(true);
   const [eventos, setEventos] = useState([]);
   const [conteo, setConteo] = useState({});
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    setSoportado(typeof navigator !== "undefined" && "mediaSession" in navigator);
-    return () => detener();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Al salir de la página, soltar el control de reproducción.
+  useEffect(() => () => detener(), []);
 
   function registrar(accion) {
     const etiqueta = ACCIONES.find(([a]) => a === accion)?.[1] ?? accion;
@@ -53,6 +49,10 @@ export default function PruebaRelojForm() {
 
   async function iniciar() {
     setError(null);
+    if (!("mediaSession" in navigator)) {
+      setError("Este navegador no soporta control de reproducción. Probá con Chrome en Android.");
+      return;
+    }
     try {
       const audio = audioRef.current;
       audio.loop = true;
@@ -110,9 +110,7 @@ export default function PruebaRelojForm() {
 
       <audio ref={audioRef} src="/sonidos/silencio.wav" preload="auto" />
 
-      {!soportado ? (
-        <p className="text-sm">Este navegador no soporta control de reproducción. Probá con Chrome en Android.</p>
-      ) : (
+      {(
         <>
           <ol className="text-sm text-muted list-decimal pl-5 flex flex-col gap-1">
             <li>Conectá el reloj al celular (como siempre, con Mi Fitness).</li>
