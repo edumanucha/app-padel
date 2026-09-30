@@ -43,7 +43,19 @@ export default function PruebaRelojForm() {
     const etiqueta = ACCIONES.find(([a]) => a === accion)?.[1] ?? accion;
     const hora = new Date().toLocaleTimeString("es-AR");
     setEventos((ev) => [{ etiqueta, hora, id: Date.now() + Math.random() }, ...ev].slice(0, 15));
-    setConteo((c) => ({ ...c, [accion]: (c[accion] || 0) + 1 }));
+    setConteo((c) => {
+      const nuevo = { ...c, [accion]: (c[accion] || 0) + 1 };
+      // Prueba de refresco del texto en el reloj (2026-09-30): si el reloj
+      // actualiza esto al instante, en el modo real se muestra el tanteador.
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: `A ${nuevo.nexttrack || 0} – ${nuevo.previoustrack || 0} B`,
+          artist: `Pausas: ${nuevo.pause || 0} · ${hora}`,
+          album: "Padelito",
+        });
+      } catch {}
+      return nuevo;
+    });
     if (navigator.vibrate) navigator.vibrate(60);
   }
 
