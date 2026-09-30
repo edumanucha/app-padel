@@ -35,6 +35,39 @@ export default function PruebaRelojForm() {
   const [eventos, setEventos] = useState([]);
   const [conteo, setConteo] = useState({});
   const [error, setError] = useState(null);
+  const [estadoNotif, setEstadoNotif] = useState("");
+
+  // Prueba de notificación (2026-09-30): el reloj no refresca el título de
+  // la "canción", pero Mi Fitness SÍ espeja las notificaciones del celu.
+  // En Android, Chrome solo permite notificaciones desde el service worker
+  // (new Notification() tira error), por eso se usa registration.showNotification.
+  async function probarNotificacion() {
+    try {
+      if (!("Notification" in window) || !("serviceWorker" in navigator)) {
+        setEstadoNotif("Este navegador no soporta notificaciones.");
+        return;
+      }
+      const permiso = await Notification.requestPermission();
+      if (permiso !== "granted") {
+        setEstadoNotif("No diste permiso de notificaciones. Activalo en los ajustes del sitio en Chrome.");
+        return;
+      }
+      const reg = await navigator.serviceWorker.ready;
+      setEstadoNotif("Listo: en 5 segundos llega la notificación. Bloqueá el celu y mirá el reloj.");
+      setTimeout(() => {
+        reg.showNotification("🎾 Set ganado · 6-4", {
+          body: "Pareja A gana el 1er set. Sets 1-0.",
+          tag: "marcadorcito-set",
+          renotify: true,
+          vibrate: [200, 100, 200],
+          icon: "/pwa-icon?size=192",
+        });
+        setEstadoNotif("Notificación enviada. ¿Te llegó al reloj?");
+      }, 5000);
+    } catch (e) {
+      setEstadoNotif(`No se pudo mandar: ${e.message}`);
+    }
+  }
 
   // Al salir de la página, soltar el control de reproducción.
   useEffect(() => () => detener(), []);
@@ -121,7 +154,7 @@ export default function PruebaRelojForm() {
   return (
     <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-xl font-semibold">⌚ Reloj / auriculares (prueba) <span className="text-xs text-muted font-normal">v4</span></h1>
+        <h1 className="font-heading text-xl font-semibold">⌚ Reloj / auriculares (prueba) <span className="text-xs text-muted font-normal">v5</span></h1>
         <button
           onClick={() => router.push("/")}
           className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
@@ -156,6 +189,17 @@ export default function PruebaRelojForm() {
                 <b>{conteo[accion] ? `✓ ${conteo[accion]}` : "—"}</b>
               </div>
             ))}
+          </div>
+
+          <div className="flex flex-col gap-2 border-t border-outline pt-3">
+            <span className="text-xs text-muted uppercase tracking-wide">Prueba de notificación al reloj</span>
+            <button
+              onClick={probarNotificacion}
+              className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink border-2 border-outline cursor-pointer"
+            >
+              🔔 Mandar &quot;Set ganado&quot; en 5 segundos
+            </button>
+            {estadoNotif && <span className="text-sm">{estadoNotif}</span>}
           </div>
 
           <div className="flex flex-col gap-1">
