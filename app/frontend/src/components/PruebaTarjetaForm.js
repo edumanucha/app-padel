@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { dibujarTarjetaTV } from "@/lib/tarjetaResultado";
 
 // Prueba de la "tarjeta del resultado para compartir" (v1, 2026-09-30) --
 // herramienta de QA aislada del Marcadorcito real. Muestra 4 diseños con
@@ -10,7 +11,7 @@ import { useRouter } from "next/navigation";
 // así lo que se ve acá es exactamente la imagen que se comparte.
 
 const DISENOS = [
-  ["tv", "1) Tabla de TV"],
+  ["tv", "1) Tabla de TV ✅ elegida"],
   ["ganador", "2) Ganador grande"],
   ["minimal", "3) Minimalista"],
   ["stats", "4) Con estadísticas"],
@@ -100,32 +101,12 @@ function dibujar(ctx, diseno, ej, fuente) {
   ctx.textBaseline = "alphabetic";
 
   if (diseno === "tv") {
-    fondo(C.verdeOscuro);
-    texto("MARCADORCITO", 90, 150, f(800, 48), C.amarillo);
-    texto(r.fecha, W - 90, 150, f(500, 44), C.gris, "right");
-    texto(r.ganoA ? "Partido ganado" : "Partido perdido", 90, 330, f(800, 88), C.blanco);
-    // Tablero: una fila por pareja, una columna por set.
-    const top = 480;
-    const filaH = 190;
-    ctx.fillStyle = C.verde;
-    ctx.beginPath();
-    ctx.roundRect(60, top, W - 120, filaH * 2, 40);
-    ctx.fill();
-    ctx.fillStyle = C.verdeLinea;
-    ctx.fillRect(90, top + filaH - 2, W - 180, 4);
-    const colX = (i) => W - 110 - (ej.setsA.length - 1 - i) * 130;
-    [
-      [ej.parejaA, ej.setsA, ej.setsB, r.ganoA],
-      [ej.parejaB, ej.setsB, ej.setsA, !r.ganoA],
-    ].forEach(([nombre, mios, suyos, gano], fila) => {
-      const y = top + filaH * fila + 122;
-      texto(nombre, 100, y, f(gano ? 800 : 500, 60), gano ? C.blanco : C.gris);
-      mios.forEach((g, i) => {
-        texto(String(g), colX(i), y, f(800, 84), g > suyos[i] ? C.amarillo : C.gris, "right");
-      });
-    });
-    texto(`⏱ ${r.duracion}  ·  ${r.sets.length} sets  ·  Sets ${r.a}-${r.b}`, 90, 1040, f(500, 48), C.gris);
-    texto("Anotado con Marcadorcito 🎾", W / 2, 1250, f(600, 42), C.amarillo, "center");
+    // Diseño elegido por el usuario -- mismo dibujo que el Marcadorcito real.
+    dibujarTarjetaTV(
+      ctx,
+      { parejaA: ej.parejaA, parejaB: ej.parejaB, setsA: ej.setsA, setsB: ej.setsB, ganador: r.ganoA ? "A" : "B", miEquipo: "A", minutos: ej.minutos },
+      fuente
+    );
     return;
   }
 

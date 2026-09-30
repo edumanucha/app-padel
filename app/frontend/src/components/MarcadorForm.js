@@ -9,6 +9,7 @@ import Toggle from "@/components/Toggle";
 import { IconoGirarTelefono } from "@/components/Icons";
 import { sumarPunto, setsGanados, formatearPuntos } from "@/lib/marcadorEngine";
 import styles from "@/components/Marcador.module.css";
+import { compartirTarjetaResultado } from "@/lib/tarjetaResultado";
 
 // Toggle tipo switch, con la misma paleta clara del resto de la app
 // (bg-surface / text-ink / --accent) -- usado en el panel "⚙️ Opciones",
@@ -260,6 +261,7 @@ export default function MarcadorForm({ partidoId }) {
   const [confirmandoTerminar, setConfirmandoTerminar] = useState(false);
   const [mostrarOpciones, setMostrarOpciones] = useState(false);
   const [mostrarApelar, setMostrarApelar] = useState(false);
+  const [compartiendo, setCompartiendo] = useState(false);
   const [motivoApelacion, setMotivoApelacion] = useState("");
   const [enviandoApelacion, setEnviandoApelacion] = useState(false);
   const [apelacionEnviada, setApelacionEnviada] = useState(false);
@@ -1607,6 +1609,35 @@ export default function MarcadorForm({ partidoId }) {
     anunciar(`Partido terminado. Gana ${nombreEquipoVoz(ganador)}.`);
   }
 
+  // Tarjeta del resultado para compartir (2026-09-30, diseño "Tabla de TV"
+  // elegido por el usuario en /pruebas-tarjeta). La duración sale de
+  // created_at -> updated_at: el último update de la fila es el que cierra
+  // el partido, así que no sigue contando si se comparte horas después.
+  async function handleCompartirResultado() {
+    const actual = resultadoRef.current;
+    if (!actual?.finalizado || compartiendo) return;
+    setCompartiendo(true);
+    try {
+      const inicio = new Date(actual.created_at).getTime();
+      const fin = actual.updated_at ? new Date(actual.updated_at).getTime() : Date.now();
+      const estado = await compartirTarjetaResultado({
+        parejaA: nombreEquipo("A"),
+        parejaB: nombreEquipo("B"),
+        setsA: actual.estado.setsA,
+        setsB: actual.estado.setsB,
+        ganador: actual.ganador,
+        miEquipo: miEquipoRef.current,
+        minutos: Math.max(0, Math.floor((fin - inicio) / 60000)),
+        fecha: new Date(fin),
+      });
+      if (estado === "descargado") setError("Este navegador no deja compartir directo: se descargó la imagen.");
+    } catch {
+      setError("No se pudo armar la tarjeta del resultado. Probá de nuevo.");
+    } finally {
+      setCompartiendo(false);
+    }
+  }
+
   // US-2.9: apelar el resultado guardado -- sin plazo límite (decisión del
   // usuario, 2026-09-05). Un superusuario lo revisa y corrige desde
   // /apelaciones.
@@ -2244,7 +2275,16 @@ export default function MarcadorForm({ partidoId }) {
         </div>
 
         {resultado.finalizado ? (
-          <div className={styles.finalBanner}>🏆 Partido para {nombreEquipo(resultado.ganador)}</div>
+          <div className={styles.finalBanner}>
+            🏆 Partido para {nombreEquipo(resultado.ganador)}
+            <button
+              className={`${styles.ctrlBtn} ${styles.ctrlBtnCompartir}`}
+              onClick={handleCompartirResultado}
+              disabled={compartiendo}
+            >
+              {compartiendo ? "Armando..." : "📤 Compartir resultado"}
+            </button>
+          </div>
         ) : (
           <div className={styles.pointsHero}>
             <span className={styles.ball} ref={ballRef}>🎾</span>

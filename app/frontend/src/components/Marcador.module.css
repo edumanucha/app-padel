@@ -689,6 +689,17 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
+/* Botón "Compartir resultado" dentro del cartel final (2026-09-30):
+   al lado del texto y no abajo, para no sumar alto en apaisado. */
+.ctrlBtnCompartir {
+  display: inline-flex;
+  margin-left: 10px;
+  vertical-align: middle;
+  background: #f2c53d;
+  color: #1a1305;
+  border-color: #f2c53d;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .finalBanner { animation: none; }
 }
