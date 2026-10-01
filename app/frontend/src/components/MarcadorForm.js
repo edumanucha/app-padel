@@ -713,6 +713,7 @@ export default function MarcadorForm({ partidoId }) {
   // Next no se entere de ese "atrás" y no cambie de pantalla.
   const enJuego = !!resultado && !resultado.finalizado;
   const [confirmarSalida, setConfirmarSalida] = useState(false);
+  const [confirmarDescartar, setConfirmarDescartar] = useState(false);
   const saliendoRef = useRef(false);
   useEffect(() => {
     if (!enJuego) return;
@@ -1751,12 +1752,39 @@ export default function MarcadorForm({ partidoId }) {
     }
 
     if (!ganador) {
-      setError("Está todo empatado, no se puede definir un ganador para terminarlo ahora -- seguí jugando un poco más.");
+      // Empatado (ej. 0-0, nunca arrancaron): no hay ganador posible, se
+      // ofrece descartarlo para que no quede colgado (2026-09-30, pedido
+      // del usuario: "si no queda siempre ese partido en stand by").
+      setConfirmarDescartar(true);
       return;
     }
 
     persistir(actual.estado, true, ganador);
     anunciar(`Partido terminado. Gana ${nombreEquipoVoz(ganador)}.`);
+  }
+
+  // Descartar un partido empatado: se cancela (no cuenta para estadísticas
+  // ni ranking) y se borra lo guardado en el celu. Si fue creado sin señal
+  // y nunca se subió, alcanza con borrarlo del celu.
+  async function handleDescartarPartido() {
+    setConfirmarDescartar(false);
+    const local = leerPartidoLocal(partidoId);
+    if (!(local?.creadoSinSenal && !local.subido)) {
+      const { error: cancelarError } = await supabase.from("partidos").update({ estado: "cancelado" }).eq("id", partidoId);
+      if (cancelarError) {
+        setError(`No se pudo descartar el partido: ${cancelarError.message}`);
+        return;
+      }
+    }
+    try {
+      localStorage.removeItem(clavePendiente);
+      localStorage.removeItem(`marcadorcito_local_${partidoId}`);
+      if (localStorage.getItem("marcadorcito_en_curso") === String(partidoId)) localStorage.removeItem("marcadorcito_en_curso");
+    } catch {
+      // nada
+    }
+    saliendoRef.current = true;
+    router.replace("/");
   }
 
   // Tarjeta del resultado para compartir (2026-09-30, diseño "Tabla de TV"
@@ -1985,7 +2013,17 @@ export default function MarcadorForm({ partidoId }) {
               El partido sigue en juego. Los puntos quedan guardados y podés volver desde el inicio
               cuando quieras.
             </p>
-            <div className="flex gap-2 justify-end">
+            <div className="flex flex-wrap gap-2 justify-end">
+              <button
+                onClick={() => {
+                  setConfirmarSalida(false);
+                  seguirEnElPartido();
+                  handleTerminarPartido();
+                }}
+                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-red-600/10 text-red-600 cursor-pointer mr-auto"
+              >
+                🏁 Terminar partido
+              </button>
               <button
                 onClick={salirDelPartido}
                 className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink cursor-pointer"
@@ -1994,6 +2032,30 @@ export default function MarcadorForm({ partidoId }) {
               </button>
               <button
                 onClick={seguirEnElPartido}
+                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink cursor-pointer"
+              >
+                Seguir jugando
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {confirmarDescartar && (
+        <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4">
+          <div className="w-full max-w-sm bg-surface text-ink rounded-[20px] p-5 flex flex-col gap-3 shadow-xl">
+            <h2 className="font-heading text-lg font-semibold">Está empatado</h2>
+            <p className="text-sm text-muted">
+              No hay ganador para cerrarlo. ¿Lo descartamos? No va a contar para estadísticas ni ranking.
+            </p>
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={handleDescartarPartido}
+                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-red-600 text-white cursor-pointer"
+              >
+                Descartar partido
+              </button>
+              <button
+                onClick={() => setConfirmarDescartar(false)}
                 className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink cursor-pointer"
               >
                 Seguir jugando
