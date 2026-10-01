@@ -680,6 +680,61 @@ export default function MarcadorForm({ partidoId }) {
     };
   }, []);
 
+  // Botón/gesto "atrás" durante el partido (2026-09-30, a pedido del usuario:
+  // "sin querer hago para atrás y me vuelve al formulario"). Mientras el
+  // partido está en juego se agrega una entrada extra al historial (copia
+  // de la actual, con el estado de Next adentro); al tocar "atrás" se cae a
+  // la original -- misma URL -- y en vez de salir se pregunta. El listener va
+  // en fase de captura + stopImmediatePropagation para que el router de
+  // Next no se entere de ese "atrás" y no cambie de pantalla.
+  const enJuego = !!resultado && !resultado.finalizado;
+  const [confirmarSalida, setConfirmarSalida] = useState(false);
+  const saliendoRef = useRef(false);
+  useEffect(() => {
+    if (!enJuego) return;
+    history.pushState(history.state, "", location.href);
+    function alVolverAtras(e) {
+      if (saliendoRef.current) return;
+      e.stopImmediatePropagation();
+      setConfirmarSalida(true);
+    }
+    function alCerrar(e) {
+      e.preventDefault();
+    }
+    window.addEventListener("popstate", alVolverAtras, true);
+    window.addEventListener("beforeunload", alCerrar);
+    return () => {
+      window.removeEventListener("popstate", alVolverAtras, true);
+      window.removeEventListener("beforeunload", alCerrar);
+    };
+  }, [enJuego]);
+
+  function seguirEnElPartido() {
+    setConfirmarSalida(false);
+    history.pushState(history.state, "", location.href);
+  }
+
+  function salirDelPartido() {
+    saliendoRef.current = true;
+    setConfirmarSalida(false);
+    history.back();
+  }
+
+  // Partido en curso: se recuerda en el celu para ofrecer "volver al
+  // marcador" desde el inicio (si se salió, se cerró la app o se bloqueó).
+  useEffect(() => {
+    if (!resultado) return;
+    try {
+      if (resultado.finalizado) {
+        if (localStorage.getItem("marcadorcito_en_curso") === String(partidoId)) localStorage.removeItem("marcadorcito_en_curso");
+      } else {
+        localStorage.setItem("marcadorcito_en_curso", String(partidoId));
+      }
+    } catch {
+      // sin localStorage: no se ofrece volver desde el inicio
+    }
+  }, [resultado, partidoId]);
+
   // Nivel de batería para el consejo del selector de modo (solo Chrome).
   const [bateria, setBateria] = useState(null);
   useEffect(() => {
@@ -1827,6 +1882,31 @@ export default function MarcadorForm({ partidoId }) {
     <div className={`w-full flex flex-col gap-3 items-center ${modoApaisado ? styles.forzarApaisado : ""}`}>
       {/* Cartelito "sin señal": posición fija, fuera del flujo, para no
           sumar altura al apaisado (ver regla de 0px de margen en el CSS). */}
+      {confirmarSalida && (
+        <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4">
+          <div className="w-full max-w-sm bg-surface text-ink rounded-[20px] p-5 flex flex-col gap-3 shadow-xl">
+            <h2 className="font-heading text-lg font-semibold">¿Salir del partido?</h2>
+            <p className="text-sm text-muted">
+              El partido sigue en juego. Los puntos quedan guardados y podés volver desde el inicio
+              cuando quieras.
+            </p>
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={salirDelPartido}
+                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink cursor-pointer"
+              >
+                Salir
+              </button>
+              <button
+                onClick={seguirEnElPartido}
+                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink cursor-pointer"
+              >
+                Seguir jugando
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {sinSincronizar && (
         <div className="fixed top-1.5 left-1.5 z-50 pointer-events-none rounded-full bg-amber-400 text-black text-[11px] font-semibold px-2.5 py-1 shadow">
           📶 Sin señal · puntos guardados en el celu

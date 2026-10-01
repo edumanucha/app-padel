@@ -164,6 +164,36 @@ export default function HomeForm() {
   const [mostrarNotificaciones, setMostrarNotificaciones] = useState(false);
   const [proximamenteTocado, setProximamenteTocado] = useState(null);
   const [mostrarMas, setMostrarMas] = useState(false);
+  const [partidoEnCurso, setPartidoEnCurso] = useState(null);
+
+  // "Volver al partido" (2026-09-30, pedido del usuario): el Marcadorcito
+  // guarda en el celu el id del partido mientras está en juego. Se confirma
+  // contra la base que siga sin terminar antes de mostrar el cartel.
+  useEffect(() => {
+    let id = null;
+    try {
+      id = localStorage.getItem("marcadorcito_en_curso");
+    } catch {
+      return;
+    }
+    if (!id) return;
+    supabase
+      .from("resultados_partido")
+      .select("finalizado")
+      .eq("partido_id", id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data && !data.finalizado) {
+          setPartidoEnCurso(id);
+        } else if (!data || data.finalizado) {
+          try {
+            localStorage.removeItem("marcadorcito_en_curso");
+          } catch {
+            // nada
+          }
+        }
+      });
+  }, []);
 
   useEffect(() => {
     async function cargar() {
@@ -289,6 +319,19 @@ export default function HomeForm() {
   return (
     <div className="w-full max-w-md flex flex-col gap-4 pb-10">
       <InstalarApp />
+
+      {partidoEnCurso && (
+        <button
+          onClick={() => router.push(`/partido/${partidoEnCurso}/marcador`)}
+          className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-[20px] bg-accent text-accent-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer text-left"
+        >
+          <span className="flex flex-col">
+            <span className="font-heading font-semibold">🎾 Tenés un partido en juego</span>
+            <span className="text-sm opacity-80">Los puntos quedaron guardados</span>
+          </span>
+          <span className="font-heading font-semibold text-sm whitespace-nowrap">Volver al partido →</span>
+        </button>
+      )}
 
       {/* 1. Saludo + ranking */}
       <div className={`${tarjeta} flex items-center justify-between`}>

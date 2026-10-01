@@ -286,7 +286,9 @@ export default function MarcadorLibreForm() {
       return;
     }
 
-    router.push(`/partido/${partido.id}/marcador`);
+    // replace (no push): así el "atrás" desde el marcador no vuelve a este
+    // formulario ya usado (2026-09-30, pedido del usuario).
+    router.replace(`/partido/${partido.id}/marcador`);
   }
 
   if (verificandoSesion) {
