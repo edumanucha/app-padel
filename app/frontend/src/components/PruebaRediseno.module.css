@@ -1,0 +1,115 @@
+/* Maquetas del rediseño del Inicio (2026-10-01). Todo local a esta página. */
+
+.envoltura { width: 100%; max-width: 92rem; display: flex; flex-direction: column; gap: 24px; }
+.intro { display: flex; flex-direction: column; gap: 8px; max-width: 60rem; }
+.intro h1 { font-family: var(--font-heading); font-size: 1.6rem; font-weight: 700; }
+.intro p { color: var(--muted); font-size: .95rem; }
+.fila { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; }
+.pieza { margin: 0; width: 320px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.rotulo { font: 700 11px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.bajada { font-size: 12.5px; color: var(--muted); text-align: center; line-height: 1.45; }
+.marco { width: 320px; height: 660px; border: 7px solid #14261f; border-radius: 36px; overflow: hidden; background: #14261f; }
+.pantalla { height: 100%; overflow-y: auto; padding: 16px 14px 14px; display: flex; flex-direction: column; gap: 12px; position: relative; }
+.pantalla small { display: block; }
+
+/* Barra de abajo (común, cada estilo la pinta a su manera) */
+.barra { position: sticky; bottom: 0; margin-top: auto; display: flex; justify-content: space-around; padding: 9px 6px; border-radius: 18px; font-size: 10px; background: #fff; color: #5f7d70; box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+.barra span { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 8px; border-radius: 12px; }
+.barraActiva { background: #f6e7b4; color: #14261f; font-weight: 700; }
+
+/* ============ HOY ============ */
+.hoy { background: #eaf3ec; color: #14261f; font-family: var(--font-body); font-size: 13px; }
+.hoyTarjeta { background: #fff; border-radius: 18px; padding: 12px; box-shadow: 0 1px 3px rgba(20,38,31,.08); }
+.hoyTarjeta b { font-weight: 700; }
+.hoyTarjeta small { color: #5f7d70; font-size: 11.5px; }
+.hoyAvatar { width: 38px; height: 38px; border-radius: 50%; background: #eaf3ec; display: grid; place-items: center; }
+.hoyIcono { width: 30px; height: 30px; border-radius: 50%; background: #eaf3ec; display: grid; place-items: center; font-size: 13px; }
+.hoyFecha { background: #f2c53d; border-radius: 10px; padding: 5px 8px; font-size: 9px; font-weight: 700; text-align: center; line-height: 1.1; }
+.hoyFecha b { display: block; font-size: 15px; }
+.hoyAmarilla { background: #f2c53d; border: 2px solid #14261f; border-radius: 16px; padding: 10px 12px; font-weight: 600; font-size: 12.5px; }
+.hoyAmarilla small { font-weight: 400; font-size: 11px; }
+.hoySub { font-size: 10px; font-weight: 700; letter-spacing: .1em; color: #5f7d70; margin-bottom: -6px; }
+
+/* ============ 1 · CARTEL DE ESTADIO ============ */
+.cartel { background: #f4f7f3; color: #10201a; font-family: var(--font-body); font-size: 13px; gap: 14px; }
+.cHeader { display: flex; justify-content: space-between; align-items: flex-start; padding-top: 4px; }
+.cEyebrow { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #5f7d70; }
+.cHola { font-family: "Big Shoulders Display", "Arial Narrow", sans-serif; font-weight: 900; font-size: 42px; line-height: .92; text-transform: uppercase; letter-spacing: -.01em; margin-top: 4px; }
+.cIconos { display: flex; gap: 14px; color: #10201a; padding-top: 6px; }
+.cProximo { background: #154139; color: #eaf4f0; border-radius: 6px; display: flex; overflow: hidden; }
+.cProximoFecha { background: #f2c53d; color: #1a1305; padding: 12px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: "Big Shoulders Display", "Arial Narrow", sans-serif; font-weight: 800; font-size: 13px; letter-spacing: .06em; min-width: 64px; }
+.cProximoFecha b { font-size: 46px; line-height: .9; }
+.cProximoInfo { padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; }
+.cEyebrowClaro { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #8fb6ae; }
+.cProximoInfo h2 { font-family: "Big Shoulders Display", "Arial Narrow", sans-serif; font-weight: 800; font-size: 25px; line-height: 1; text-transform: uppercase; margin: 2px 0 4px; }
+.cProximoInfo p { font-size: 12px; color: #c4dad3; }
+.cCta { display: flex; justify-content: space-between; align-items: center; background: #f2c53d; color: #1a1305; border: 0; border-radius: 6px; padding: 15px 16px; font-family: "Big Shoulders Display", "Arial Narrow", sans-serif; font-weight: 900; font-size: 22px; text-transform: uppercase; letter-spacing: .02em; cursor: pointer; }
+.cAcciones { display: grid; grid-template-columns: 1fr 1fr; border-top: 2px solid #10201a; border-bottom: 2px solid #10201a; }
+.cAcciones span { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 11px 4px; font-weight: 700; font-size: 12.5px; }
+.cAcciones span + span { border-left: 2px solid #10201a; }
+.cAviso { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #154139; }
+.cNumeros { display: grid; grid-template-columns: repeat(3, 1fr); }
+.cNumeros div { display: flex; flex-direction: column; padding: 4px 0; }
+.cNumeros div + div { border-left: 1px solid #cfdcd4; padding-left: 12px; }
+.cNumeros b { font-family: "Big Shoulders Display", "Arial Narrow", sans-serif; font-weight: 900; font-size: 38px; line-height: 1; }
+.cNumeros span { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #5f7d70; }
+.cUltimo { display: flex; flex-direction: column; gap: 3px; font-size: 12.5px; }
+.cBarra { background: #10201a; color: #8fb6ae; border-radius: 6px; box-shadow: none; }
+.cBarra .barraActiva, .cBarra span:first-child { background: #f2c53d; color: #1a1305; border-radius: 4px; }
+
+/* ============ 2 · EDITORIAL ============ */
+.editorial { background: #fbfcf8; color: #17241f; font-family: var(--font-body); font-size: 13px; gap: 12px; padding-left: 20px; padding-right: 20px; }
+.eHeader { display: flex; justify-content: space-between; align-items: center; color: #5b6f66; }
+.eFecha { font-size: 11px; letter-spacing: .04em; }
+.eIconos { display: flex; gap: 14px; }
+.eHola { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 40px; line-height: 1.02; letter-spacing: -.02em; margin-top: 6px; }
+.eHola em { font-style: italic; font-weight: 400; color: #154139; }
+.eLead { font-family: "Fraunces", Georgia, serif; font-size: 16px; line-height: 1.4; color: #3c4f47; }
+.eLead b { font-weight: 800; color: #17241f; }
+.eRegla { border: 0; border-top: 1px solid #17241f; margin: 4px 0 0; width: 100%; }
+.eSeccion { font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #8a7a3a; }
+.eProximo { display: flex; gap: 14px; align-items: baseline; }
+.eHora { font-family: "Fraunces", Georgia, serif; font-weight: 800; font-size: 44px; line-height: 1; color: #154139; letter-spacing: -.03em; }
+.eCancha { font-family: "Fraunces", Georgia, serif; font-size: 18px; font-weight: 600; }
+.eMeta { font-size: 11.5px; color: #5b6f66; margin-top: 2px; }
+.eCta { background: #154139; color: #fbfcf8; border: 0; border-radius: 999px; padding: 13px 18px; font-family: "Fraunces", Georgia, serif; font-size: 17px; font-weight: 600; font-style: italic; cursor: pointer; align-self: flex-start; }
+.eLinks { display: flex; gap: 18px; font-size: 12.5px; font-weight: 600; color: #154139; }
+.eUltimo { font-family: "Fraunces", Georgia, serif; font-size: 15px; line-height: 1.45; color: #3c4f47; }
+.eUltimo b { color: #17241f; font-weight: 800; }
+.eUltimo u { text-decoration-color: #f2c53d; text-decoration-thickness: 3px; text-underline-offset: 2px; }
+.eBarra { background: #fbfcf8; border: 1px solid #17241f; border-radius: 999px; box-shadow: none; }
+.eBarra .barraActiva { background: #17241f; color: #fbfcf8; border-radius: 999px; }
+
+/* ============ 3 · MARCADOR ============ */
+.marcador { background: #0c1f1b; color: #eaf4f0; font-family: "Chakra Petch", ui-monospace, monospace; font-size: 13px; gap: 12px;
+  background-image: repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px); }
+.mEtiqueta { font-size: 9.5px; font-weight: 600; letter-spacing: .18em; color: #8fb6ae; }
+.mHeader { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid #1f5049; padding-bottom: 10px; }
+.mHola { font-size: 26px; font-weight: 700; letter-spacing: .06em; line-height: 1; margin-top: 4px; }
+.mPuntos { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.mProximo { background: #154139; border: 2px solid #0a211e; border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.04); }
+.mFila { display: flex; justify-content: space-between; }
+.mHoraFila { display: flex; gap: 14px; align-items: center; }
+.mHoraFila b { display: block; font-size: 14px; letter-spacing: .08em; }
+.mHoraFila small { color: #8fb6ae; font-size: 11px; }
+.mCta { display: flex; align-items: center; justify-content: center; gap: 10px; background: #f2c53d; color: #1a1305; border: 0; border-radius: 8px; padding: 14px; font-family: "Chakra Petch", ui-monospace, monospace; font-weight: 700; font-size: 17px; letter-spacing: .16em; cursor: pointer; }
+.mLed { width: 9px; height: 9px; border-radius: 50%; background: #c2410c; box-shadow: 0 0 6px #fb923c; }
+.mAcciones { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.mAcciones span { border: 1px solid #1f5049; border-radius: 6px; padding: 9px 4px; text-align: center; font-size: 11px; font-weight: 600; letter-spacing: .1em; color: #c9ddd6; }
+.mBadge { color: #f2c53d !important; border-color: #f2c53d !important; }
+.mNumeros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.mNumeros div { background: #0a1916; border: 1px solid #1f5049; border-radius: 6px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.mUltimo { border: 1px solid #1f5049; border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+.mSets { display: grid; grid-template-columns: 1fr 26px 26px; row-gap: 4px; align-items: center; font-size: 11px; letter-spacing: .08em; }
+.mSets b { font-size: 18px; color: #f2c53d; text-align: center; }
+.mSets .mPerdido { color: #5f7d70; }
+.mBarra { background: #0a1916; color: #8fb6ae; border: 1px solid #1f5049; border-radius: 10px; box-shadow: none; font-family: "Chakra Petch", ui-monospace, monospace; letter-spacing: .06em; }
+.mBarra .barraActiva { background: #f2c53d; color: #1a1305; border-radius: 6px; }
+
+/* Dígitos de puntitos */
+.puntitos { display: inline-flex; gap: calc(var(--p) * 1.4); align-items: center; }
+.digito { display: grid; grid-template-columns: repeat(5, var(--p)); grid-auto-rows: var(--p); gap: calc(var(--p) * .45); }
+.digito i { width: var(--p); height: var(--p); border-radius: 50%; }
+.on { background: #f4ff9a; box-shadow: 0 0 calc(var(--p) * 1.2) rgba(215,227,74,.6); }
+.off { background: #20321f; }
+.sep { color: #f4ff9a; font-weight: 700; font-size: calc(var(--p) * 5); line-height: 1; }
