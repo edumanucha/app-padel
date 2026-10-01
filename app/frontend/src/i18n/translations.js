@@ -606,6 +606,7 @@ export const dict = {
       jugarTitulo: "Jugar",
       ayudaTitulo: "Ayuda",
       jugadoresRanking: "Jugadores / Ranking",
+      verGuia: "Ver la guía con Padelito",
     },
     elegirDeporte: {
       bienvenido: "Bienvenido",
@@ -1205,6 +1206,7 @@ export const dict = {
       jugarTitulo: "Play",
       ayudaTitulo: "Help",
       jugadoresRanking: "Players / Ranking",
+      verGuia: "Take the tour with Padelito",
     },
     elegirDeporte: {
       bienvenido: "Welcome",
@@ -1804,6 +1806,7 @@ export const dict = {
       jugarTitulo: "Jogar",
       ayudaTitulo: "Ajuda",
       jugadoresRanking: "Jogadores / Ranking",
+      verGuia: "Ver o guia com o Padelito",
     },
     elegirDeporte: {
       bienvenido: "Bem-vindo",

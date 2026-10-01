@@ -76,6 +76,7 @@ export default function BottomNav() {
   return (
     <>
     <header
+      data-guia="navegacion"
       className="nav-escritorio hidden lg:flex fixed top-0 left-0 right-0 z-40 items-center gap-2 px-6 py-3 border-b border-black/5"
       style={{ background: "var(--nav-bg)" }}
     >
@@ -119,6 +120,7 @@ export default function BottomNav() {
       </div>
     </header>
     <nav
+      data-guia="navegacion"
       className="lg:hidden fixed bottom-4 left-4 right-4 max-w-md mx-auto flex items-center justify-around py-2.5 rounded-[20px] z-40"
       style={{ background: "var(--nav-bg)", boxShadow: "0 4px 16px rgba(20,38,31,0.16)" }}
     >

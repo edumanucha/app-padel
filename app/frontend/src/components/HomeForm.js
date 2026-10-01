@@ -10,6 +10,7 @@ import DotDigit from "@/components/DotDigit";
 import IlustracionCancha from "@/components/IlustracionCancha";
 import ContadorNumero from "@/components/ContadorNumero";
 import InstalarApp from "@/components/InstalarApp";
+import GuiaPadelito from "@/components/GuiaPadelito";
 import { useEnPantalla } from "@/lib/useEnPantalla";
 import marcadorStyles from "@/components/Marcador.module.css";
 import {
@@ -375,6 +376,7 @@ export default function HomeForm() {
       <div className="col-completa">
         <InstalarApp variante="franja" />
       </div>
+      <GuiaPadelito />
 
       {partidoEnCurso && (
         <button
@@ -390,7 +392,7 @@ export default function HomeForm() {
       )}
 
       {/* 1. Saludo + ranking */}
-      <div className={`${tarjeta} flex items-center justify-between col-completa`}>
+      <div data-guia="saludo" className={`${tarjeta} flex items-center justify-between col-completa`}>
         <button onClick={() => router.push("/perfil")} className="flex items-center gap-3 text-left cursor-pointer">
           <div className="w-12 h-12 rounded-full bg-bg overflow-hidden flex items-center justify-center flex-shrink-0">
             {perfil.avatar_url ? (
@@ -480,7 +482,7 @@ export default function HomeForm() {
       <div className="home-principal flex flex-col gap-4">
       {/* 2. Próximo partido -- con el chip de fecha tipo "calendario", como
           en la referencia que trajo el usuario. */}
-      <div className={`${tarjeta} flex items-center gap-3`}>
+      <div data-guia="proximo" className={`${tarjeta} flex items-center gap-3`}>
         {resumen?.proximo_partido ? (
           (() => {
             const { dia, mes } = diaYMesCorto(resumen.proximo_partido.fecha_hora, locale);
@@ -529,13 +531,14 @@ export default function HomeForm() {
         <Subtitulo>{t("home.jugar")}</Subtitulo>
 
         <button
+          data-guia="marcador"
           onClick={() => router.push("/marcador-libre")}
           className="font-heading font-bold text-xl px-6 py-6 rounded-[20px] bg-accent text-accent-ink border-2 border-outline shadow-[0_2px_6px_rgba(20,38,31,0.12)] cursor-pointer flex items-center gap-4 text-left relative overflow-hidden"
         >
           <ContenidoMarcadorcitoDemo />
         </button>
 
-        <div className="flex gap-3">
+        <div data-guia="jugar" className="flex gap-3">
           <button
             onClick={irACrearPartido}
             className="tarjeta-pelota-loop flex-[2] font-heading font-semibold text-sm px-4 py-4 rounded-[16px] bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer flex items-center justify-center gap-2"
@@ -575,7 +578,7 @@ export default function HomeForm() {
       </div>
 
       {/* 6/7/8. Racha, posición, estadística rápida */}
-      <div className="grid grid-cols-3 gap-2">
+      <div data-guia="numeros" className="grid grid-cols-3 gap-2">
         <button onClick={handleVerHistorial} className={`${tarjeta} text-center cursor-pointer`}>
           <span className="font-heading text-xl font-semibold block">
             <ContadorNumero valor={resumen?.racha_actual ?? 0} />
@@ -667,7 +670,7 @@ export default function HomeForm() {
       {/* 11. Resto de accesos, en secciones agrupadas -- tarjetas claras con
           tinte de color (accent-2/accent-3) en vez de bloques sólidos con
           borde grueso. */}
-      <div className="flex flex-col gap-3">
+      <div data-guia="comunidad" className="flex flex-col gap-3">
         <Subtitulo>{t("home.comunidad")}</Subtitulo>
         <div className="grid grid-cols-2 gap-2">
           <button

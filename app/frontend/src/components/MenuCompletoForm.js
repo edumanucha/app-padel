@@ -82,6 +82,7 @@ const SECCIONES = [
     badge: "bg-bg",
     items: [
       { Icono: IconoAyuda, claveTexto: "comoFunciona.titulo", ruta: "/como-funciona" },
+      { Icono: IconoAyuda, claveTexto: "menu.verGuia", ruta: "/?guia=1" },
       { Icono: IconoLibro, claveTexto: "quienesSomos.titulo", ruta: "/quienes-somos" },
     ],
   },
