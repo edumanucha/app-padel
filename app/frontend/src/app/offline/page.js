@@ -11,7 +11,7 @@ import { IconoSinConexion } from "@/components/Icons";
 export default function OfflinePage() {
   return (
     <div className="w-full max-w-sm mx-auto flex flex-col items-center text-center gap-4 py-12">
-      <span className="w-16 h-16 rounded-full bg-bg flex items-center justify-center text-muted">
+      <span className="w-16 h-16 rounded-full border border-ink/15 flex items-center justify-center text-muted">
         <IconoSinConexion width={32} height={32} />
       </span>
       <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">Sin conexión</h1>
@@ -20,7 +20,7 @@ export default function OfflinePage() {
       </p>
       <button
         onClick={() => window.location.reload()}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer"
+        className="w-full font-titulo font-black uppercase text-[1.75rem] leading-none px-4 py-4 rounded-[6px] bg-accent text-accent-ink cursor-pointer"
       >
         Reintentar
       </button>

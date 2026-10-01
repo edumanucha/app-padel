@@ -320,11 +320,11 @@ export default function DemoMarcadorForm() {
       <div className="w-full max-w-[1180px] flex items-center justify-between">
         <button
           onClick={() => router.push("/marcador-libre")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
         >
           Volver
         </button>
-        <span className="font-heading text-sm text-muted">Demo del Marcadorcito</span>
+        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">Demo del Marcadorcito</span>
         <span style={{ width: 76 }} />
       </div>
 
@@ -439,7 +439,7 @@ export default function DemoMarcadorForm() {
 
         <button
           onClick={() => router.push("/marcador-libre")}
-          className="font-heading font-semibold text-sm px-4 py-3 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer"
+          className="font-titulo font-black uppercase text-lg leading-tight px-4 py-3 rounded-[6px] bg-accent text-accent-ink cursor-pointer"
         >
           Listo, quiero armar mi partido
         </button>

@@ -70,7 +70,7 @@ function SelectorTema({ tema, onElegir }) {
         aria-haspopup="listbox"
         aria-expanded={abierto}
         aria-label="Tema del tablero"
-        className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer flex items-center gap-1"
+        className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer flex items-center gap-1"
       >
         {actual.texto}
         <span aria-hidden className="text-xs">▾</span>
@@ -79,7 +79,7 @@ function SelectorTema({ tema, onElegir }) {
         <ul
           role="listbox"
           aria-label="Tema del tablero"
-          className="absolute right-0 top-full mt-1 z-50 min-w-full bg-surface text-ink rounded-[6px] shadow-xl py-1 whitespace-nowrap"
+          className="absolute right-0 top-full mt-1 z-50 min-w-full bg-surface text-ink rounded-[6px] border border-ink/15 py-1 whitespace-nowrap"
         >
           {TEMAS.map((t) => (
             <li key={t.valor}>
@@ -91,8 +91,8 @@ function SelectorTema({ tema, onElegir }) {
                   onElegir(t.valor);
                   setAbierto(false);
                 }}
-                className={`w-full text-left font-heading text-sm px-4 py-2 cursor-pointer ${
-                  t.valor === tema ? "font-bold text-accent-ink bg-accent" : "font-semibold"
+                className={`w-full text-left text-sm px-4 py-2 cursor-pointer border-l-2 ${
+                  t.valor === tema ? "font-bold border-ink bg-ink/5" : "font-semibold border-transparent"
                 }`}
               >
                 {t.texto}
@@ -123,25 +123,25 @@ function ElegirModo({ modos, bateria }) {
           >
             <span
               className={`w-14 h-14 rounded-full flex items-center justify-center text-3xl border-2 ${
-                m.modo === elegido ? "bg-accent border-outline" : "border-black/10"
+                m.modo === elegido ? "bg-[#154139] text-[#eaf4f0] border-[#154139]" : "border-ink/15"
               }`}
             >
               {m.icono}
             </span>
-            <span className={`text-xs ${m.modo === elegido ? "font-bold" : "text-muted"}`}>{m.nombre}</span>
+            <span className={`text-[10.5px] font-bold uppercase tracking-[0.12em] ${m.modo === elegido ? "text-ink" : "text-muted"}`}>{m.nombre}</span>
           </button>
         ))}
       </div>
       <p className="text-sm text-center text-muted min-h-[2.75em]">{actual.detalle}</p>
       {bateria && !bateria.cargando && bateria.nivel < 50 && actual.modo === "camara" && (
-        <p className="text-xs rounded-[6px] px-3 py-2 bg-amber-100 text-amber-900">
+        <p className="text-xs rounded-[6px] px-3 py-2 border border-accent bg-accent/15 text-ink">
           Batería al {bateria.nivel}%. La cámara consume bastante: para un partido entero conviene arrancar con más de 50%.
         </p>
       )}
       <button
         type="button"
         onClick={actual.activar}
-        className="rounded-full font-heading font-bold text-base py-3 bg-accent text-accent-ink cursor-pointer"
+        className="rounded-[6px] font-titulo font-black uppercase text-lg leading-tight py-3 bg-accent text-accent-ink cursor-pointer"
       >
         Empezar con {actual.nombre} →
       </button>
@@ -2057,7 +2057,7 @@ export default function MarcadorForm({ partidoId }) {
         <p className="text-red-600 text-sm">{error || "No se pudo cargar el marcador."}</p>
         <button
           onClick={() => router.push(`/partido/${partidoId}`)}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer self-start"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer self-start"
         >
           Volver
         </button>
@@ -2107,13 +2107,13 @@ export default function MarcadorForm({ partidoId }) {
           </p>
           <button
             onClick={seguirEnElPartido}
-            className="rounded-full font-heading font-bold text-base py-3 bg-accent text-accent-ink cursor-pointer"
+            className="rounded-[6px] font-titulo font-black uppercase text-lg leading-tight py-3 bg-accent text-accent-ink cursor-pointer"
           >
             Seguir jugando
           </button>
           <button
             onClick={salirDelPartido}
-            className="rounded-full font-heading font-semibold text-sm py-2.5 bg-bg text-ink cursor-pointer"
+            className="rounded-[6px] text-sm font-semibold py-2.5 border border-ink/15 text-ink cursor-pointer"
           >
             Salir (el partido sigue)
           </button>
@@ -2123,21 +2123,21 @@ export default function MarcadorForm({ partidoId }) {
               seguirEnElPartido();
               handleTerminarPartido();
             }}
-            className="rounded-full font-heading font-semibold text-sm py-2.5 bg-red-600/10 text-red-600 cursor-pointer"
+            className="rounded-[6px] text-sm font-semibold py-2.5 border border-red-600/40 text-red-600 cursor-pointer"
           >
             <IconoBandera className="ico" aria-hidden /> Terminar partido
           </button>
         </HojaAbajo>
       )}
       {sinSincronizar && (
-        <div className="fixed top-1.5 left-1.5 z-50 pointer-events-none rounded-[6px] bg-amber-400 text-black text-[11px] font-semibold px-2.5 py-1 shadow">
+        <div className="fixed top-1.5 left-1.5 z-50 pointer-events-none rounded-[6px] bg-accent text-accent-ink text-[10.5px] font-bold uppercase tracking-[0.08em] px-2.5 py-1">
           Sin señal · puntos guardados en el celu
         </div>
       )}
       <div className="w-full flex items-center justify-between gap-2 flex-wrap">
         <button
           onClick={() => router.push(`/partido/${partidoId}`)}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
         >
           Volver al detalle
         </button>
@@ -2145,7 +2145,7 @@ export default function MarcadorForm({ partidoId }) {
           <SelectorTema tema={tema} onElegir={elegirTema} />
           <button
             onClick={() => setModoApaisado((v) => !v)}
-            className={`${styles.botonApaisado} font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer`}
+            className={`${styles.botonApaisado} text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer`}
           >
             <IconoGirarTelefono width={16} height={16} />
             {modoApaisado ? "Modo vertical" : "Modo apaisado"}
@@ -2356,7 +2356,7 @@ export default function MarcadorForm({ partidoId }) {
                       <button
                         key={valor}
                         onClick={() => elegirFormatoReloj(valor)}
-                        className={`text-left rounded-[6px] px-3 py-2 border-2 cursor-pointer ${formatoReloj === valor ? "border-accent bg-bg" : "border-outline bg-surface"}`}
+                        className={`text-left rounded-[6px] px-3 py-2 border cursor-pointer ${formatoReloj === valor ? "border-ink ring-1 ring-ink bg-surface" : "border-ink/15 bg-surface"}`}
                       >
                         <span className="block text-sm font-semibold">{arriba}</span>
                         <span className="block text-xs text-muted">{abajo}</span>
@@ -2405,14 +2405,14 @@ export default function MarcadorForm({ partidoId }) {
             <div className="flex flex-col gap-3">
               <div className="flex gap-2">
                 <button
-                  className="flex-1 font-heading font-semibold text-xs px-3 py-2 rounded-xl bg-bg text-ink border-2 border-outline cursor-pointer disabled:opacity-60"
+                  className="flex-1 text-xs font-bold uppercase tracking-[0.08em] px-3 py-2 rounded-[6px] border border-ink/15 text-ink cursor-pointer disabled:opacity-60"
                   onClick={() => handleCambiarSaque(saque === "A" ? "B" : "A")}
                   disabled={pausado}
                 >
                   <IconoPelota className="ico" aria-hidden /> Cambiar saque
                 </button>
                 <button
-                  className="flex-1 font-heading font-semibold text-xs px-3 py-2 rounded-xl bg-bg text-ink border-2 border-outline cursor-pointer"
+                  className="flex-1 text-xs font-bold uppercase tracking-[0.08em] px-3 py-2 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
                   onClick={handleTogglePausa}
                 >
                   {pausado ? "▶ Reanudar" : "⏸ Pausar"}
@@ -2425,7 +2425,7 @@ export default function MarcadorForm({ partidoId }) {
               {resultado.finalizado && (
                 <>
                   <button
-                    className="font-heading font-semibold text-xs px-3 py-2 rounded-xl bg-accent-3/15 text-accent-3-ink border-2 border-accent-3 cursor-pointer self-start"
+                    className="text-xs font-bold uppercase tracking-[0.08em] px-3 py-2 rounded-[6px] bg-accent-3/15 text-accent-3-ink border border-accent-3 cursor-pointer self-start"
                     onClick={() => setMostrarApelar((v) => !v)}
                   >
                     <IconoBandera className="ico" aria-hidden /> Apelar
@@ -2443,10 +2443,10 @@ export default function MarcadorForm({ partidoId }) {
                             onChange={(e) => setMotivoApelacion(e.target.value)}
                             placeholder="Contá brevemente por qué apelás este resultado"
                             rows={2}
-                            className="rounded-xl border-2 border-outline bg-bg px-3 py-2 text-ink text-sm resize-y"
+                            className="rounded-[6px] border border-ink/15 bg-surface px-3 py-2 text-ink text-sm resize-y"
                           />
                           <button
-                            className="font-heading font-semibold text-xs px-3 py-2 rounded-xl bg-accent-3 text-accent-3-ink border-2 border-outline cursor-pointer disabled:opacity-60 self-start"
+                            className="font-titulo font-black uppercase text-base leading-tight px-4 py-2 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60 self-start"
                             onClick={handleEnviarApelacion}
                             disabled={enviandoApelacion}
                           >
@@ -2461,7 +2461,7 @@ export default function MarcadorForm({ partidoId }) {
 
             {!confirmandoTerminar ? (
               <button
-                className="font-heading font-semibold text-xs px-3 py-2 rounded-xl bg-red-600/10 text-red-600 border-2 border-red-600 cursor-pointer self-start"
+                className="text-xs font-bold uppercase tracking-[0.08em] px-3 py-2 rounded-[6px] text-red-600 border border-red-600/40 cursor-pointer self-start"
                 onClick={() => setConfirmandoTerminar(true)}
               >
                 <IconoBandera className="ico" aria-hidden /> Terminar partido
@@ -2469,7 +2469,7 @@ export default function MarcadorForm({ partidoId }) {
             ) : (
               <div className="flex gap-2">
                 <button
-                  className="font-heading font-semibold text-xs px-3 py-2 rounded-xl bg-red-600 text-white border-2 border-outline cursor-pointer"
+                  className="text-xs font-bold uppercase tracking-[0.08em] px-3 py-2 rounded-[6px] bg-red-600 text-white cursor-pointer"
                   onClick={() => {
                     setConfirmandoTerminar(false);
                     setMostrarOpciones(false);
@@ -2479,7 +2479,7 @@ export default function MarcadorForm({ partidoId }) {
                   ¿Seguro? Se cierra y no cuenta
                 </button>
                 <button
-                  className="font-heading font-semibold text-xs px-3 py-2 rounded-xl bg-bg text-ink border-2 border-outline cursor-pointer"
+                  className="text-xs font-bold uppercase tracking-[0.08em] px-3 py-2 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
                   onClick={() => setConfirmandoTerminar(false)}
                 >
                   Cancelar

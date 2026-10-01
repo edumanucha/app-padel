@@ -153,15 +153,17 @@ export default function GuiaPadelito() {
 
   if (fase === "boton") {
     return (
+      // Rediseño Cartel (2026-10-01): globos y botones sin píldoras ni sombras,
+      // esquinas de 6-8px y botón principal amarillo en font-titulo.
       <button
         onClick={empezar}
         className="fixed right-4 bottom-28 lg:bottom-6 z-40 flex items-center gap-2 cursor-pointer"
         aria-label="Ver la guía de la app"
       >
-        <span className="bg-surface text-ink text-xs font-heading font-semibold rounded-full px-3 py-1.5 shadow">
+        <span className="bg-surface text-ink text-xs font-semibold rounded-[6px] border border-ink/15 px-3 py-1.5">
           Ver la guía
         </span>
-        <span className="w-12 h-12 rounded-full bg-[#154139] text-[#f2c53d] font-heading font-bold text-xl flex items-center justify-center shadow-lg">
+        <span className="w-12 h-12 rounded-full bg-[#154139] text-[#f2c53d] font-titulo font-black text-2xl flex items-center justify-center">
           ?
         </span>
       </button>
@@ -173,20 +175,20 @@ export default function GuiaPadelito() {
       <div className="fixed inset-0 z-[70] bg-black/55 flex items-end justify-center p-4 pb-8">
         <div className="w-full max-w-md flex items-end gap-2">
           <Pelotita />
-          <div className="bg-surface text-ink rounded-[18px] rounded-bl-none p-4 shadow-xl flex flex-col gap-3 flex-1">
+          <div className="bg-surface text-ink rounded-[8px] rounded-bl-none p-4 flex flex-col gap-3 flex-1">
             <p className="text-sm">
               ¡Hola! Soy <b>Padelito</b>. ¿Querés que te muestre la app en un ratito? Es menos de un minuto.
             </p>
             <div className="flex gap-2">
               <button
                 onClick={empezar}
-                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline cursor-pointer"
+                className="font-titulo font-black uppercase text-xl leading-none px-4 py-2.5 rounded-[6px] bg-accent text-accent-ink cursor-pointer"
               >
                 ¡Dale!
               </button>
               <button
                 onClick={despues}
-                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink cursor-pointer"
+                className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
               >
                 Después
               </button>
@@ -204,7 +206,7 @@ export default function GuiaPadelito() {
     <div className="fixed inset-0 z-[70]" onClick={(e) => e.stopPropagation()}>
       {rect ? (
         <div
-          className="fixed rounded-[22px] pointer-events-none transition-all duration-300"
+          className="fixed rounded-[8px] pointer-events-none transition-all duration-300"
           style={{
             top: rect.top - margen,
             left: rect.left - margen,
@@ -221,7 +223,7 @@ export default function GuiaPadelito() {
       >
         <div className="w-full max-w-md flex items-end gap-2">
           <Pelotita />
-          <div className="bg-surface text-ink rounded-[18px] rounded-bl-none p-4 shadow-xl flex flex-col gap-3 flex-1">
+          <div className="bg-surface text-ink rounded-[8px] rounded-bl-none p-4 flex flex-col gap-3 flex-1">
             <p className="text-sm">{PASOS[paso].texto}</p>
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted">
@@ -232,7 +234,7 @@ export default function GuiaPadelito() {
               </span>
               <button
                 onClick={siguiente}
-                className="font-heading font-semibold text-sm px-4 py-1.5 rounded-full bg-accent text-accent-ink border-2 border-outline cursor-pointer"
+                className="font-titulo font-black uppercase text-xl leading-none px-4 py-2.5 rounded-[6px] bg-accent text-accent-ink cursor-pointer"
               >
                 {paso >= PASOS.length - 1 ? "¡Listo!" : "Siguiente →"}
               </button>

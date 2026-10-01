@@ -38,13 +38,13 @@ export default function AvisoGirarTelefono() {
   return (
     <div className={styles.avisoGirar}>
       <span className={styles.avisoGirarIcono}><IconoGirarTelefono className="ico" aria-hidden /></span>
-      <p className="font-heading text-lg font-semibold">Girá tu teléfono</p>
+      <p className="font-titulo font-black uppercase text-3xl leading-none">Girá tu teléfono</p>
       <p className="text-sm" style={{ color: "#8fb6ae" }}>
         El marcador está pensado para verse en horizontal, para que se lea bien desde lejos en la cancha.
       </p>
       <button
         onClick={forzarGiro}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink cursor-pointer"
+        className="font-titulo font-black uppercase text-xl leading-none px-5 py-3 rounded-[6px] bg-accent text-accent-ink cursor-pointer"
       >
         Intentar forzar el giro
       </button>
