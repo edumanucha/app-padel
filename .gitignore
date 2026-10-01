@@ -45,4 +45,5 @@ docs/libro-diseno/
 
 # Herramienta de capturas: perfil temporal de Chrome y hoja de miniaturas
 herramientas/capturas-libro/.perfil-chrome/
-herramientas/capturas-libro/hoja.*
+herramientas/capturas-libro/hoja.html
+herramientas/capturas-libro/hoja.png
