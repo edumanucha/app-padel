@@ -156,7 +156,7 @@ export default function CompletarPerfilForm() {
       onSubmit={handleSubmit}
       className="w-full max-w-sm bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4"
     >
-      <h1 className="font-heading text-2xl font-semibold">{t("completarPerfil.titulo")}</h1>
+      <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("completarPerfil.titulo")}</h1>
       <p className="text-muted text-sm">{t("completarPerfil.subtitulo")}</p>
 
       <label className="flex flex-col gap-1">

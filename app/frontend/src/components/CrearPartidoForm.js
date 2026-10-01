@@ -178,7 +178,7 @@ export default function CrearPartidoForm() {
     return (
       <div className="w-full max-w-sm bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <h1 className="font-heading text-2xl font-semibold">
+          <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">
             {t("crearPartido.creado")}
           </h1>
           <button
@@ -215,7 +215,7 @@ export default function CrearPartidoForm() {
       className="w-full max-w-sm bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4"
     >
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-2xl font-semibold">{t("home.crearPartido")}</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("home.crearPartido")}</h1>
         <button
           type="button"
           onClick={() => router.push("/")}

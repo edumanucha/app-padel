@@ -347,7 +347,7 @@ export default function MarcadorLibreForm() {
   return (
     <div className="w-full max-w-md flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-2xl font-semibold">Marcadorcito</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">Marcadorcito</h1>
         <button
           onClick={() => router.push("/")}
           className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"

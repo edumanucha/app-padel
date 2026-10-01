@@ -147,7 +147,7 @@ export default function ConversacionForm({ otroId }) {
           >
             ←
           </button>
-          <h1 className="font-heading text-xl font-semibold">{otroNombre}</h1>
+          <h1 className="font-titulo text-3xl font-black uppercase leading-[0.95]">{otroNombre}</h1>
         </div>
         <button
           onClick={() => setMostrarReporte(true)}

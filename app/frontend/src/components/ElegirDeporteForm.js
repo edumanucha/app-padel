@@ -36,7 +36,7 @@ export default function ElegirDeporteForm() {
   return (
     <div className="w-full max-w-sm flex flex-col gap-4 items-center">
       <span className="text-xs uppercase tracking-wide text-muted">{t("elegirDeporte.bienvenido")}</span>
-      <h1 className="font-heading text-3xl font-semibold text-center">{t("elegirDeporte.titulo")}</h1>
+      <h1 className="font-titulo text-5xl font-black uppercase leading-[0.95] text-center">{t("elegirDeporte.titulo")}</h1>
       <p className="text-muted text-sm text-center">{t("elegirDeporte.subtitulo")}</p>
 
       <div className="w-full flex flex-col gap-3">

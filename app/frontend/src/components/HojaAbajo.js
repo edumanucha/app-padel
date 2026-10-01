@@ -30,7 +30,7 @@ export default function HojaAbajo({ titulo, onCerrar, textoCerrar = "Listo ✕",
         <div className="px-4 pt-3 pb-2 flex flex-col gap-2 shrink-0">
           <span className="mx-auto w-10 h-1 rounded-full bg-black/15" aria-hidden />
           <div className="flex items-center justify-between gap-2">
-            <h2 className="font-heading font-bold text-base">{titulo}</h2>
+            <h2 className="font-titulo font-black text-2xl uppercase leading-none">{titulo}</h2>
             {onCerrar && (
               <button
                 type="button"

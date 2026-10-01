@@ -1,4 +1,4 @@
-import { Archivo } from "next/font/google";
+import { Archivo, Big_Shoulders } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import PageTransition from "@/components/PageTransition";
@@ -20,6 +20,17 @@ import { LocaleProvider } from "@/i18n/LocaleContext";
 // veces. Ahora se pide la unión de pesos una sola vez, con una sola
 // variable (--font-archivo); globals.css mapea tanto --font-heading
 // como --font-body a esa misma variable.
+// Títulos estilo "cartel de estadio" (2026-10-01, rediseño paso B, opción
+// "1 · Cartel de estadio" elegida por el usuario en /pruebas-rediseno):
+// condensada, en mayúscula, solo para títulos -- el texto sigue en Archivo.
+// (Google la publica como "Big Shoulders", con eje de tamaño óptico: en
+// títulos grandes se vuelve la versión condensada "Display".)
+const cartel = Big_Shoulders({
+  variable: "--font-cartel",
+  subsets: ["latin"],
+  axes: ["opsz"],
+});
+
 const archivo = Archivo({
   variable: "--font-archivo",
   subsets: ["latin"],
@@ -69,7 +80,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="es"
-      className={`${archivo.variable} h-full antialiased`}
+      className={`${archivo.variable} ${cartel.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col pb-24">

@@ -339,7 +339,7 @@ export default function HomeForm() {
     return (
       <div className="w-full max-w-md flex flex-col gap-4 pb-10">
         <div className="bg-surface text-ink rounded-[20px] p-5 shadow-[0_1px_3px_rgba(20,38,31,0.08)] flex flex-col gap-3">
-          <h1 className="font-heading text-xl font-semibold"><IconoSinConexion className="ico" aria-hidden /> Estás sin señal</h1>
+          <h1 className="font-titulo text-3xl font-black uppercase leading-[0.95]"><IconoSinConexion className="ico" aria-hidden /> Estás sin señal</h1>
           <p className="text-sm text-muted">
             Igual podés llevar el marcador de un partido. Todo queda guardado en el celu y se sube solo cuando vuelva la
             conexión.

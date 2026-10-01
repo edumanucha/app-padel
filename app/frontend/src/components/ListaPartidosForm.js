@@ -252,7 +252,7 @@ export default function ListaPartidosForm() {
   return (
     <div className="w-full max-w-md flex flex-col gap-4 pantalla-grilla">
       <div className="flex items-center justify-between col-completa">
-        <h1 className="font-heading text-2xl font-semibold">
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">
           {t("partidosAbiertos.titulo")}
         </h1>
         <button

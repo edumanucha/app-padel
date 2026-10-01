@@ -97,6 +97,7 @@
   --color-outline: var(--outline);
   --font-heading: var(--font-archivo);
   --font-body: var(--font-archivo);
+  --font-titulo: var(--font-cartel);
 }
 
 body {

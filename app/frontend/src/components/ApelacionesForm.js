@@ -106,7 +106,7 @@ export default function ApelacionesForm() {
   return (
     <div className="w-full max-w-md flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-2xl font-semibold">
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">
           {esSuperusuario ? t("apelaciones.tituloSuperusuario") : t("apelaciones.tituloJugador")}
         </h1>
         <button
