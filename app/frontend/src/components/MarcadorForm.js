@@ -43,6 +43,76 @@ function TarjetaOpciones({ titulo, children }) {
   );
 }
 
+// Selector de tema propio, en vez del <select> nativo (2026-09-30, bug del
+// usuario: "en modo apaisado... el desplegable no está en el mismo sentido
+// que el celular, se ve re mal"). El apaisado gira la pantalla con CSS,
+// pero la lista de un <select> la dibuja el sistema con la orientación
+// real del teléfono, así que salía de costado. Este menú es parte de la
+// página y gira junto con el tablero. Va en posición absoluta para no
+// sumar alto al apaisado (regla de 0px de margen).
+const TEMAS = [
+  { valor: "verde", texto: "Tema verde" },
+  { valor: "neon", texto: "Tema neón" },
+  { valor: "contraste", texto: "Alto contraste" },
+];
+
+function SelectorTema({ tema, onElegir }) {
+  const [abierto, setAbierto] = useState(false);
+  const contenedorRef = useRef(null);
+
+  useEffect(() => {
+    if (!abierto) return;
+    function cerrarSiAfuera(e) {
+      if (contenedorRef.current && !contenedorRef.current.contains(e.target)) setAbierto(false);
+    }
+    document.addEventListener("pointerdown", cerrarSiAfuera);
+    return () => document.removeEventListener("pointerdown", cerrarSiAfuera);
+  }, [abierto]);
+
+  const actual = TEMAS.find((t) => t.valor === tema) ?? TEMAS[0];
+  return (
+    <div ref={contenedorRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setAbierto((v) => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={abierto}
+        aria-label="Tema del tablero"
+        className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer flex items-center gap-1"
+      >
+        {actual.texto}
+        <span aria-hidden className="text-xs">▾</span>
+      </button>
+      {abierto && (
+        <ul
+          role="listbox"
+          aria-label="Tema del tablero"
+          className="absolute right-0 top-full mt-1 z-50 min-w-full bg-surface text-ink rounded-[14px] shadow-xl py-1 whitespace-nowrap"
+        >
+          {TEMAS.map((t) => (
+            <li key={t.valor}>
+              <button
+                type="button"
+                role="option"
+                aria-selected={t.valor === tema}
+                onClick={() => {
+                  onElegir(t.valor);
+                  setAbierto(false);
+                }}
+                className={`w-full text-left font-heading text-sm px-4 py-2 cursor-pointer ${
+                  t.valor === tema ? "font-bold text-accent-ink bg-accent" : "font-semibold"
+                }`}
+              >
+                {t.texto}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 const ESTADO_INICIAL = {
   setsA: [0],
   setsB: [0],
@@ -2034,16 +2104,7 @@ export default function MarcadorForm({ partidoId }) {
           Volver al detalle
         </button>
         <div className="flex items-center gap-2 flex-wrap">
-          <select
-            value={tema}
-            onChange={(e) => elegirTema(e.target.value)}
-            aria-label="Tema del tablero"
-            className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
-          >
-            <option value="verde">Tema verde</option>
-            <option value="neon">Tema neón</option>
-            <option value="contraste">Alto contraste</option>
-          </select>
+          <SelectorTema tema={tema} onElegir={elegirTema} />
           <button
             onClick={() => setModoApaisado((v) => !v)}
             className={`${styles.botonApaisado} font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer`}
