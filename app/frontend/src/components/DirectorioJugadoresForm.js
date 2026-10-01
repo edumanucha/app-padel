@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
+import HojaAbajo from "@/components/HojaAbajo";
 import PelotaLoader from "@/components/PelotaLoader";
 import { useLocale } from "@/i18n/LocaleContext";
 import ContadorNumero from "@/components/ContadorNumero";
@@ -90,6 +91,8 @@ export default function DirectorioJugadoresForm() {
   const [filtroNombre, setFiltroNombre] = useState("");
   const [filtroNivel, setFiltroNivel] = useState("");
   const [filtroSexo, setFiltroSexo] = useState("");
+  const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  const cantidadFiltros = [filtroNombre.trim(), filtroNivel, filtroSexo].filter((v) => v !== "").length;
   // Ranking mensual (se reinicia solo, es el mes calendario actual) vs.
   // histórico (acumulado de por vida) -- 2026-09-13, a pedido del usuario.
   const [periodo, setPeriodo] = useState("mensual");
@@ -137,11 +140,16 @@ export default function DirectorioJugadoresForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [verificandoSesion, periodo]);
 
-  async function buscar() {
+  // `filtros`: opcional, para buscar con valores que todavía no llegaron
+  // al estado (por ejemplo, recién limpiados).
+  async function buscar(filtros) {
+    const nombre = (filtros?.nombre ?? filtroNombre).trim();
+    const nivel = filtros?.nivel ?? filtroNivel;
+    const sexo = filtros?.sexo ?? filtroSexo;
     setError("");
     // Copia de la última vez (2026-09-30, optimización): solo para la
     // lista sin filtros, que es la que se ve al entrar.
-    const sinFiltros = filtroNombre.trim() === "" && filtroNivel === "" && filtroSexo === "";
+    const sinFiltros = nombre === "" && nivel === "" && sexo === "";
     const claveCopia = `jugadores_${periodo}`;
     const copia = sinFiltros ? leerPantalla(claveCopia, userId) : null;
     if (copia) {
@@ -152,9 +160,9 @@ export default function DirectorioJugadoresForm() {
     }
 
     const { data, error: buscarError } = await supabase.rpc("listar_directorio_jugadores", {
-      p_nombre: filtroNombre.trim() === "" ? null : filtroNombre.trim(),
-      p_nivel: filtroNivel === "" ? null : Number(filtroNivel),
-      p_sexo: filtroSexo === "" ? null : filtroSexo,
+      p_nombre: nombre === "" ? null : nombre,
+      p_nivel: nivel === "" ? null : Number(nivel),
+      p_sexo: sexo === "" ? null : sexo,
       p_periodo: periodo,
     });
 
@@ -171,7 +179,16 @@ export default function DirectorioJugadoresForm() {
 
   function handleSubmit(e) {
     e.preventDefault();
+    setMostrarFiltros(false);
     buscar();
+  }
+
+  function limpiarFiltros() {
+    setFiltroNombre("");
+    setFiltroNivel("");
+    setFiltroSexo("");
+    setMostrarFiltros(false);
+    buscar({ nombre: "", nivel: "", sexo: "" });
   }
 
   if (verificandoSesion) {
@@ -187,49 +204,73 @@ export default function DirectorioJugadoresForm() {
     <div className="w-full max-w-md flex flex-col gap-4 pantalla-grilla">
       <div className="flex items-center justify-between col-completa">
         <h1 className="font-heading text-2xl font-semibold">{t("directorio.titulo")}</h1>
+        <div className="flex items-center gap-2">
+        <button
+          onClick={() => setMostrarFiltros(true)}
+          className={`font-heading font-semibold text-sm px-3 py-1.5 rounded-full shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer ${
+            cantidadFiltros > 0 ? "bg-accent text-accent-ink border-2 border-outline" : "bg-surface text-ink"
+          }`}
+        >
+          🔍 {t("directorio.filtros")}
+          {cantidadFiltros > 0 ? ` (${cantidadFiltros})` : ""}
+        </button>
         <button
           onClick={() => router.push("/")}
           className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
         >
           {t("directorio.volver")}
         </button>
+        </div>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <Subtitulo>{t("directorio.filtros")}</Subtitulo>
-        <form onSubmit={handleSubmit} className={`${tarjeta} flex flex-col gap-2`}>
-          <input
-            type="text"
-            value={filtroNombre}
-            onChange={(e) => setFiltroNombre(e.target.value)}
-            placeholder={t("directorio.buscarPorNombre")}
-            className={inputClass}
-          />
-          <div className="flex gap-2">
-            <select value={filtroNivel} onChange={(e) => setFiltroNivel(e.target.value)} className={`${inputClass} flex-1`}>
-              <option value="">{t("directorio.todosLosNiveles")}</option>
-              {NIVELES_VALORES.map((n) => (
-                <option key={n} value={n}>
-                  {etiquetaNivel(n, t)}
-                </option>
-              ))}
-            </select>
-            <select value={filtroSexo} onChange={(e) => setFiltroSexo(e.target.value)} className={`${inputClass} flex-1`}>
-              <option value="">{t("directorio.todos")}</option>
-              <option value="masculino">{t("directorio.masculino")}</option>
-              <option value="femenino">{t("directorio.femenino")}</option>
-            </select>
-          </div>
-          <button
-            type="submit"
-            disabled={cargando}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
-          >
-            {cargando && <PelotaLoader />}
-            {t("directorio.buscar")}
-          </button>
-        </form>
-      </div>
+      {/* Filtros en hoja de abajo (2026-10-01, mismo estilo que las Opciones
+          del Marcadorcito, a pedido del usuario): se abren con el botón
+          "Filtros" de arriba y la lista del ranking queda con más lugar. */}
+      {mostrarFiltros && (
+        <HojaAbajo titulo={t("directorio.filtros")} onCerrar={() => setMostrarFiltros(false)} textoCerrar="✕">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+            <input
+              type="text"
+              value={filtroNombre}
+              onChange={(e) => setFiltroNombre(e.target.value)}
+              placeholder={t("directorio.buscarPorNombre")}
+              className={inputClass}
+            />
+            <div className="flex gap-2">
+              <select value={filtroNivel} onChange={(e) => setFiltroNivel(e.target.value)} className={`${inputClass} flex-1`}>
+                <option value="">{t("directorio.todosLosNiveles")}</option>
+                {NIVELES_VALORES.map((n) => (
+                  <option key={n} value={n}>
+                    {etiquetaNivel(n, t)}
+                  </option>
+                ))}
+              </select>
+              <select value={filtroSexo} onChange={(e) => setFiltroSexo(e.target.value)} className={`${inputClass} flex-1`}>
+                <option value="">{t("directorio.todos")}</option>
+                <option value="masculino">{t("directorio.masculino")}</option>
+                <option value="femenino">{t("directorio.femenino")}</option>
+              </select>
+            </div>
+            {cantidadFiltros > 0 && (
+              <button
+                type="button"
+                onClick={limpiarFiltros}
+                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink cursor-pointer"
+              >
+                {t("directorio.limpiarFiltros")}
+              </button>
+            )}
+            <button
+              type="submit"
+              disabled={cargando}
+              className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+            >
+              {cargando && <PelotaLoader />}
+              {t("directorio.buscar")}
+            </button>
+          </form>
+        </HojaAbajo>
+      )}
 
       {error && <p className="text-red-600 text-sm col-completa">{error}</p>}
 

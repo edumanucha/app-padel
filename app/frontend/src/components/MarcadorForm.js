@@ -2097,40 +2097,37 @@ export default function MarcadorForm({ partidoId }) {
     <div className={`w-full flex flex-col gap-3 items-center ${modoApaisado ? styles.forzarApaisado : ""}`}>
       {/* Cartelito "sin señal": posición fija, fuera del flujo, para no
           sumar altura al apaisado (ver regla de 0px de margen en el CSS). */}
+      {/* "¿Salir del partido?" en hoja de abajo (2026-10-01, mismo estilo
+          que Opciones, a pedido del usuario). Tocar afuera = seguir jugando. */}
       {confirmarSalida && (
-        <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4">
-          <div className="w-full max-w-sm bg-surface text-ink rounded-[20px] p-5 flex flex-col gap-3 shadow-xl">
-            <h2 className="font-heading text-lg font-semibold">¿Salir del partido?</h2>
-            <p className="text-sm text-muted">
-              El partido sigue en juego. Los puntos quedan guardados y podés volver desde el inicio
-              cuando quieras. Si lo terminás, se cierra y no cuenta para estadísticas ni ranking.
-            </p>
-            <div className="flex flex-wrap gap-2 justify-end">
-              <button
-                onClick={() => {
-                  setConfirmarSalida(false);
-                  seguirEnElPartido();
-                  handleTerminarPartido();
-                }}
-                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-red-600/10 text-red-600 cursor-pointer mr-auto"
-              >
-                🏁 Terminar partido
-              </button>
-              <button
-                onClick={salirDelPartido}
-                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink cursor-pointer"
-              >
-                Salir
-              </button>
-              <button
-                onClick={seguirEnElPartido}
-                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink cursor-pointer"
-              >
-                Seguir jugando
-              </button>
-            </div>
-          </div>
-        </div>
+        <HojaAbajo titulo="¿Salir del partido?" onCerrar={seguirEnElPartido} textoCerrar="✕">
+          <p className="text-sm text-muted -mt-1">
+            El partido sigue en juego. Los puntos quedan guardados y podés volver desde el inicio
+            cuando quieras. Si lo terminás, se cierra y no cuenta para estadísticas ni ranking.
+          </p>
+          <button
+            onClick={seguirEnElPartido}
+            className="rounded-full font-heading font-bold text-base py-3 bg-accent text-accent-ink border-2 border-outline cursor-pointer"
+          >
+            Seguir jugando
+          </button>
+          <button
+            onClick={salirDelPartido}
+            className="rounded-full font-heading font-semibold text-sm py-2.5 bg-bg text-ink cursor-pointer"
+          >
+            Salir (el partido sigue)
+          </button>
+          <button
+            onClick={() => {
+              setConfirmarSalida(false);
+              seguirEnElPartido();
+              handleTerminarPartido();
+            }}
+            className="rounded-full font-heading font-semibold text-sm py-2.5 bg-red-600/10 text-red-600 cursor-pointer"
+          >
+            🏁 Terminar partido
+          </button>
+        </HojaAbajo>
       )}
       {sinSincronizar && (
         <div className="fixed top-1.5 left-1.5 z-50 pointer-events-none rounded-full bg-amber-400 text-black text-[11px] font-semibold px-2.5 py-1 shadow">

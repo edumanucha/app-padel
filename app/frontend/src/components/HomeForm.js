@@ -10,6 +10,7 @@ import DotDigit from "@/components/DotDigit";
 import IlustracionCancha from "@/components/IlustracionCancha";
 import ContadorNumero from "@/components/ContadorNumero";
 import InstalarApp from "@/components/InstalarApp";
+import HojaAbajo from "@/components/HojaAbajo";
 import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import GuiaPadelito from "@/components/GuiaPadelito";
 import { useEnPantalla } from "@/lib/useEnPantalla";
@@ -459,21 +460,19 @@ export default function HomeForm() {
         </div>
       </div>
 
+      {/* Notificaciones en hoja de abajo (2026-10-01, mismo estilo que las
+          Opciones del Marcadorcito, a pedido del usuario). */}
       {mostrarNotificaciones && (
-        <div className={`${tarjeta} flex flex-col gap-2 col-completa`}>
-          <div className="flex items-center justify-between">
-            <span className="font-heading font-semibold text-sm">{t("home.notificaciones")}</span>
-            <div className="flex items-center gap-2">
-              {noLeidas > 0 && (
-                <button onClick={handleMarcarTodasLeidas} className="text-xs text-muted underline">
-                  {t("home.marcarTodasLeidas")}
-                </button>
-              )}
-              <button onClick={() => setMostrarNotificaciones(false)} className="text-xs text-muted">
-                {t("home.cerrar")}
-              </button>
-            </div>
-          </div>
+        <HojaAbajo
+          titulo={t("home.notificaciones")}
+          onCerrar={() => setMostrarNotificaciones(false)}
+          textoCerrar={t("home.cerrar")}
+        >
+          {noLeidas > 0 && (
+            <button onClick={handleMarcarTodasLeidas} className="self-end text-xs text-muted underline cursor-pointer -mt-2">
+              {t("home.marcarTodasLeidas")}
+            </button>
+          )}
           {notificaciones.length === 0 && (
             <span className="text-sm text-muted">{t("home.sinNotificaciones")}</span>
           )}
@@ -489,7 +488,7 @@ export default function HomeForm() {
               <span className="text-xs text-muted">{new Date(n.creado_en).toLocaleString("es-AR")}</span>
             </button>
           ))}
-        </div>
+        </HojaAbajo>
       )}
 
       {error && <p className="text-red-600 text-sm col-completa">{error}</p>}

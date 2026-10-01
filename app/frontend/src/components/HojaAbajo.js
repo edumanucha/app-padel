@@ -12,7 +12,7 @@
 //
 // - `onCerrar`: si no se pasa, la hoja no se puede cerrar tocando afuera
 //   ni tiene "Listo" (sirve para cuando hay que elegir sí o sí).
-export default function HojaAbajo({ titulo, onCerrar, children }) {
+export default function HojaAbajo({ titulo, onCerrar, textoCerrar = "Listo ✕", children }) {
   return (
     <>
       <div
@@ -37,7 +37,7 @@ export default function HojaAbajo({ titulo, onCerrar, children }) {
                 onClick={onCerrar}
                 className="font-heading font-semibold text-sm text-muted px-2 py-1 cursor-pointer"
               >
-                Listo ✕
+                {textoCerrar}
               </button>
             )}
           </div>

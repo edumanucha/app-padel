@@ -122,6 +122,7 @@ export const dict = {
       comoFuncionaRanking: "Cómo funciona el ranking",
       explicacionRanking: "Sumás 2 puntos por cada game que ganás en un partido con Marcadorcito, más 5 puntos extra si ganás el partido. Es un acumulado de por vida: nunca se resetea ni se resta por perder, así que jugar siempre te suma.",
       filtros: "Filtros",
+      limpiarFiltros: "Limpiar filtros",
       ranking: "Ranking",
     },
     admin: {
@@ -730,6 +731,7 @@ export const dict = {
       comoFuncionaRanking: "How the ranking works",
       explicacionRanking: "You earn 2 points for every game you win in a match with Marcadorcito, plus a 5-point bonus if you win the match. It's a lifetime total: it never resets or gets deducted for losing, so playing always adds up.",
       filtros: "Filters",
+      limpiarFiltros: "Clear filters",
       ranking: "Ranking",
     },
     admin: {
@@ -1338,6 +1340,7 @@ export const dict = {
       comoFuncionaRanking: "Como funciona o ranking",
       explicacionRanking: "Você soma 2 pontos por cada game vencido em uma partida com o Marcadorcito, mais 5 pontos de bônus se vencer a partida. É um total acumulado para sempre: nunca zera nem desconta por perder, então jogar sempre soma.",
       filtros: "Filtros",
+      limpiarFiltros: "Limpar filtros",
       ranking: "Ranking",
     },
     admin: {

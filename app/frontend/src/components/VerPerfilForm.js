@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
+import HojaAbajo from "@/components/HojaAbajo";
 import PelotaLoader from "@/components/PelotaLoader";
 import AvatarUpload from "@/components/AvatarUpload";
 import Logo from "@/components/Logo";
@@ -606,36 +607,6 @@ export default function VerPerfilForm() {
     );
   }
 
-  if (mostrarConfirmacionBaja) {
-    return (
-      <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
-        <h1 className="font-heading text-2xl font-semibold">{t("verPerfil.confirmarBajaTitulo")}</h1>
-        <p className="text-muted text-sm">{t("verPerfil.confirmarBajaTexto")}</p>
-
-        {errorBaja && <p className="text-red-600 text-sm">{errorBaja}</p>}
-
-        <div className="flex gap-3">
-          <button
-            onClick={handleDarBaja}
-            disabled={dandoBaja}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-red-600 text-white border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
-          >
-            {dandoBaja && <PelotaLoader />}
-            {dandoBaja ? t("verPerfil.dandoDeBaja") : t("verPerfil.siDarDeBaja")}
-          </button>
-          <button
-            type="button"
-            onClick={() => setMostrarConfirmacionBaja(false)}
-            disabled={dandoBaja}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60"
-          >
-            {t("verPerfil.cancelar")}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="w-full max-w-md flex flex-col gap-4 pantalla-mosaico">
       <div className="flex items-center justify-between col-completa">
@@ -943,6 +914,36 @@ export default function VerPerfilForm() {
           {t("verPerfil.darDeBajaCuenta")}
         </button>
       </div>
+
+      {/* Confirmar la baja en hoja de abajo (2026-10-01, mismo estilo que las
+          Opciones del Marcadorcito, a pedido del usuario). Antes reemplazaba
+          toda la pantalla del perfil. */}
+      {mostrarConfirmacionBaja && (
+        <HojaAbajo
+          titulo={t("verPerfil.confirmarBajaTitulo")}
+          onCerrar={dandoBaja ? undefined : () => setMostrarConfirmacionBaja(false)}
+          textoCerrar="✕"
+        >
+          <p className="text-muted text-sm -mt-1">{t("verPerfil.confirmarBajaTexto")}</p>
+          {errorBaja && <p className="text-red-600 text-sm">{errorBaja}</p>}
+          <button
+            onClick={handleDarBaja}
+            disabled={dandoBaja}
+            className="rounded-full font-heading font-bold text-sm py-3 bg-red-600 text-white cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+          >
+            {dandoBaja && <PelotaLoader />}
+            {dandoBaja ? t("verPerfil.dandoDeBaja") : t("verPerfil.siDarDeBaja")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setMostrarConfirmacionBaja(false)}
+            disabled={dandoBaja}
+            className="rounded-full font-heading font-semibold text-sm py-2.5 bg-bg text-ink cursor-pointer disabled:opacity-60"
+          >
+            {t("verPerfil.cancelar")}
+          </button>
+        </HojaAbajo>
+      )}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
+import HojaAbajo from "@/components/HojaAbajo";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
 
@@ -149,37 +150,42 @@ export default function ConversacionForm({ otroId }) {
           <h1 className="font-heading text-xl font-semibold">{otroNombre}</h1>
         </div>
         <button
-          onClick={() => setMostrarReporte((v) => !v)}
+          onClick={() => setMostrarReporte(true)}
           className="font-heading font-semibold text-xs px-3 py-1.5 rounded-full bg-surface text-red-600 border-2 border-outline cursor-pointer"
         >
           {t("conversacion.reportar")}
         </button>
       </div>
 
+      {/* Reportar en hoja de abajo (2026-10-01, mismo estilo que las
+          Opciones del Marcadorcito, a pedido del usuario). */}
       {mostrarReporte && (
-        <div className="bg-bg border-2 border-outline rounded-[14px] p-3 flex flex-col gap-2">
+        <HojaAbajo
+          titulo={`🚩 ${t("conversacion.reportar")} · ${otroNombre}`}
+          onCerrar={() => setMostrarReporte(false)}
+          textoCerrar="✕"
+        >
           <textarea
             value={motivoReporte}
             onChange={(e) => setMotivoReporte(e.target.value)}
             placeholder={t("conversacion.motivoPlaceholder")}
-            rows={2}
-            className="rounded-xl bg-surface px-2 py-1 text-sm"
+            rows={3}
+            className="rounded-xl border-2 border-outline bg-bg px-3 py-2 text-ink text-sm resize-y"
           />
-          <div className="flex gap-2">
-            <button
-              onClick={handleReportar}
-              className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-red-600 text-white border-2 border-outline cursor-pointer"
-            >
-              {t("conversacion.enviarReporte")}
-            </button>
-            <button
-              onClick={() => setMostrarReporte(false)}
-              className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink border-2 border-outline cursor-pointer"
-            >
-              {t("conversacion.cancelar")}
-            </button>
-          </div>
-        </div>
+          <button
+            onClick={handleReportar}
+            disabled={motivoReporte.trim() === ""}
+            className="rounded-full font-heading font-bold text-sm py-3 bg-red-600 text-white cursor-pointer disabled:opacity-50"
+          >
+            {t("conversacion.enviarReporte")}
+          </button>
+          <button
+            onClick={() => setMostrarReporte(false)}
+            className="rounded-full font-heading font-semibold text-sm py-2.5 bg-bg text-ink cursor-pointer"
+          >
+            {t("conversacion.cancelar")}
+          </button>
+        </HojaAbajo>
       )}
       {reporteEnviado && <p className="text-xs text-muted">{t("conversacion.reporteEnviado")}</p>}
 
