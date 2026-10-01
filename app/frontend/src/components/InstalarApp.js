@@ -5,6 +5,10 @@ import { IconoCasa } from "@/components/Icons";
 
 const tarjeta = "bg-surface text-ink rounded-[18px] p-4 shadow-[0_1px_3px_rgba(20,38,31,0.08)]";
 
+// La franja del inicio, si se cierra, vuelve a aparecer a los 3 días.
+const CLAVE_FRANJA_CERRADA = "instalarAppFranjaCerrada";
+const DIAS_FRANJA_CERRADA = 3;
+
 function estaInstalada() {
   if (typeof window === "undefined") return false;
   return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
@@ -15,28 +19,37 @@ function esIOS() {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
+function franjaCerradaHace() {
+  try {
+    const cuando = Number(localStorage.getItem(CLAVE_FRANJA_CERRADA));
+    return cuando ? (Date.now() - cuando) / 86400000 : Infinity;
+  } catch {
+    return Infinity;
+  }
+}
+
 // "Instalar app" (2026-09-13, a pedido del usuario: "de hacerlo
-// instalable" -- el manifest/íconos/service worker ya estaban armados
-// (US-PWA), pero no había ningún botón real en la UI para disparar el
-// instalado -- sin esto, el usuario dependía de que el navegador se lo
-// ofreciera solo, que muchos ni notan. Android/desktop: captura el evento
-// `beforeinstallprompt` del navegador y lo dispara al tocar el botón. iOS
-// Safari no tiene ese evento (no lo soporta) -- ahí se muestra el paso a
-// paso manual ("Compartir -> Agregar a inicio").
-// `siempre`: si es true, no se puede descartar (para Configuración,
-// acceso permanente); si es false, se puede cerrar y no vuelve a
-// aparecer en esta sesión de navegador (para el banner del Home).
-export default function InstalarApp({ siempre = false }) {
+// instalable"). Android/compu: captura el evento `beforeinstallprompt` del
+// navegador y lo dispara al tocar el botón. iOS Safari no tiene ese evento
+// -- ahí se muestra el paso a paso manual ("Compartir -> Agregar a inicio").
+//
+// 2026-09-30 (pedido del usuario: "si no está instalada, que aparezca el
+// botón en la home y en el perfil"; eligió la opción 2 en /pruebas-instalar):
+// - variante "franja": franja amarilla finita arriba del inicio, se cierra
+//   con ✕ y vuelve a los 3 días.
+// - variante "boton": botón punteado en el perfil, no se cierra.
+// - variante "tarjeta" (la de siempre): Configuración, no se cierra.
+// Ahora aparece siempre que la app no esté instalada, aunque el navegador
+// no ofrezca instalar con un toque: en ese caso el botón muestra los pasos.
+export default function InstalarApp({ variante = "tarjeta" }) {
   const [promptEvent, setPromptEvent] = useState(null);
   const [instalada, setInstalada] = useState(true); // arranca en true para no parpadear antes de chequear
-  const [descartada, setDescartada] = useState(false);
-  const [mostrarPasosIOS, setMostrarPasosIOS] = useState(false);
+  const [cerrada, setCerrada] = useState(false);
+  const [mostrarPasos, setMostrarPasos] = useState(false);
 
   useEffect(() => {
     setInstalada(estaInstalada());
-    if (!siempre) {
-      setDescartada(sessionStorage.getItem("instalarAppDescartada") === "1");
-    }
+    if (variante === "franja") setCerrada(franjaCerradaHace() < DIAS_FRANJA_CERRADA);
 
     function alCapturarPrompt(e) {
       e.preventDefault();
@@ -52,24 +65,82 @@ export default function InstalarApp({ siempre = false }) {
       window.removeEventListener("beforeinstallprompt", alCapturarPrompt);
       window.removeEventListener("appinstalled", alInstalar);
     };
-  }, [siempre]);
+  }, [variante]);
 
   async function handleInstalar() {
-    if (!promptEvent) return;
+    if (!promptEvent) {
+      setMostrarPasos((v) => !v);
+      return;
+    }
     promptEvent.prompt();
     const { outcome } = await promptEvent.userChoice;
     if (outcome === "accepted") setInstalada(true);
     setPromptEvent(null);
   }
 
-  function handleDescartar() {
-    setDescartada(true);
-    sessionStorage.setItem("instalarAppDescartada", "1");
+  function handleCerrar() {
+    setCerrada(true);
+    try {
+      localStorage.setItem(CLAVE_FRANJA_CERRADA, String(Date.now()));
+    } catch {
+      // sin almacenamiento: se cierra solo por esta vez
+    }
   }
 
-  if (instalada) return null;
-  if (!siempre && descartada) return null;
-  if (!promptEvent && !esIOS()) return null;
+  if (instalada || cerrada) return null;
+
+  const pasos = mostrarPasos && (
+    <ol className="text-xs text-muted flex flex-col gap-1 list-decimal list-inside text-left">
+      {esIOS() ? (
+        <>
+          <li>Tocá el botón &quot;Compartir&quot; (el cuadradito con la flecha) en Safari.</li>
+          <li>Elegí &quot;Agregar a pantalla de inicio&quot;.</li>
+          <li>Confirmá tocando &quot;Agregar&quot;.</li>
+        </>
+      ) : (
+        <>
+          <li>Abrí el menú del navegador (los tres puntitos ⋮).</li>
+          <li>Elegí &quot;Instalar app&quot; o &quot;Agregar a pantalla de inicio&quot;.</li>
+          <li>Confirmá tocando &quot;Instalar&quot;.</li>
+        </>
+      )}
+    </ol>
+  );
+
+  if (variante === "franja") {
+    return (
+      <div className="flex flex-col gap-2">
+        <div className="rounded-full bg-accent text-accent-ink border-2 border-outline pl-3 pr-2 py-1.5 flex items-center gap-2 text-xs font-heading font-semibold">
+          <span aria-hidden>📲</span>
+          <span className="flex-1 min-w-0">Instalá la app: más rápida y anda sin señal</span>
+          <button
+            onClick={handleInstalar}
+            className="rounded-full bg-[#14261f] text-[#f2c53d] px-3 py-1 cursor-pointer flex-shrink-0"
+          >
+            Instalar
+          </button>
+          <button onClick={handleCerrar} aria-label="Cerrar" className="opacity-60 px-1 cursor-pointer flex-shrink-0">
+            ✕
+          </button>
+        </div>
+        {pasos && <div className={tarjeta}>{pasos}</div>}
+      </div>
+    );
+  }
+
+  if (variante === "boton") {
+    return (
+      <div className="flex flex-col gap-2">
+        <button
+          onClick={handleInstalar}
+          className="w-full rounded-full bg-surface text-ink border-2 border-dashed border-accent py-2.5 text-sm font-heading font-semibold cursor-pointer"
+        >
+          📲 Instalar la app en este dispositivo
+        </button>
+        {pasos && <div className={tarjeta}>{pasos}</div>}
+      </div>
+    );
+  }
 
   return (
     <div className={`${tarjeta} flex items-start gap-3`}>
@@ -81,37 +152,14 @@ export default function InstalarApp({ siempre = false }) {
         <span className="text-xs text-muted block mt-0.5">
           Accedé más rápido, con ícono propio en tu pantalla de inicio, como una app más.
         </span>
-
-        {esIOS() ? (
-          <>
-            <button
-              onClick={() => setMostrarPasosIOS((v) => !v)}
-              className="font-heading font-semibold text-xs text-accent-2-ink underline cursor-pointer mt-2"
-            >
-              Ver cómo
-            </button>
-            {mostrarPasosIOS && (
-              <ol className="text-xs text-muted mt-1 flex flex-col gap-1 list-decimal list-inside">
-                <li>Tocá el botón "Compartir" (el cuadradito con la flecha) en Safari.</li>
-                <li>Elegí "Agregar a pantalla de inicio".</li>
-                <li>Confirmá tocando "Agregar".</li>
-              </ol>
-            )}
-          </>
-        ) : (
-          <button
-            onClick={handleInstalar}
-            className="font-heading font-semibold text-xs px-3 py-1.5 rounded-full bg-accent text-accent-ink border-2 border-outline cursor-pointer mt-2"
-          >
-            Instalar
-          </button>
-        )}
-      </div>
-      {!siempre && (
-        <button onClick={handleDescartar} aria-label="Cerrar" className="text-muted cursor-pointer flex-shrink-0">
-          ✕
+        <button
+          onClick={handleInstalar}
+          className="font-heading font-semibold text-xs px-3 py-1.5 rounded-full bg-accent text-accent-ink border-2 border-outline cursor-pointer mt-2"
+        >
+          {promptEvent ? "Instalar" : "Ver cómo"}
         </button>
-      )}
+        {pasos && <div className="mt-2">{pasos}</div>}
+      </div>
     </div>
   );
 }

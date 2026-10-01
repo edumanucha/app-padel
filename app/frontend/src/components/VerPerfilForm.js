@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import AvatarUpload from "@/components/AvatarUpload";
 import Logo from "@/components/Logo";
+import InstalarApp from "@/components/InstalarApp";
 import BarraEstadistica from "@/components/BarraEstadistica";
 import Toggle from "@/components/Toggle";
 import { calcularResumenEstadisticas, calcularPuntosRanking } from "@/lib/estadisticasMarcadorcito";
@@ -683,6 +684,10 @@ export default function VerPerfilForm() {
           </button>
         </div>
       </div>
+
+      {/* Instalar la app (2026-09-30, opción 2 elegida por el usuario): solo
+          aparece si no está instalada. */}
+      <InstalarApp variante="boton" />
 
       <div ref={estadisticasRef} className="flex flex-col gap-3">
         {/* Tarjeta acordeón, colapsada por defecto (2026-09-13, a pedido

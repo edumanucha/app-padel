@@ -373,7 +373,7 @@ export default function HomeForm() {
   return (
     <div className="w-full max-w-md flex flex-col gap-4 pb-10 pantalla-tablero">
       <div className="col-completa">
-        <InstalarApp />
+        <InstalarApp variante="franja" />
       </div>
 
       {partidoEnCurso && (

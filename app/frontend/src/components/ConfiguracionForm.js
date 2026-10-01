@@ -96,7 +96,7 @@ export default function ConfiguracionForm() {
         </div>
       </div>
 
-      <InstalarApp siempre />
+      <InstalarApp />
 
       <div className={`${tarjeta} flex flex-col gap-3`}>
         <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted">{t("config.idioma")}</span>
