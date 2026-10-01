@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, usuarioRapido } from "@/lib/supabaseClient";
+import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import PelotaLoader from "@/components/PelotaLoader";
 import AvatarUpload from "@/components/AvatarUpload";
 import Logo from "@/components/Logo";
@@ -135,13 +136,25 @@ export default function VerPerfilForm() {
       const {
         data: { user },
         error: userError,
-      } = await supabase.auth.getUser();
+      } = await usuarioRapido();
 
       if (userError || !user) {
         // Sin sesión activa: redirigimos al login en vez de mostrar esta
         // pantalla (US-1.5 -- no se debe ver contenido protegido sin sesión).
         router.replace("/login");
         return;
+      }
+
+      // Copia de la última vez (2026-09-30): se ve al toque mientras se
+      // piden los datos nuevos.
+      const copia = leerPantalla("perfil", user.id);
+      if (copia) {
+        setPerfil(copia.perfil);
+        if (copia.partidosStats !== undefined) {
+          setPartidosStats(copia.partidosStats);
+          setCargandoEstadisticas(false);
+        }
+        setCargando(false);
       }
 
       // RLS ("Ver mi propio perfil") ya garantiza que esto solo puede
@@ -178,6 +191,7 @@ export default function VerPerfilForm() {
 
       setPerfil(data);
       setCargando(false);
+      guardarPantalla("perfil", user.id, { ...(leerPantalla("perfil", user.id) ?? {}), perfil: data });
 
       // Estadísticas de Marcadorcito (2026-09-13): no bloquea el resto del
       // perfil -- si tarda o falla, el resto de la pantalla ya se ve.
@@ -231,6 +245,10 @@ export default function VerPerfilForm() {
 
       setPartidosStats(partidosConStats.length > 0 ? partidosConStats : null);
       setCargandoEstadisticas(false);
+      guardarPantalla("perfil", jugadorId, {
+        ...(leerPantalla("perfil", jugadorId) ?? {}),
+        partidosStats: partidosConStats.length > 0 ? partidosConStats : null,
+      });
     }
 
     cargarPerfil();

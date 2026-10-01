@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import Logo from "@/components/Logo";
 import {
@@ -58,7 +58,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
     async function cargar() {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await usuarioRapido();
       if (!user) {
         router.replace("/login");
         return;
@@ -96,7 +96,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
   async function handleToggleFrecuente() {
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await usuarioRapido();
     if (!user) return;
 
     if (jugador.es_frecuente) {
@@ -117,7 +117,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
   async function handleToggleKudos(partidoId) {
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await usuarioRapido();
     if (!user) return;
 
     const fila = partidosRanking.find((p) => p.partido_id === partidoId);

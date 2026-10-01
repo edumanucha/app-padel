@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import { useLocale } from "@/i18n/LocaleContext";
 
@@ -23,7 +23,7 @@ export default function FormularioFeedback({ titulo }) {
 
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await usuarioRapido();
 
     await supabase.from("feedback_app").insert({ jugador_id: user.id, comentario: comentario.trim() });
 

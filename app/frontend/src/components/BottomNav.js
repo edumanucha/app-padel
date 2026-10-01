@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import {
   IconoCasa,
   IconoTrofeo,
@@ -63,7 +63,7 @@ export default function BottomNav() {
 
   useEffect(() => {
     let activo = true;
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    usuarioRapido().then(({ data: { user } }) => {
       if (activo) setConSesion(!!user);
     });
     return () => {

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, usuarioRapido } from "@/lib/supabaseClient";
+import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import PelotaLoader from "@/components/PelotaLoader";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
@@ -37,10 +38,18 @@ export default function MisPartidosForm() {
     async function cargar() {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await usuarioRapido();
       if (!user) {
         router.replace("/login");
         return;
+      }
+
+      // Copia de la última vez (2026-09-30): se ve al toque mientras se
+      // piden los datos nuevos.
+      const copia = leerPantalla("mis_partidos", user.id);
+      if (copia) {
+        setPartidos(copia);
+        setCargando(false);
       }
 
       const [participacionesRes, historialRes] = await Promise.all([
@@ -73,6 +82,7 @@ export default function MisPartidosForm() {
         .sort((a, b) => new Date(b.fecha_hora) - new Date(a.fecha_hora));
 
       setPartidos(combinados);
+      guardarPantalla("mis_partidos", user.id, combinados);
       setCargando(false);
     }
     cargar();

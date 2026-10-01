@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import { IconoPelota, IconoCompartir, IconoRepetir, IconoBilletera, IconoTelefono } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
@@ -114,7 +114,7 @@ export default function DetallePartidoForm({ partidoId }) {
     async function iniciar() {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await usuarioRapido();
 
       if (!user) {
         router.replace("/login");

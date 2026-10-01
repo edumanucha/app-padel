@@ -49,22 +49,22 @@ function guardarJSON(clave, valor) {
   }
 }
 
-// Usuario actual, también sin señal. Con señal valida contra el servidor
-// (getUser); sin señal usa la sesión guardada en el celu. Si el token ya
-// venció y no hay red para renovarlo, getSession puede devolver null: en
-// ese caso se lee directo la sesión que supabase-js dejó en localStorage.
+// Usuario actual, también sin señal. Usa la sesión guardada en el celu
+// (getSession: sin vuelta al servidor salvo para renovar el token -- ver
+// usuarioRapido en supabaseClient.js, 2026-09-30). Si el token ya venció y
+// no hay red para renovarlo, getSession puede devolver null: en ese caso se
+// lee directo la sesión que supabase-js dejó en localStorage.
 export async function usuarioActual() {
-  if (!sinConexion()) {
-    const { data, error } = await supabase.auth.getUser();
-    if (data?.user) return data.user;
-    if (!esErrorDeRed(error)) return null;
-  }
+  let errorSesion = null;
   try {
-    const { data } = await supabase.auth.getSession();
+    const { data, error } = await supabase.auth.getSession();
     if (data?.session?.user) return data.session.user;
-  } catch {
-    // sigue abajo
+    errorSesion = error;
+  } catch (e) {
+    errorSesion = e;
   }
+  // Con señal y sin sesión: no hay nadie logueado.
+  if (!esErrorDeRed(errorSesion)) return null;
   try {
     for (let i = 0; i < localStorage.length; i++) {
       const clave = localStorage.key(i);

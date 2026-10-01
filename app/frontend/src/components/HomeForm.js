@@ -10,6 +10,7 @@ import DotDigit from "@/components/DotDigit";
 import IlustracionCancha from "@/components/IlustracionCancha";
 import ContadorNumero from "@/components/ContadorNumero";
 import InstalarApp from "@/components/InstalarApp";
+import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import GuiaPadelito from "@/components/GuiaPadelito";
 import { useEnPantalla } from "@/lib/useEnPantalla";
 import marcadorStyles from "@/components/Marcador.module.css";
@@ -238,6 +239,16 @@ export default function HomeForm() {
         return;
       }
 
+      // Copia de la última vez (2026-09-30, optimización): se muestra al
+      // toque y los datos de abajo la reemplazan cuando llegan.
+      const copia = leerPantalla("home", user.id);
+      if (copia) {
+        setPerfil(copia.perfil);
+        setResumen(copia.resumen);
+        setNotificaciones(copia.notificaciones ?? []);
+        setCargando(false);
+      }
+
       const { data: perfilData, error: perfilError } = await supabase
         .from("perfiles")
         .select("*")
@@ -281,6 +292,13 @@ export default function HomeForm() {
         setResumen(resumenData);
       }
       setNotificaciones(notifData ?? []);
+      if (!resumenError) {
+        guardarPantalla("home", user.id, {
+          perfil: perfilData,
+          resumen: resumenData,
+          notificaciones: notifData ?? [],
+        });
+      }
 
       setCargando(false);
     }

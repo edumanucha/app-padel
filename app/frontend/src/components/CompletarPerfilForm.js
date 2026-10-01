@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import { useLocale } from "@/i18n/LocaleContext";
 
@@ -69,7 +69,7 @@ export default function CompletarPerfilForm() {
     async function verificarSesion() {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await usuarioRapido();
 
       if (!user) {
         router.replace("/login");
@@ -105,7 +105,7 @@ export default function CompletarPerfilForm() {
     const {
       data: { user },
       error: userError,
-    } = await supabase.auth.getUser();
+    } = await usuarioRapido();
 
     if (userError || !user) {
       setError(t("completarPerfil.sinSesion"));

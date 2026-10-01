@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, usuarioRapido } from "@/lib/supabaseClient";
+import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import PelotaLoader from "@/components/PelotaLoader";
 import Logo from "@/components/Logo";
 import { useLocale } from "@/i18n/LocaleContext";
@@ -19,10 +20,18 @@ export default function MensajesForm() {
     async function cargar() {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await usuarioRapido();
       if (!user) {
         router.replace("/login");
         return;
+      }
+
+      // Copia de la última vez (2026-09-30): se ve al toque mientras se
+      // piden los datos nuevos.
+      const copia = leerPantalla("mensajes", user.id);
+      if (copia) {
+        setConversaciones(copia);
+        setCargando(false);
       }
 
       const { data, error: rpcError } = await supabase.rpc("listar_conversaciones");
@@ -33,6 +42,7 @@ export default function MensajesForm() {
         return;
       }
       setConversaciones(data ?? []);
+      guardarPantalla("mensajes", user.id, data ?? []);
     }
     cargar();
   }, [router]);

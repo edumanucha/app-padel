@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, usuarioRapido } from "@/lib/supabaseClient";
+import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import PelotaLoader from "@/components/PelotaLoader";
 import { useLocale } from "@/i18n/LocaleContext";
 import ContadorNumero from "@/components/ContadorNumero";
@@ -81,6 +82,7 @@ export default function DirectorioJugadoresForm() {
   const router = useRouter();
   const { t } = useLocale();
   const [verificandoSesion, setVerificandoSesion] = useState(true);
+  const [userId, setUserId] = useState(null);
   const [jugadores, setJugadores] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -118,11 +120,12 @@ export default function DirectorioJugadoresForm() {
     async function verificarSesion() {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await usuarioRapido();
       if (!user) {
         router.replace("/login");
         return;
       }
+      setUserId(user.id);
       setVerificandoSesion(false);
     }
     verificarSesion();
@@ -135,8 +138,18 @@ export default function DirectorioJugadoresForm() {
   }, [verificandoSesion, periodo]);
 
   async function buscar() {
-    setCargando(true);
     setError("");
+    // Copia de la última vez (2026-09-30, optimización): solo para la
+    // lista sin filtros, que es la que se ve al entrar.
+    const sinFiltros = filtroNombre.trim() === "" && filtroNivel === "" && filtroSexo === "";
+    const claveCopia = `jugadores_${periodo}`;
+    const copia = sinFiltros ? leerPantalla(claveCopia, userId) : null;
+    if (copia) {
+      setJugadores(copia);
+      setCargando(false);
+    } else {
+      setCargando(true);
+    }
 
     const { data, error: buscarError } = await supabase.rpc("listar_directorio_jugadores", {
       p_nombre: filtroNombre.trim() === "" ? null : filtroNombre.trim(),
@@ -153,6 +166,7 @@ export default function DirectorioJugadoresForm() {
     }
 
     setJugadores(data ?? []);
+    if (sinFiltros) guardarPantalla(claveCopia, userId, data ?? []);
   }
 
   function handleSubmit(e) {

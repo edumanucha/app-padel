@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { borrarPantallas } from "@/lib/cachePantalla";
 
 // Cliente de Supabase para usar del lado del navegador (en componentes
 // "use client"). Lee las variables NEXT_PUBLIC_* de .env.local -- el
@@ -19,3 +20,24 @@ export const supabase = createClient(
     },
   }
 );
+
+// Al cerrar sesión se borran las copias de las pantallas (cachePantalla.js),
+// así nadie que use el celu después ve los datos de la sesión anterior.
+if (typeof window !== "undefined") {
+  supabase.auth.onAuthStateChange((evento) => {
+    if (evento === "SIGNED_OUT") borrarPantallas();
+  });
+}
+
+// Usuario actual, rápido (2026-09-30, optimización a pedido del usuario:
+// "siento que la app está un poco lenta"). supabase.auth.getUser() va
+// SIEMPRE al servidor a validar el token (una vuelta de red de ~0,15-0,3 s
+// en cada pantalla); getSession() lo lee de la sesión guardada en el celu
+// y solo sale a la red si hay que renovar el token vencido. Es seguro para
+// decidir qué mostrar: la base de datos igual valida el token en cada
+// consulta (RLS), así que nadie ve datos que no le corresponden.
+// Devuelve la misma forma que getUser(): { data: { user }, error }.
+export async function usuarioRapido() {
+  const { data, error } = await supabase.auth.getSession();
+  return { data: { user: data?.session?.user ?? null }, error };
+}

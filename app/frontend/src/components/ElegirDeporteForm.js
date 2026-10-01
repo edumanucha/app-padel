@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import { IconoPelota, IconoFutbol, IconoBasquet } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 
@@ -23,7 +23,7 @@ export default function ElegirDeporteForm() {
     async function verificar() {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await usuarioRapido();
       setHaySesion(!!user);
     }
     verificar();

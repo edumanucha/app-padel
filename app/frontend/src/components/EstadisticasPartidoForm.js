@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import BarraEstadistica from "@/components/BarraEstadistica";
 import { IconoTrofeo } from "@/components/Icons";
@@ -39,7 +39,7 @@ export default function EstadisticasPartidoForm({ partidoId }) {
     async function cargar() {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await usuarioRapido();
       if (!user) {
         router.replace("/login");
         return;
