@@ -106,7 +106,7 @@ Para comparar las versiones (banderas) cuando el usuario quiera. Puntaje de 1 a 
 | Canchas | `/canchas` | | | | | |
 | Detalle de cancha | `/canchas/[id]` | | | | | |
 | Apelaciones (admin) | `/apelaciones` | | | | | |
-| Admin canchas | `/admin` | | | | | |
+| Admin canchas | `/admin/canchas` | | | | | |
 | Sin conexión | `/offline` | | | | | |
 | Hojas de abajo (opciones, filtros, etc.) | varias | | | | | |
 | Vista en compu (Inicio) | `/` en pantalla grande | | | | | |
