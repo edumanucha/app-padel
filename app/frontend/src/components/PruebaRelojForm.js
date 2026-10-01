@@ -20,6 +20,9 @@ import { crearEstadoInicial, sumarPunto, setsGanados, formatearPuntos } from "@/
 //    mientras la página está viva (el audio en loop la mantiene viva).
 //
 // Mapeo: ⏭️ = punto A, ⏮️ = punto B, ⏸️/▶️ = deshacer, anti doble toque 1 s.
+// v15 (2026-09-30, pedido del usuario): ⏯️ dos veces rápido = cambiar saque
+// (un toque solo sigue siendo deshacer, se aplica a los 0,8 s si no llega
+// el segundo).
 // Formato en el reloj (pedido del usuario): "40-15 Marcadorcito" arriba y
 // "3-2 · Sets 1-0 · 45'" abajo.
 
@@ -81,6 +84,7 @@ export default function PruebaRelojForm() {
   const audio2Ref = useRef(null);
   const sonandoRef = useRef(null);
   const ultimoToqueRef = useRef(0);
+  const esperaPausaRef = useRef(null);
 
   const [activo, setActivo] = useState(false);
   const [error, setError] = useState(null);
@@ -175,6 +179,15 @@ export default function PruebaRelojForm() {
     if (navigator.vibrate) navigator.vibrate([40, 40, 40]);
   }
 
+  function cambiarSaque() {
+    if (estadoRef.current.finalizado) return;
+    historialRef.current = [...historialRef.current, estadoRef.current].slice(-50);
+    const nuevo = { ...estadoRef.current, saque: estadoRef.current.saque === "A" ? "B" : "A" };
+    cambiarEstado(nuevo);
+    anotar(`🔄 Cambio de saque: saca ${nuevo.saque}`);
+    if (navigator.vibrate) navigator.vibrate([150, 80, 150]);
+  }
+
   function reiniciar() {
     historialRef.current = [];
     cambiarEstado(crearEstadoInicial());
@@ -204,11 +217,29 @@ export default function PruebaRelojForm() {
         sonandoRef.current?.play().catch(() => {});
         navigator.mediaSession.playbackState = "playing";
       };
+      // ⏯️: un toque = deshacer; dos seguidos (< 0,8 s) = cambiar saque.
+      const pausaPlay = () => {
+        if (esperaPausaRef.current) {
+          clearTimeout(esperaPausaRef.current);
+          esperaPausaRef.current = null;
+          cambiarSaque();
+        } else {
+          esperaPausaRef.current = setTimeout(() => {
+            esperaPausaRef.current = null;
+            // Al arrancar (sin nada para deshacer) un toque solo también
+            // cambia el saque -- opción 1 elegida por el usuario.
+            if (historialRef.current.length === 0) cambiarSaque();
+            else deshacer();
+          }, 800);
+        }
+        sonandoRef.current?.play().catch(() => {});
+        navigator.mediaSession.playbackState = "playing";
+      };
       const acciones = {
         nexttrack: conAntiRebote(() => punto("A")),
         previoustrack: conAntiRebote(() => punto("B")),
-        pause: conAntiRebote(deshacer),
-        play: conAntiRebote(deshacer),
+        pause: pausaPlay,
+        play: pausaPlay,
       };
       for (const [accion, fn] of Object.entries(acciones)) {
         try { navigator.mediaSession.setActionHandler(accion, fn); } catch {}
@@ -247,7 +278,7 @@ export default function PruebaRelojForm() {
     <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-xl font-semibold">
-          ⌚ Simulador modo Reloj <span className="text-xs text-muted font-normal">v14</span>
+          ⌚ Simulador modo Reloj <span className="text-xs text-muted font-normal">v15</span>
         </h1>
         <button
           onClick={() => router.push("/")}
@@ -261,7 +292,7 @@ export default function PruebaRelojForm() {
       <audio ref={audio2Ref} src="/sonidos/silencio2.wav" preload="auto" />
 
       <p className="text-sm text-muted">
-        En el reloj: <b>⏭️ punto A</b> · <b>⏮️ punto B</b> · <b>⏸️ deshacer</b>. Al terminar el partido te vibra la muñeca con el resultado (acá vos sos la pareja A).
+        En el reloj: <b>⏭️ punto A</b> · <b>⏮️ punto B</b> · <b>⏸️ deshacer</b> · <b>⏸️⏸️ (dos rápido) cambiar saque</b>. Al terminar el partido te vibra la muñeca con el resultado (acá vos sos la pareja A).
       </p>
 
       <div className="flex gap-2">

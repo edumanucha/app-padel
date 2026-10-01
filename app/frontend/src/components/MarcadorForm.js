@@ -1322,9 +1322,17 @@ export default function MarcadorForm({ partidoId }) {
   const sumarPuntoRelojRef = useRef(null);
   const deshacerRelojRef = useRef(null);
   const ultimoToqueRelojRef = useRef(0);
+  const cambiarSaqueRelojRef = useRef(null);
+  const esperaPausaRelojRef = useRef(null);
   useEffect(() => {
     sumarPuntoRelojRef.current = handleSumarPunto;
     deshacerRelojRef.current = handleDeshacer;
+    cambiarSaqueRelojRef.current = () => {
+      const actual = resultadoRef.current;
+      if (!actual || actual.finalizado) return;
+      handleCambiarSaque(actual.estado.saque === "A" ? "B" : "A");
+      if (navigator.vibrate) navigator.vibrate([150, 80, 150]);
+    };
   });
 
   async function activarReloj() {
@@ -1341,7 +1349,7 @@ export default function MarcadorForm({ partidoId }) {
       relojSonandoRef.current = audio;
       navigator.mediaSession.metadata = new MediaMetadata({
         title: "Marcadorcito",
-        artist: "⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer",
+        artist: "⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer · ⏸️⏸️ Saque",
         album: "Padelito",
       });
       const conAntiRebote = (fn) => () => {
@@ -1356,11 +1364,32 @@ export default function MarcadorForm({ partidoId }) {
         relojSonandoRef.current?.play().catch(() => {});
         navigator.mediaSession.playbackState = "playing";
       };
+      // ⏯️ (2026-09-30, pedido del usuario): un toque = deshacer; dos
+      // seguidos (< 0,8 s) = cambiar saque. El deshacer espera esos 0,8 s
+      // por si llega el segundo toque.
+      const pausaPlay = () => {
+        if (esperaPausaRelojRef.current) {
+          clearTimeout(esperaPausaRelojRef.current);
+          esperaPausaRelojRef.current = null;
+          cambiarSaqueRelojRef.current?.();
+        } else {
+          esperaPausaRelojRef.current = setTimeout(() => {
+            esperaPausaRelojRef.current = null;
+            // Al arrancar (sin nada para deshacer) un toque solo también
+            // cambia el saque -- opción 1 elegida por el usuario.
+            const sinHistorial = !(resultadoRef.current?.estado.historial ?? []).length;
+            if (sinHistorial) cambiarSaqueRelojRef.current?.();
+            else deshacerRelojRef.current?.();
+          }, 800);
+        }
+        relojSonandoRef.current?.play().catch(() => {});
+        navigator.mediaSession.playbackState = "playing";
+      };
       const acciones = {
         nexttrack: conAntiRebote(() => sumarPuntoRelojRef.current?.("A")),
         previoustrack: conAntiRebote(() => sumarPuntoRelojRef.current?.("B")),
-        pause: conAntiRebote(() => deshacerRelojRef.current?.()),
-        play: conAntiRebote(() => deshacerRelojRef.current?.()),
+        pause: pausaPlay,
+        play: pausaPlay,
       };
       for (const [accion, fn] of Object.entries(acciones)) {
         try { navigator.mediaSession.setActionHandler(accion, fn); } catch {}
@@ -2200,7 +2229,7 @@ export default function MarcadorForm({ partidoId }) {
               </FilaOpcion>
               {relojActivo && (
                 <>
-                  <span className="text-xs text-muted pl-1">⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer. Tanteador en vivo en el reloj y aviso al terminar el partido.</span>
+                  <span className="text-xs text-muted pl-1">⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer · ⏸️⏸️ (dos rápido) cambiar saque. Tanteador en vivo en el reloj y aviso al terminar el partido.</span>
                   <span className="text-xs text-muted pl-1">Qué se ve en el reloj (● = quién saca):</span>
                   <div className="flex flex-col gap-1.5">
                     {[
