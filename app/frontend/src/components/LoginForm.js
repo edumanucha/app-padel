@@ -21,14 +21,19 @@ export default function LoginForm() {
     <div className="w-full max-w-sm flex flex-col gap-3">
       <Link
         href="/elegir-deporte"
-        className="font-heading font-semibold text-sm text-muted self-start"
+        className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink self-start"
       >
         ← {t("deporteMaqueta.elegirOtroDeporte")}
       </Link>
-      <div className="bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-4">
+      {/* Rediseño Cartel (2026-10-01): el título va en un bloque verde
+          tablero como protagonista y las formas de entrar quedan abajo, sin
+          tarjeta. Los botones viven en LoginGoogleForm/LoginEmailForm. */}
+      <div className="rounded-[6px] bg-[#154139] text-[#eaf4f0] px-4 py-5 flex flex-col gap-2">
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("login.titulo")}</h1>
-        <p className="text-muted text-sm">{t("login.subtitulo")}</p>
+        <p className="text-sm text-[#c4dad3]">{t("login.subtitulo")}</p>
+      </div>
 
+      <div className="text-ink flex flex-col gap-4 pt-1">
         <LoginGoogleForm />
         <LoginEmailForm />
       </div>

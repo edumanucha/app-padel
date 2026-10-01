@@ -77,12 +77,13 @@ export default function BottomNav() {
     <>
     <header
       data-guia="navegacion"
-      className="nav-escritorio hidden lg:flex fixed top-0 left-0 right-0 z-40 items-center gap-2 px-6 py-3 border-b border-black/5"
-      style={{ background: "var(--nav-bg)" }}
+      className="nav-escritorio hidden lg:flex fixed top-0 left-0 right-0 z-40 items-center gap-2 px-6 py-3"
+      /* Barra oscura tipo cartel, igual que la de abajo del celu (rediseño, 2026-10-01). */
+      style={{ background: "#10201a" }}
     >
       <button onClick={() => router.push("/")} className="flex items-center gap-2 mr-4 cursor-pointer">
         <Logo size={30} />
-        <span className="font-heading font-bold text-lg text-ink">Padelito</span>
+        <span className="font-titulo font-black uppercase text-2xl leading-none text-[#eaf4f0]">Padelito</span>
       </button>
       {TABS_COMPU.map(({ href, texto, Icono }) => {
         const activa = href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -90,7 +91,7 @@ export default function BottomNav() {
           <button
             key={href}
             onClick={() => router.push(href)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-[6px] text-sm font-heading font-semibold cursor-pointer ${ activa ? "bg-accent text-accent-ink" : "text-muted hover:bg-accent/15 hover:text-ink" }`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-[6px] text-sm font-heading font-semibold cursor-pointer ${ activa ? "bg-accent text-accent-ink" : "text-[#8fb6ae] hover:bg-white/10 hover:text-[#eaf4f0]" }`}
           >
             <Icono width={18} height={18} />
             {texto(t)}
@@ -100,7 +101,7 @@ export default function BottomNav() {
       <div className="ml-auto flex items-center gap-2">
         <button
           onClick={() => router.push("/menu")}
-          className="w-10 h-10 rounded-full bg-surface text-ink flex items-center justify-center cursor-pointer"
+          className="w-10 h-10 rounded-[6px] text-[#eaf4f0] hover:bg-white/10 flex items-center justify-center cursor-pointer"
           aria-label={t("home.verTodo")}
           title={t("home.verTodo")}
         >
@@ -108,7 +109,7 @@ export default function BottomNav() {
         </button>
         <button
           onClick={() => router.push("/perfil")}
-          className={`flex items-center gap-2 px-3 py-2 rounded-[6px] text-sm font-heading font-semibold cursor-pointer ${ pathname.startsWith("/perfil") ? "bg-accent text-accent-ink" : "bg-surface text-ink" }`}
+          className={`flex items-center gap-2 px-3 py-2 rounded-[6px] text-sm font-heading font-semibold cursor-pointer ${ pathname.startsWith("/perfil") ? "bg-accent text-accent-ink" : "text-[#eaf4f0] border border-white/20 hover:bg-white/10" }`}
         >
           <IconoPersona width={18} height={18} />
           {t("nav.perfil")}

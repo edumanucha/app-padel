@@ -16,11 +16,15 @@ import {
   crearPartidoSinSenal,
 } from "@/lib/marcadorOffline";
 
-const inputClass = "rounded-xl bg-bg px-3 py-2 text-ink text-sm";
-const tarjeta = "bg-surface text-ink rounded-[8px] p-4 border border-ink/10";
+// Rediseño Cartel (2026-10-01): sin tarjetas -- los bloques se separan con
+// líneas finas, los campos llevan contorno fino y las etiquetas van chicas
+// en mayúscula. El único botón amarillo es "Empezar a jugar".
+const inputClass = "rounded-[6px] bg-transparent border border-ink/15 px-3 py-2 text-ink text-sm";
+const tarjeta = "text-ink border-b border-ink/10 pb-4";
+const etiquetaClass = "text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted";
 
 function Subtitulo({ children }) {
-  return <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">{children}</span>;
+  return <span className={etiquetaClass}>{children}</span>;
 }
 
 // Un slot de jugador del plantel ad-hoc: busca por nombre contra cuentas
@@ -54,7 +58,7 @@ function SlotJugador({ etiqueta, valor, onChange, excluirIds = [] }) {
 
   return (
     <label className="flex flex-col gap-1 relative">
-      <span className="font-heading text-sm">{etiqueta}</span>
+      <span className={etiquetaClass}>{etiqueta}</span>
       <input
         type="text"
         value={valor.termino}
@@ -69,13 +73,13 @@ function SlotJugador({ etiqueta, valor, onChange, excluirIds = [] }) {
         <span className="text-xs text-muted">Se va a cargar como invitado libre (sin cuenta)</span>
       )}
       {resultados.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-surface rounded-[6px] shadow-[0_2px_8px_rgba(20,38,31,0.15)] z-10 overflow-hidden">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-surface rounded-[6px] border border-ink/15 z-10 overflow-hidden">
           {resultados.map((r) => (
             <button
               key={r.id}
               type="button"
               onClick={() => elegir(r)}
-              className="w-full text-left px-3 py-2 text-sm hover:bg-bg cursor-pointer"
+              className="w-full text-left px-3 py-2 text-sm hover:bg-bg cursor-pointer border-b border-ink/10 last:border-b-0"
             >
               {r.nombre}
             </button>
@@ -345,12 +349,12 @@ export default function MarcadorLibreForm() {
   }
 
   return (
-    <div className="w-full max-w-md flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+    <div className="w-full max-w-md flex flex-col gap-5">
+      <div className="flex items-start justify-between gap-3">
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">Marcadorcito</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer flex-shrink-0"
         >
           Volver
         </button>
@@ -359,12 +363,12 @@ export default function MarcadorLibreForm() {
       <button
         type="button"
         onClick={generarPartidoRapido}
-        className="self-start font-heading font-semibold text-xs px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+        className="self-start font-semibold text-xs px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer inline-flex items-center gap-1.5"
       >
         <IconoRayo className="ico" aria-hidden /> Generar partido rápido
       </button>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         <div className={tarjeta}>
           <p className="text-muted text-sm mb-3">
             Registrá un partido que jugás ahora por tu cuenta, sin pasar por &quot;Crear partido&quot;. Vos quedás
@@ -377,7 +381,7 @@ export default function MarcadorLibreForm() {
           <button
             type="button"
             onClick={() => router.push("/marcador-libre/demo")}
-            className="w-full font-heading font-semibold text-sm px-4 py-3 rounded-[6px] border-2 border-accent-2 bg-accent-2/15 text-ink cursor-pointer flex items-center justify-center gap-2"
+            className="w-full font-semibold text-sm px-4 py-3 rounded-[6px] border border-ink/15 text-ink cursor-pointer flex items-center justify-center gap-2"
           >
             <IconoPlay width={16} height={16} /> Ver cómo funciona (demo)
           </button>
@@ -386,19 +390,19 @@ export default function MarcadorLibreForm() {
           </p>
         </div>
 
-        <div className="flex flex-col gap-3">
-          <Subtitulo>Cancha</Subtitulo>
+        {/* Sin subtítulo propio: CampoCancha ya trae su etiqueta "Cancha". */}
+        <div className="flex flex-col gap-2">
           <div className={tarjeta}>
             <CampoCancha value={cancha} onChange={setCancha} onElegir={(c) => setCanchaId(c?.id ?? null)} />
           </div>
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           <Subtitulo>Plantel</Subtitulo>
           <div className={`${tarjeta} flex flex-col gap-3`}>
             <div className="flex flex-col gap-1">
-              <span className="font-heading text-sm">Equipo A</span>
-              <span className="text-sm text-muted">Vos: {nombrePropio}</span>
+              <span className={etiquetaClass}>Equipo A</span>
+              <span className="font-titulo font-extrabold uppercase text-xl leading-none">Vos: {nombrePropio}</span>
             </div>
 
             <SlotJugador
@@ -423,8 +427,8 @@ export default function MarcadorLibreForm() {
         </div>
 
         <div className={tarjeta}>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" checked={puntoDeOro} onChange={(e) => setPuntoDeOro(e.target.checked)} />
+          <label className="flex items-start gap-2">
+            <input className="mt-0.5" type="checkbox" checked={puntoDeOro} onChange={(e) => setPuntoDeOro(e.target.checked)} />
             <span className="text-sm">
               Jugar con &quot;punto de oro&quot; (en 40-40 gana el próximo punto, sin ventaja)
             </span>
@@ -436,12 +440,12 @@ export default function MarcadorLibreForm() {
         <button
           type="submit"
           disabled={cargando}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+          className="w-full font-titulo font-black uppercase text-[1.75rem] leading-none px-4 py-4 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
         >
           {cargando && <PelotaLoader />}
           {cargando ? "Creando..." : (
             <>
-              <IconoPelota width={16} height={16} /> Empezar a jugar
+              <IconoPelota width={22} height={22} /> Empezar a jugar
             </>
           )}
         </button>

@@ -110,7 +110,7 @@ export default function InstalarApp({ variante = "tarjeta" }) {
   if (variante === "franja") {
     return (
       <div className="flex flex-col gap-2">
-        <div className="rounded-full bg-accent text-accent-ink pl-3 pr-2 py-1.5 flex items-center gap-2 text-xs font-heading font-semibold">
+        <div className="rounded-[6px] bg-[#154139] text-[#eaf4f0] pl-3 pr-2 py-2 flex items-center gap-2 text-xs font-semibold">
           <IconoInstalar className="ico" aria-hidden />
           <span className="flex-1 min-w-0">Instalá la app: más rápida y anda sin señal</span>
           <button
@@ -133,7 +133,7 @@ export default function InstalarApp({ variante = "tarjeta" }) {
       <div className="flex flex-col gap-2">
         <button
           onClick={handleInstalar}
-          className="w-full rounded-full bg-surface text-ink border-2 border-dashed border-accent py-2.5 text-sm font-heading font-semibold cursor-pointer"
+          className="w-full rounded-[6px] text-ink border border-ink/15 py-2.5 text-sm font-semibold cursor-pointer"
         >
           <IconoInstalar className="ico" aria-hidden /> Instalar la app en este dispositivo
         </button>
@@ -144,17 +144,17 @@ export default function InstalarApp({ variante = "tarjeta" }) {
 
   return (
     <div className={`${tarjeta} flex items-start gap-3`}>
-      <span className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+      <span className="w-10 h-10 rounded-[6px] bg-[#154139] text-[#f2c53d] flex items-center justify-center flex-shrink-0">
         <IconoCasa width={18} height={18} />
       </span>
       <div className="flex-1 min-w-0">
-        <span className="font-heading font-semibold text-sm block">Instalá Padelito en tu celular</span>
+        <span className="font-titulo font-extrabold uppercase text-xl leading-none block">Instalá Padelito en tu celular</span>
         <span className="text-xs text-muted block mt-0.5">
           Accedé más rápido, con ícono propio en tu pantalla de inicio, como una app más.
         </span>
         <button
           onClick={handleInstalar}
-          className="font-heading font-semibold text-xs px-3 py-1.5 rounded-[6px] bg-accent text-accent-ink cursor-pointer mt-2"
+          className="font-semibold text-xs px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer mt-2"
         >
           {promptEvent ? "Instalar" : "Ver cómo"}
         </button>

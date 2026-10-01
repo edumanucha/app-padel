@@ -1,4 +1,4 @@
-import { Archivo, Big_Shoulders } from "next/font/google";
+import { Archivo, Big_Shoulders, Schibsted_Grotesk, Chakra_Petch } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import PageTransition from "@/components/PageTransition";
@@ -29,6 +29,22 @@ const cartel = Big_Shoulders({
   variable: "--font-cartel",
   subsets: ["latin"],
   axes: ["opsz"],
+});
+
+// Texto y números (2026-10-01, rediseño paso E, opción "C · Schibsted +
+// números de tablero" elegida por el usuario en /pruebas-fuentes): tres
+// fuentes con un rol fijo cada una -- títulos en Big Shoulders (cartel),
+// texto en Schibsted Grotesk (de diario deportivo) y números grandes
+// (puntos, horas, resultados) en Chakra Petch (tablero electrónico).
+const texto = Schibsted_Grotesk({
+  variable: "--font-texto",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+const tablero = Chakra_Petch({
+  variable: "--font-tablero",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 
 const archivo = Archivo({
@@ -80,7 +96,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="es"
-      className={`${archivo.variable} ${cartel.variable} h-full antialiased`}
+      className={`${archivo.variable} ${cartel.variable} ${texto.variable} ${tablero.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col pb-24">

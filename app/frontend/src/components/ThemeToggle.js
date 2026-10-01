@@ -40,7 +40,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={alternarTema}
-      className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
+      className="font-semibold text-sm px-3 py-1.5 rounded-[6px] text-ink border border-ink/15 cursor-pointer inline-flex items-center gap-1.5"
     >
       {theme === "dark" ? <><IconoSol className="ico" aria-hidden /> Modo claro</> : <><IconoLuna className="ico" aria-hidden /> Modo oscuro</>}
     </button>

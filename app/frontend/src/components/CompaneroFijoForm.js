@@ -85,7 +85,7 @@ export default function CompaneroFijoForm() {
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("companero.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
         >
           {t("companero.volver")}
         </button>
@@ -93,9 +93,12 @@ export default function CompaneroFijoForm() {
 
       <p className="text-sm text-muted">{t("companero.descripcion")}</p>
 
+      {/* Rediseño Cartel (2026-10-01): activar la búsqueda es el único botón
+          amarillo; las duplas son la protagonista en verde tablero y los
+          candidatos van como filas con línea. */}
       <button
         onClick={handleToggleBusco}
-        className="font-heading font-semibold text-sm px-4 py-3 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer self-start"
+        className="font-titulo font-black uppercase text-[1.4rem] leading-none px-4 py-4 rounded-[6px] bg-accent text-accent-ink cursor-pointer text-left"
       >
         {busco ? t("companero.buscandoActivo") : t("companero.activarBusqueda")}
       </button>
@@ -103,29 +106,29 @@ export default function CompaneroFijoForm() {
       {mensaje && <p className="text-sm text-muted">{mensaje}</p>}
 
       {misDuplas.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">{t("companero.misDuplas")}</span>
+        <div className="rounded-[6px] bg-[#154139] text-[#eaf4f0] px-4 py-4 flex flex-col gap-2">
+          <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#8fb6ae]">{t("companero.misDuplas")}</span>
           {misDuplas.map((d) => (
-            <div key={d.jugador_id} className="bg-accent-2 text-accent-2-ink border-2 border-outline rounded-[6px] p-3">
-              <IconoDuo className="ico" aria-hidden /> {d.nombre}
+            <div key={d.jugador_id} className="font-titulo font-extrabold uppercase text-[1.7rem] leading-none flex items-center gap-2">
+              <IconoDuo width={22} height={22} aria-hidden /> {d.nombre}
             </div>
           ))}
         </div>
       )}
 
       {busco && (
-        <div className="flex flex-col gap-2">
-          <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">{t("companero.candidatosTitulo")}</span>
+        <div className="flex flex-col">
+          <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted pb-1">{t("companero.candidatosTitulo")}</span>
           {candidatos.length === 0 && (
-            <span className="text-sm text-muted">{t("companero.sinCandidatos")}</span>
+            <span className="text-sm text-muted py-2">{t("companero.sinCandidatos")}</span>
           )}
           {candidatos.map((c) => (
             <div
               key={c.id}
-              className="bg-surface border border-ink/10 rounded-[8px] p-3 flex items-center justify-between gap-2"
+              className="py-3 border-b border-ink/10 flex items-center justify-between gap-2"
             >
               <div>
-                <span className="font-heading font-semibold text-sm block">{c.nombre}</span>
+                <span className="font-titulo font-extrabold uppercase text-xl leading-none block">{c.nombre}</span>
                 <span className="text-xs text-muted">
                   {t("companero.nivelPosicionZona", {
                     nivel: c.nivel,
@@ -136,7 +139,7 @@ export default function CompaneroFijoForm() {
               </div>
               <button
                 onClick={() => handleMarcarInteres(c.id)}
-                className="font-heading font-semibold text-xs px-3 py-1.5 rounded-[6px] bg-accent text-accent-ink cursor-pointer"
+                className="text-xs font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer flex-shrink-0"
               >
                 {t("companero.marcarInteres")}
               </button>

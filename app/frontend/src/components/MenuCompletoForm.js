@@ -23,6 +23,7 @@ import {
   IconoAyuda,
   IconoLibro,
   IconoSinConexion,
+  IconoChevron,
 } from "@/components/Icons";
 
 // "Ver todo" (a pedido del usuario, 2026-09-06): el Home resume los
@@ -93,7 +94,8 @@ const SE_VIENE = [
   { Icono: IconoSinConexion, claveTexto: "home.modoSinConexion" },
 ];
 
-const tarjeta = "bg-surface text-ink rounded-[6px] p-3 border border-ink/10";
+// Rediseño Cartel (2026-10-01): fila con ícono y línea fina abajo.
+const fila = "w-full text-left flex items-center gap-3 py-2.5 border-b border-ink/10 text-sm font-semibold";
 
 export default function MenuCompletoForm() {
   const router = useRouter();
@@ -125,63 +127,69 @@ export default function MenuCompletoForm() {
     );
   }
 
+  // Rediseño Cartel (2026-10-01): cada sección es una etiqueta chica y una
+  // lista de filas con ícono, separadas por líneas finas (sin tarjetas).
   return (
-    <div className="w-full max-w-md flex flex-col gap-5 pantalla-mosaico">
-      <div className="flex items-center justify-between col-completa">
+    <div className="w-full max-w-md flex flex-col gap-6 pantalla-mosaico text-ink">
+      <div className="flex items-center justify-between gap-3 col-completa">
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("menu.verTodo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
         >
           {t("menu.volver")}
         </button>
       </div>
 
       {SECCIONES.map((seccion) => (
-        <div key={seccion.claveTitulo} className="flex flex-col gap-2">
-          <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">
+        <div key={seccion.claveTitulo} className="flex flex-col">
+          <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted pb-2">
             {t(seccion.claveTitulo)}
           </span>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col border-t-2 border-ink">
             {seccion.items.map((item) => (
               <button
                 key={item.ruta}
                 onClick={() => router.push(item.ruta)}
-                className={`text-left font-heading font-semibold text-sm cursor-pointer flex items-center gap-3 ${tarjeta}`}
+                className={`${fila} cursor-pointer`}
               >
-                <span className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${seccion.badge}`}>
+                <span className={`w-9 h-9 rounded-[6px] flex items-center justify-center flex-shrink-0 ${seccion.badge}`}>
                   <item.Icono width={18} height={18} />
                 </span>
-                {t(item.claveTexto)}
+                <span className="flex-1 min-w-0">{t(item.claveTexto)}</span>
+                <IconoChevron width={16} height={16} className="text-muted" style={{ transform: "rotate(-90deg)" }} aria-hidden />
               </button>
             ))}
             {seccion.esCuenta && esSuperusuario && (
               <button
                 onClick={() => router.push("/admin/canchas")}
-                className={`text-left font-heading font-semibold text-sm cursor-pointer flex items-center gap-3 ${tarjeta}`}
+                className={`${fila} cursor-pointer`}
               >
-                <span className="w-9 h-9 rounded-full bg-bg flex items-center justify-center flex-shrink-0">
+                <span className="w-9 h-9 rounded-[6px] bg-bg flex items-center justify-center flex-shrink-0">
                   <IconoLlave width={18} height={18} />
                 </span>
-                {t("home.adminCanchas")}
+                <span className="flex-1 min-w-0">{t("home.adminCanchas")}</span>
+                <IconoChevron width={16} height={16} className="text-muted" style={{ transform: "rotate(-90deg)" }} aria-hidden />
               </button>
             )}
           </div>
         </div>
       ))}
 
-      <div className="flex flex-col gap-2">
-        <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">{t("home.seViene")}</span>
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col">
+        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted pb-2">{t("home.seViene")}</span>
+        <div className="flex flex-col border-t-2 border-ink">
           {SE_VIENE.map((item) => (
             <div
               key={item.claveTexto}
-              className={`text-sm text-muted flex items-center gap-3 opacity-70 ${tarjeta}`}
+              className={`${fila} text-muted font-normal`}
             >
-              <span className="w-9 h-9 rounded-full bg-bg flex items-center justify-center flex-shrink-0">
+              <span className="w-9 h-9 rounded-[6px] bg-bg flex items-center justify-center flex-shrink-0 opacity-70">
                 <item.Icono width={18} height={18} />
               </span>
-              {t(item.claveTexto)} · {t("home.proximamente")}
+              <span className="flex-1 min-w-0">
+                {t(item.claveTexto)} · {t("home.proximamente")}
+              </span>
             </div>
           ))}
         </div>
