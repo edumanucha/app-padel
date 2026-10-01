@@ -36,3 +36,6 @@ docs/*.txt
 *secreto*
 client_secret*.json
 service-account*.json
+
+# Scripts SQL con datos de personas reales (nombres de amigos, etc.) -- solo locales
+*.privado.sql
