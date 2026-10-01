@@ -208,7 +208,7 @@ export default function CrearPartidoForm() {
           </span>
           <span className="flex items-baseline justify-between gap-3 border-b border-ink/10 py-2.5">
             <span className={etiquetaClass}>{t("crearPartido.jugadoresNecesariosConfirm")}</span>
-            <span className="font-titulo font-black text-[2.2rem] leading-none">{partidoCreado.cantidad_jugadores}</span>
+            <span className="font-numero font-bold text-[2.2rem] leading-none">{partidoCreado.cantidad_jugadores}</span>
           </span>
           <span className="flex items-baseline justify-between gap-3 border-b border-ink/10 py-2.5">
             <span className={etiquetaClass}>{t("crearPartido.estado")}</span>

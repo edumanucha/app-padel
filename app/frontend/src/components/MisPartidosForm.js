@@ -165,7 +165,7 @@ export default function MisPartidosForm() {
                     >
                       {p.resultado.gano ? t("home.ganaste") : t("home.perdiste")}
                     </span>
-                    <span className="font-titulo font-black text-[2.2rem] leading-none">
+                    <span className="font-numero font-bold text-[2.2rem] leading-none">
                       {formatearResultado(p.resultado.sets_a, p.resultado.sets_b)}
                     </span>
                   </span>

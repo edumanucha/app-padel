@@ -211,7 +211,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
           {/* Números grandes con divisores, como en el Inicio. */}
           <div className="grid grid-cols-3">
             <div className="flex flex-col py-1 min-w-0">
-              <span className="font-titulo font-black text-[2.4rem] leading-none flex items-center gap-1">
+              <span className="font-numero font-bold text-[2.4rem] leading-none flex items-center gap-1">
                 <IconoTrofeo width={18} height={18} aria-hidden />
                 {jugador.puntos_ranking}
               </span>
@@ -220,7 +220,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
               </span>
             </div>
             <div className="flex flex-col py-1 pl-3 border-l border-ink/15 min-w-0">
-              <span className="font-titulo font-black text-[2.4rem] leading-none">
+              <span className="font-numero font-bold text-[2.4rem] leading-none">
                 {t("directorio.opcionNivelGenerica", { n: jugador.nivel })}
               </span>
               <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
@@ -236,7 +236,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
               </span>
             </div>
             <div className="flex flex-col py-1 pl-3 border-l border-ink/15 min-w-0">
-              <span className="font-titulo font-black text-[2.4rem] leading-none">{jugador.partidos_jugados}</span>
+              <span className="font-numero font-bold text-[2.4rem] leading-none">{jugador.partidos_jugados}</span>
               <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
                 {jugador.partidos_jugados > 0
                   ? t("perfilJugador.partidosVictorias", { jugados: jugador.partidos_jugados, porcentaje: jugador.porcentaje_victorias })

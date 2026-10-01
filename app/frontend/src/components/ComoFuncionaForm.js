@@ -49,7 +49,7 @@ export default function ComoFuncionaForm() {
       <div className="flex flex-col border-t-2 border-ink">
         {BLOQUES.map((b, i) => (
           <div key={b.clave} className="flex gap-3 py-4 border-b border-ink/10">
-            <span className="font-titulo font-black text-[1.6rem] leading-none text-muted w-8 flex-shrink-0 tabular-nums">
+            <span className="font-numero font-bold text-[1.6rem] leading-none text-muted w-8 flex-shrink-0 tabular-nums">
               {String(i + 1).padStart(2, "0")}
             </span>
             <div className="flex flex-col gap-1 min-w-0">

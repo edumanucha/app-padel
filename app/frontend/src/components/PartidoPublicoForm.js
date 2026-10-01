@@ -94,7 +94,7 @@ export default function PartidoPublicoForm({ partidoId }) {
           <div className="flex rounded-[6px] overflow-hidden bg-[#154139] text-[#eaf4f0]">
             <span className="bg-accent text-accent-ink flex flex-col items-center justify-center px-3 py-3 min-w-[72px] font-titulo font-extrabold uppercase tracking-wide leading-none">
               <span className="text-sm">{diaSemana}</span>
-              <span className="text-5xl font-black leading-[0.9]">{dia}</span>
+              <span className="font-numero text-5xl font-bold leading-[0.9]">{dia}</span>
               <span className="text-sm">{mes}</span>
             </span>
             <div className="flex flex-col justify-center gap-1 px-4 py-3 min-w-0">

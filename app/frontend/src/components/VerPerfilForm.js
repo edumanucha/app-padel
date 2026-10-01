@@ -640,7 +640,7 @@ export default function VerPerfilForm() {
               <IconoTrofeo width={13} height={13} aria-hidden />
               {t("perfilJugador.ranking")}
             </span>
-            <span className="font-titulo font-black text-[2.6rem] leading-none">{perfil.puntos_ranking ?? 0}</span>
+            <span className="font-numero font-bold text-[2.6rem] leading-none">{perfil.puntos_ranking ?? 0}</span>
             <span className="text-xs text-[#c4dad3]">
               {perfil.puntos_ranking > 0 ? t("verPerfil.puntosPts", { puntos: perfil.puntos_ranking }) : t("perfilJugador.sinPartidos")}
             </span>
@@ -654,7 +654,7 @@ export default function VerPerfilForm() {
             <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#8fb6ae]">
               {t("verPerfil.nivelDeJuego")}
             </span>
-            <span className="font-titulo font-black text-[2.6rem] leading-none">
+            <span className="font-numero font-bold text-[2.6rem] leading-none">
               {t("directorio.opcionNivelGenerica", { n: perfil.nivel })}
             </span>
             <span
@@ -723,15 +723,15 @@ export default function VerPerfilForm() {
                     {/* Rediseño Cartel: números grandes con divisores. */}
                     <div className="grid grid-cols-3">
                       <div className="flex flex-col">
-                        <span className="font-titulo font-black text-[2.2rem] leading-none">{r.partidos}</span>
+                        <span className="font-numero font-bold text-[2.2rem] leading-none">{r.partidos}</span>
                         <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{t("estadisticas.partidosConDatos")}</span>
                       </div>
                       <div className="flex flex-col pl-3 border-l border-ink/15">
-                        <span className="font-titulo font-black text-[2.2rem] leading-none">{r.duracionPromedioMin} min</span>
+                        <span className="font-numero font-bold text-[2.2rem] leading-none">{r.duracionPromedioMin} min</span>
                         <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{t("estadisticas.duracionPromedio")}</span>
                       </div>
                       <div className="flex flex-col pl-3 border-l border-ink/15">
-                        <span className="font-titulo font-black text-[2.2rem] leading-none">{r.rachaMaxima}</span>
+                        <span className="font-numero font-bold text-[2.2rem] leading-none">{r.rachaMaxima}</span>
                         <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{t("estadisticas.rachaMaxima")}</span>
                       </div>
                     </div>

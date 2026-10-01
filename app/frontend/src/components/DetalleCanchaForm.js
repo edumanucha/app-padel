@@ -146,7 +146,7 @@ export default function DetalleCanchaForm({ canchaId }) {
           </div>
           {resenas.length > 0 && (
             <div className="flex flex-col items-end flex-shrink-0">
-              <span className="font-titulo font-black text-[2.6rem] leading-none inline-flex items-center gap-1">
+              <span className="font-numero font-bold text-[2.6rem] leading-none inline-flex items-center gap-1">
                 <IconoEstrella llena className="ico text-accent" aria-hidden />
                 {(resenas.reduce((acc, r) => acc + r.puntuacion, 0) / resenas.length).toFixed(1)}
               </span>

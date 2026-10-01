@@ -376,7 +376,7 @@ export default function ListaPartidosForm() {
               </span>
 
               <span className="flex flex-col items-end pl-3 border-l border-ink/15">
-                <span className="font-titulo font-black text-[2.4rem] leading-none">
+                <span className="font-numero font-bold text-[2.4rem] leading-none">
                   {partido.lugares_ocupados}/{partido.cantidad_jugadores}
                 </span>
                 <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{t("nav.jugadores")}</span>

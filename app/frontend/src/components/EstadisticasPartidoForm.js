@@ -15,7 +15,7 @@ import { estadisticasDeLado, formatoSets, calcularPuntosRanking } from "@/lib/es
 function Dato({ etiqueta, valor, className = "" }) {
   return (
     <div className={`flex flex-col gap-1 py-3 ${className}`}>
-      <span className="font-titulo font-black text-[2.2rem] leading-none tabular-nums">{valor}</span>
+      <span className="font-numero font-bold text-[2.2rem] leading-none tabular-nums">{valor}</span>
       <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{etiqueta}</span>
     </div>
   );
@@ -171,7 +171,7 @@ export default function EstadisticasPartidoForm({ partidoId }) {
               {datos.sets.split("  ·  ").map((set, i) => (
                 <span
                   key={i}
-                  className={`font-titulo font-black text-[2.6rem] leading-none tabular-nums pr-4 ${i > 0 ? "pl-4 border-l border-[#8fb6ae]/40" : ""}`}
+                  className={`font-numero font-bold text-[2.6rem] leading-none tabular-nums pr-4 ${i > 0 ? "pl-4 border-l border-[#8fb6ae]/40" : ""}`}
                 >
                   {set}
                 </span>

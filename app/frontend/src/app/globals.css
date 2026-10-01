@@ -95,9 +95,10 @@
   --color-accent-3: var(--accent-3);
   --color-accent-3-ink: var(--accent-3-ink);
   --color-outline: var(--outline);
-  --font-heading: var(--font-archivo);
-  --font-body: var(--font-archivo);
+  --font-heading: var(--font-texto);
+  --font-body: var(--font-texto);
   --font-titulo: var(--font-cartel);
+  --font-numero: var(--font-tablero);
 }
 
 body {

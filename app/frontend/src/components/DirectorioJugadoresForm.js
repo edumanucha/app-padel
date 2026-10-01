@@ -65,7 +65,7 @@ function ColumnaPodio({ jugador, puesto, maxPuntos, animar, onClick, t }) {
   return (
     <button type="button" onClick={onClick} className="flex-1 min-w-0 flex flex-col items-center gap-1 cursor-pointer">
       <span className="text-xs font-semibold text-[#c4dad3] truncate max-w-full px-1">{jugador.nombre}</span>
-      <span className={`font-titulo font-black leading-none ${esPrimero ? "text-[2.6rem]" : "text-[2.2rem]"}`}>
+      <span className={`font-numero font-bold leading-none ${esPrimero ? "text-[2.6rem]" : "text-[2.2rem]"}`}>
         <ContadorNumero valor={jugador.puntos_ranking} />
       </span>
       <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#8fb6ae]">{t("directorio.pts")}</span>
@@ -73,7 +73,7 @@ function ColumnaPodio({ jugador, puesto, maxPuntos, animar, onClick, t }) {
         className={`w-full rounded-t-[6px] flex items-start justify-center pt-2 transition-all duration-700 ease-out overflow-hidden ${ esPrimero ? "bg-accent text-accent-ink" : "bg-[#0f2e29] text-[#eaf4f0]" }`}
         style={{ height: animar ? `${alturaPx}px` : "0px" }}
       >
-        <span className="font-titulo font-black text-2xl leading-none flex items-center gap-1">
+        <span className="font-numero font-bold text-2xl leading-none flex items-center gap-1">
           <span className="w-2 h-2 rounded-full" style={{ background: medalla.color }} aria-hidden />
           {puesto}
         </span>
@@ -354,7 +354,7 @@ export default function DirectorioJugadoresForm() {
                 className="lista-item-entra flex items-center gap-3 text-left cursor-pointer w-full py-3 border-b border-ink/10"
                 style={{ animationDelay: `${Math.min(i, 12) * 35}ms` }}
               >
-                <span className="w-9 flex-shrink-0 font-titulo font-black text-[1.75rem] leading-none text-muted">
+                <span className="w-9 flex-shrink-0 font-numero font-bold text-[1.75rem] leading-none text-muted">
                   {i + 4}
                 </span>
                 <div className="flex flex-col flex-1 min-w-0">
@@ -371,7 +371,7 @@ export default function DirectorioJugadoresForm() {
                 </div>
                 <div className="flex flex-col items-end gap-1 flex-shrink-0 w-20">
                   <span className="whitespace-nowrap flex items-baseline gap-1">
-                    <span className="font-titulo font-black text-[1.75rem] leading-none">
+                    <span className="font-numero font-bold text-[1.75rem] leading-none">
                       <ContadorNumero valor={j.puntos_ranking} />
                     </span>
                     <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{t("directorio.pts")}</span>
