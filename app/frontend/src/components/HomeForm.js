@@ -28,7 +28,6 @@ import {
   IconoLista,
   IconoPersona,
   IconoLlave,
-  IconoSinConexion,
   IconoEngranaje,
 } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
@@ -802,10 +801,9 @@ export default function HomeForm() {
       {/* 11.b Próximamente (US-5.1) */}
       <div className={`${tarjeta} flex flex-col gap-2`}>
         <span className="font-heading font-semibold text-sm">{t("home.seViene")}</span>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 pt-1">
           {[
             { Icono: IconoCalendario, clave: "reservarCancha" },
-            { Icono: IconoSinConexion, clave: "modoSinConexion" },
           ].map((item) => (
             <button
               key={item.clave}
