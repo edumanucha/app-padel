@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import CampoCancha from "@/components/CampoCancha";
-import { IconoPlay, IconoPelota } from "@/components/Icons";
+import { IconoPlay, IconoPelota, IconoRayo } from "@/components/Icons";
 import { crearEstadoInicial } from "@/lib/marcadorEngine";
 import {
   usuarioActual,
@@ -361,7 +361,7 @@ export default function MarcadorLibreForm() {
         onClick={generarPartidoRapido}
         className="self-start font-heading font-semibold text-xs px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
       >
-        ⚡ Generar partido rápido
+        <IconoRayo className="ico" aria-hidden /> Generar partido rápido
       </button>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">

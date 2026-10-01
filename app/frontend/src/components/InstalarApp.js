@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { IconoCasa } from "@/components/Icons";
+import { IconoCasa, IconoInstalar } from "@/components/Icons";
 
 const tarjeta = "bg-surface text-ink rounded-[18px] p-4 shadow-[0_1px_3px_rgba(20,38,31,0.08)]";
 
@@ -111,7 +111,7 @@ export default function InstalarApp({ variante = "tarjeta" }) {
     return (
       <div className="flex flex-col gap-2">
         <div className="rounded-full bg-accent text-accent-ink border-2 border-outline pl-3 pr-2 py-1.5 flex items-center gap-2 text-xs font-heading font-semibold">
-          <span aria-hidden>📲</span>
+          <IconoInstalar className="ico" aria-hidden />
           <span className="flex-1 min-w-0">Instalá la app: más rápida y anda sin señal</span>
           <button
             onClick={handleInstalar}
@@ -135,7 +135,7 @@ export default function InstalarApp({ variante = "tarjeta" }) {
           onClick={handleInstalar}
           className="w-full rounded-full bg-surface text-ink border-2 border-dashed border-accent py-2.5 text-sm font-heading font-semibold cursor-pointer"
         >
-          📲 Instalar la app en este dispositivo
+          <IconoInstalar className="ico" aria-hidden /> Instalar la app en este dispositivo
         </button>
         {pasos && <div className={tarjeta}>{pasos}</div>}
       </div>

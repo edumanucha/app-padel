@@ -663,3 +663,13 @@ button:not(:disabled):active {
 .col-completa:empty {
   display: none;
 }
+
+/* Ícono de línea metido en un texto o botón (2026-10-01, rediseño paso A:
+   reemplaza a los emojis). Toma el tamaño y el color del texto. */
+.ico {
+  display: inline-block;
+  width: 1.15em;
+  height: 1.15em;
+  vertical-align: -0.2em;
+  flex-shrink: 0;
+}

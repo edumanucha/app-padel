@@ -19,7 +19,7 @@ const CLAVE_ESTADO = "padelito_guia"; // "pendiente" | "hecha"
 const PASOS = [
   {
     guia: "saludo",
-    texto: "¡Hola! Soy Padelito 🎾 Acá estás vos: tu nombre y tus puntos de ranking. A la derecha tenés el menú, la configuración y las notificaciones.",
+    texto: "¡Hola! Soy Padelito. Acá estás vos: tu nombre y tus puntos de ranking. A la derecha tenés el menú, la configuración y las notificaciones.",
   },
   { guia: "proximo", texto: "Tu próximo partido aparece acá. Tocalo para ver quién juega, dónde y a qué hora." },
   {
@@ -34,7 +34,7 @@ const PASOS = [
   { guia: "comunidad", texto: "Acá encontrás a otros jugadores, tus mensajes y las invitaciones a partidos." },
   {
     guia: "navegacion",
-    texto: "Y con esta barra te movés por la app: Inicio, Jugadores, Marcadorcito y Perfil. ¡Listo, a jugar! 🎾",
+    texto: "Y con esta barra te movés por la app: Inicio, Jugadores, Marcadorcito y Perfil. ¡Listo, a jugar!",
   },
 ];
 
@@ -175,7 +175,7 @@ export default function GuiaPadelito() {
           <Pelotita />
           <div className="bg-surface text-ink rounded-[18px] rounded-bl-none p-4 shadow-xl flex flex-col gap-3 flex-1">
             <p className="text-sm">
-              ¡Hola! Soy <b>Padelito</b> 🎾 ¿Querés que te muestre la app en un ratito? Es menos de un minuto.
+              ¡Hola! Soy <b>Padelito</b>. ¿Querés que te muestre la app en un ratito? Es menos de un minuto.
             </p>
             <div className="flex gap-2">
               <button

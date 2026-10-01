@@ -8,6 +8,7 @@ import CampoCancha from "@/components/CampoCancha";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
 
+import { IconoRayo } from "@/components/Icons";
 const inputClass =
   "rounded-xl bg-bg px-3 py-2 text-ink";
 
@@ -230,7 +231,7 @@ export default function CrearPartidoForm() {
         onClick={generarPartidoRapido}
         className="self-start font-heading font-semibold text-xs px-3 py-1.5 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
       >
-        ⚡ Generar partido rápido
+        <IconoRayo className="ico" aria-hidden /> Generar partido rápido
       </button>
 
       <label className="flex flex-col gap-1">

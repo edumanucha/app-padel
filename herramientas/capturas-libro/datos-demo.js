@@ -105,7 +105,7 @@ const notificaciones = [
 const mensajes = [
   { id: id(500), remitente_id: id(103), destinatario_id: YO, contenido: "¿Jugamos el sábado? Tengo cancha a las 19.", leido: true, creado_en: minutos(-180) },
   { id: id(501), remitente_id: YO, destinatario_id: id(103), contenido: "Dale, contá conmigo. ¿Quién más viene?", leido: true, creado_en: minutos(-170) },
-  { id: id(502), remitente_id: id(103), destinatario_id: YO, contenido: "Armani y Nacho. Llevá pelotas que las mías están muertas 😅", leido: false, creado_en: minutos(-20) },
+  { id: id(502), remitente_id: id(103), destinatario_id: YO, contenido: "Armani y Nacho. Llevá pelotas que las mías están muertas.", leido: false, creado_en: minutos(-20) },
 ];
 
 const directorio = (periodo) =>

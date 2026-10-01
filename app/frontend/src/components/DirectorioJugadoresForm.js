@@ -10,6 +10,7 @@ import { useLocale } from "@/i18n/LocaleContext";
 import ContadorNumero from "@/components/ContadorNumero";
 import InfoEstadistica from "@/components/InfoEstadistica";
 
+import { IconoLupa } from "@/components/Icons";
 const tarjeta = "bg-surface text-ink rounded-[18px] p-4 shadow-[0_1px_3px_rgba(20,38,31,0.08)]";
 
 function Subtitulo({ children }) {
@@ -211,7 +212,7 @@ export default function DirectorioJugadoresForm() {
             cantidadFiltros > 0 ? "bg-accent text-accent-ink border-2 border-outline" : "bg-surface text-ink"
           }`}
         >
-          🔍 {t("directorio.filtros")}
+          <IconoLupa className="ico" aria-hidden /> {t("directorio.filtros")}
           {cantidadFiltros > 0 ? ` (${cantidadFiltros})` : ""}
         </button>
         <button

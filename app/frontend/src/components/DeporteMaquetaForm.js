@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/i18n/LocaleContext";
 
+import { IconoFutbol, IconoBasquet } from "@/components/Icons";
 // Maqueta navegable de un deporte todavía no construido (a pedido del
 // usuario, 2026-09-06): reusa la estructura visual del Home real de
 // Padelito (HomeForm.js) con datos de ejemplo, para mostrar hacia dónde
@@ -10,7 +11,12 @@ import { useLocale } from "@/i18n/LocaleContext";
 // navega a una pantalla real ni ejecuta ninguna acción -- mismo
 // principio de US-5.1/5.2 (Próximamente sin acceso real), pero como
 // pantalla completa en vez de un ítem de menú suelto.
-export default function DeporteMaquetaForm({ nombre, emoji, colorAcento, datosEjemplo }) {
+// El ícono llega como nombre ("futbol" | "basquet"): una página de servidor
+// no le puede pasar un componente a uno de cliente.
+const ICONOS = { futbol: IconoFutbol, basquet: IconoBasquet };
+
+export default function DeporteMaquetaForm({ nombre, icono, colorAcento, datosEjemplo }) {
+  const Icono = ICONOS[icono];
   const router = useRouter();
   const { t } = useLocale();
 
@@ -18,7 +24,7 @@ export default function DeporteMaquetaForm({ nombre, emoji, colorAcento, datosEj
     <div className="w-full max-w-md flex flex-col gap-4 pb-10">
       <div className="bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-4xl">{emoji}</span>
+          <span className="text-4xl">{Icono && <Icono className="ico" aria-hidden />}</span>
           <div>
             <span className="font-heading text-lg font-semibold block">{nombre}</span>
             <span className="text-muted text-sm">{t("deporteMaqueta.vistaPrevia")}</span>

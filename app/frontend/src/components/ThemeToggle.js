@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { IconoSol, IconoLuna } from "@/components/Icons";
 // Botón para cambiar entre modo claro y oscuro a mano.
 // "use client" es necesario porque este componente usa estado (useState) y
 // toca el DOM/localStorage directamente — cosas que solo pueden pasar en el
@@ -41,7 +42,7 @@ export default function ThemeToggle() {
       onClick={alternarTema}
       className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
     >
-      {theme === "dark" ? "☀️ Modo claro" : "🌙 Modo oscuro"}
+      {theme === "dark" ? <><IconoSol className="ico" aria-hidden /> Modo claro</> : <><IconoLuna className="ico" aria-hidden /> Modo oscuro</>}
     </button>
   );
 }

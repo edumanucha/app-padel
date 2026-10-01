@@ -135,7 +135,7 @@ export default function MisPartidosForm() {
           )}
           {p.resultado && (
             <span className="text-sm">
-              {p.resultado.gano ? `🏆 ${t("home.ganaste")}` : t("home.perdiste")} {t("home.vs")} {p.resultado.rival_nombres} (
+              {p.resultado.gano ? t("home.ganaste") : t("home.perdiste")} {t("home.vs")} {p.resultado.rival_nombres} (
               {formatearResultado(p.resultado.sets_a, p.resultado.sets_b)})
             </span>
           )}

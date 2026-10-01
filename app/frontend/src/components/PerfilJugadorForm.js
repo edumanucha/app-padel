@@ -5,18 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import Logo from "@/components/Logo";
-import {
-  IconoMensaje,
-  IconoTrofeo,
-  IconoPersona,
-  IconoMano,
-  IconoPelota,
-  IconoGrafico,
-  IconoBandera,
-  IconoDuo,
-  IconoChevron,
-  IconoPulgar,
-} from "@/components/Icons";
+import { IconoMensaje, IconoTrofeo, IconoPersona, IconoMano, IconoPelota, IconoGrafico, IconoBandera, IconoDuo, IconoChevron, IconoPulgar, IconoEstrella } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
 
@@ -201,7 +190,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
               title={jugador.es_frecuente ? t("perfilJugador.desmarcarFrecuente") : t("perfilJugador.marcarFrecuente")}
               className="text-2xl cursor-pointer"
             >
-              {jugador.es_frecuente ? "⭐" : "☆"}
+              <IconoEstrella llena={jugador.es_frecuente} className="ico text-accent" aria-hidden />
             </button>
             <button
               onClick={() => router.push(`/mensajes/${jugadorId}`)}
@@ -219,10 +208,10 @@ export default function PerfilJugadorForm({ jugadorId }) {
               </span>
               <span className="flex flex-wrap gap-0.5 text-base leading-none overflow-hidden">
                 {Array.from({ length: 8 - jugador.nivel }).map((_, i) => (
-                  <span key={`llena-${i}`}>⭐</span>
+                  <IconoEstrella key={`llena-${i}`} llena className="ico text-accent" aria-hidden />
                 ))}
                 {Array.from({ length: jugador.nivel - 1 }).map((_, i) => (
-                  <span key={`vacia-${i}`}>☆</span>
+                  <IconoEstrella key={`vacia-${i}`} className="ico text-muted" aria-hidden />
                 ))}
               </span>
             </div>

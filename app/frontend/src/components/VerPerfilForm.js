@@ -12,20 +12,7 @@ import InstalarApp from "@/components/InstalarApp";
 import BarraEstadistica from "@/components/BarraEstadistica";
 import Toggle from "@/components/Toggle";
 import { calcularResumenEstadisticas, calcularPuntosRanking } from "@/lib/estadisticasMarcadorcito";
-import {
-  IconoTelefono,
-  IconoPersona,
-  IconoMapa,
-  IconoPin,
-  IconoMano,
-  IconoPelota,
-  IconoCampana,
-  IconoMensaje,
-  IconoOjo,
-  IconoOjoTachado,
-  IconoTrofeo,
-  IconoChevron,
-} from "@/components/Icons";
+import { IconoTelefono, IconoPersona, IconoMapa, IconoPin, IconoMano, IconoPelota, IconoCampana, IconoMensaje, IconoOjo, IconoOjoTachado, IconoTrofeo, IconoChevron, IconoEstrella } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
 
@@ -651,12 +638,12 @@ export default function VerPerfilForm() {
               aria-label={t("verPerfil.estrellasAriaLabel", { n: 8 - perfil.nivel })}
             >
               {Array.from({ length: 8 - perfil.nivel }).map((_, i) => (
-                <span key={`llena-${i}`} className="estrella-llena-entra" style={{ animationDelay: `${i * 130}ms` }}>
-                  ⭐
+                <span key={`llena-${i}`} className="estrella-llena-entra text-accent" style={{ animationDelay: `${i * 130}ms` }}>
+                  <IconoEstrella llena className="ico" aria-hidden />
                 </span>
               ))}
               {Array.from({ length: perfil.nivel - 1 }).map((_, i) => (
-                <span key={`vacia-${i}`}>☆</span>
+                <IconoEstrella key={`vacia-${i}`} className="ico text-muted" aria-hidden />
               ))}
             </span>
           </div>

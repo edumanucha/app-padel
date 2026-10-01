@@ -15,24 +15,7 @@ import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import GuiaPadelito from "@/components/GuiaPadelito";
 import { useEnPantalla } from "@/lib/useEnPantalla";
 import marcadorStyles from "@/components/Marcador.module.css";
-import {
-  IconoMenu,
-  IconoCampana,
-  IconoPelota,
-  IconoCalendario,
-  IconoLupa,
-  IconoTrofeo,
-  IconoCarrito,
-  IconoMensaje,
-  IconoSobre,
-  IconoRadar,
-  IconoDuo,
-  IconoPin,
-  IconoLista,
-  IconoPersona,
-  IconoLlave,
-  IconoEngranaje,
-} from "@/components/Icons";
+import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, IconoTrofeo, IconoCarrito, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
 
@@ -116,7 +99,7 @@ function ContenidoMarcadorcitoDemo() {
         <DotDigit valor={marcador[0]} />
         <span className="text-lg text-white">-</span>
         <DotDigit valor={marcador[1]} />
-        {mostrarCartel && <span className={marcadorStyles.miniCartelSet}>🏆 Set ganado</span>}
+        {mostrarCartel && <span className={marcadorStyles.miniCartelSet}>Set ganado</span>}
       </div>
       <div className="relative z-10">
         <span className="flex items-center gap-1.5">
@@ -356,7 +339,7 @@ export default function HomeForm() {
     return (
       <div className="w-full max-w-md flex flex-col gap-4 pb-10">
         <div className="bg-surface text-ink rounded-[20px] p-5 shadow-[0_1px_3px_rgba(20,38,31,0.08)] flex flex-col gap-3">
-          <h1 className="font-heading text-xl font-semibold">📶 Estás sin señal</h1>
+          <h1 className="font-heading text-xl font-semibold"><IconoSinConexion className="ico" aria-hidden /> Estás sin señal</h1>
           <p className="text-sm text-muted">
             Igual podés llevar el marcador de un partido. Todo queda guardado en el celu y se sube solo cuando vuelva la
             conexión.
@@ -366,7 +349,7 @@ export default function HomeForm() {
               onClick={() => router.push(`/partido/${partidoEnCurso}/marcador`)}
               className="font-heading font-semibold px-4 py-3 rounded-full bg-accent text-accent-ink cursor-pointer"
             >
-              🎾 Volver al partido en juego
+              Volver al partido en juego
             </button>
           )}
           <button
@@ -403,7 +386,7 @@ export default function HomeForm() {
           className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-[20px] bg-accent text-accent-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer text-left col-completa"
         >
           <span className="flex flex-col">
-            <span className="font-heading font-semibold">🎾 Tenés un partido en juego</span>
+            <span className="font-heading font-semibold">Tenés un partido en juego</span>
             <span className="text-sm opacity-80">Los puntos quedaron guardados</span>
           </span>
           <span className="font-heading font-semibold text-sm whitespace-nowrap">Volver al partido →</span>

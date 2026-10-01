@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import { useLocale } from "@/i18n/LocaleContext";
 
+import { IconoEstrella } from "@/components/Icons";
 // Búsqueda + invitación de jugadores (US-2.3), embebido en la card de un
 // partido propio dentro de ListaPartidosForm.js. La búsqueda usa la
 // función `buscar_jugadores_para_invitar` (RPC) en vez de leer `perfiles`
@@ -114,7 +115,7 @@ export default function InvitarJugadorForm({ partidoId, onInvitado }) {
           <span className="text-xs text-muted uppercase">{t("invitarJugador.tusFrecuentes")}</span>
           {frecuentes.map((jugador) => (
             <div key={jugador.id} className="flex items-center justify-between gap-2">
-              <span className="text-sm">⭐ {jugador.nombre}</span>
+              <span className="text-sm"><IconoEstrella llena className="ico text-accent" aria-hidden /> {jugador.nombre}</span>
               <button
                 onClick={() => handleInvitar(jugador.id)}
                 disabled={invitandoA === jugador.id}

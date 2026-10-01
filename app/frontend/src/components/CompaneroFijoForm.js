@@ -6,6 +6,7 @@ import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import { useLocale } from "@/i18n/LocaleContext";
 
+import { IconoDuo } from "@/components/Icons";
 // US-8.2: buscar una dupla estable (no solo gente para completar un
 // partido puntual) -- posición complementaria a la mía, match mutuo
 // (marco interés, si la otra persona también me marcó a mí, queda
@@ -106,7 +107,7 @@ export default function CompaneroFijoForm() {
           <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">{t("companero.misDuplas")}</span>
           {misDuplas.map((d) => (
             <div key={d.jugador_id} className="bg-accent-2 text-accent-2-ink border-2 border-outline rounded-[14px] p-3">
-              🤝 {d.nombre}
+              <IconoDuo className="ico" aria-hidden /> {d.nombre}
             </div>
           ))}
         </div>

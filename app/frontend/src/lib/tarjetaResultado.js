@@ -81,13 +81,13 @@ export function dibujarTarjetaTV(ctx, datos, fuente = "sans-serif") {
 
   const nSets = setsA.length;
   texto(
-    `⏱ ${duracionTexto(minutos)}  ·  ${nSets} ${nSets === 1 ? "set" : "sets"}  ·  Sets ${setsGanA}-${setsGanB}`,
+    `${duracionTexto(minutos)}  ·  ${nSets} ${nSets === 1 ? "set" : "sets"}  ·  Sets ${setsGanA}-${setsGanB}`,
     90,
     1040,
     f(500, 48),
     C.gris
   );
-  texto("Anotado con Marcadorcito 🎾", W / 2, 1250, f(600, 42), C.amarillo, "center");
+  texto("Anotado con Marcadorcito", W / 2, 1250, f(600, 42), C.amarillo, "center");
 }
 
 // Letra de la app (Archivo, cargada con next/font) para usarla en el canvas.

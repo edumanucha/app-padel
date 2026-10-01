@@ -161,7 +161,7 @@ export default function ConversacionForm({ otroId }) {
           Opciones del Marcadorcito, a pedido del usuario). */}
       {mostrarReporte && (
         <HojaAbajo
-          titulo={`🚩 ${t("conversacion.reportar")} · ${otroNombre}`}
+          titulo={`${t("conversacion.reportar")} · ${otroNombre}`}
           onCerrar={() => setMostrarReporte(false)}
           textoCerrar="✕"
         >

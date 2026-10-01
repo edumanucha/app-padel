@@ -6,6 +6,7 @@ import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import { useLocale } from "@/i18n/LocaleContext";
 
+import { IconoLlamada, IconoEstrella } from "@/components/Icons";
 // Ver CanchasListadoForm.js: `descripcion` guarda de todo, en pantalla
 // mostramos solo la cantidad de canchas.
 function cantidadCanchas(descripcion) {
@@ -153,7 +154,7 @@ export default function DetalleCanchaForm({ canchaId }) {
 
         {cancha.telefono && (
           <div className="flex items-center gap-2 text-sm">
-            <span>📞 {cancha.telefono}</span>
+            <span><IconoLlamada className="ico" aria-hidden /> {cancha.telefono}</span>
             <a
               href={`https://wa.me/${cancha.telefono.replace(/[^0-9]/g, "")}`}
               target="_blank"
@@ -171,7 +172,7 @@ export default function DetalleCanchaForm({ canchaId }) {
           <span className="font-heading text-lg font-semibold">{t("detalleCancha.resenas")}</span>
           {resenas.length > 0 && (
             <span className="font-heading font-semibold text-sm">
-              ⭐ {(resenas.reduce((acc, r) => acc + r.puntuacion, 0) / resenas.length).toFixed(1)} · {resenas.length}
+              <IconoEstrella llena className="ico text-accent" aria-hidden /> {(resenas.reduce((acc, r) => acc + r.puntuacion, 0) / resenas.length).toFixed(1)} · {resenas.length}
             </span>
           )}
         </div>
@@ -182,7 +183,7 @@ export default function DetalleCanchaForm({ canchaId }) {
           <div key={i} className="bg-bg border-2 border-outline rounded-[14px] p-3 flex flex-col gap-1">
             <div className="flex items-center justify-between">
               <span className="font-heading font-semibold text-sm">{r.nombre}</span>
-              <span className="text-sm">{"⭐".repeat(r.puntuacion)}</span>
+              <span className="text-sm text-accent inline-flex" aria-label={`${r.puntuacion} de 5`}>{Array.from({ length: r.puntuacion }, (_, i) => <IconoEstrella key={i} llena className="ico" aria-hidden />)}</span>
             </div>
             {r.comentario && <span className="text-sm text-muted">{r.comentario}</span>}
           </div>
@@ -199,7 +200,7 @@ export default function DetalleCanchaForm({ canchaId }) {
                   onClick={() => setPuntuacion(n)}
                   className="cursor-pointer"
                 >
-                  {n <= puntuacion ? "⭐" : "☆"}
+                  <IconoEstrella llena={n <= puntuacion} className="ico text-accent" aria-hidden />
                 </button>
               ))}
             </div>

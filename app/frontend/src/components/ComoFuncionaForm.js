@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/i18n/LocaleContext";
 
+import { IconoPersona, IconoCalendario, IconoPelota, IconoTrofeo, IconoMensaje, IconoDuo, IconoPin, IconoBilletera, IconoBandera, IconoBasquet } from "@/components/Icons";
 // Recorrido honesto de funciones reales de la app (2026-09-10, a pedido
 // del usuario, con relevamiento completo de historias-usuario-mvp.md +
 // todas las rutas reales -- la primera versión se había quedado corta).
@@ -10,19 +11,19 @@ import { useLocale } from "@/i18n/LocaleContext";
 // camino, para no vender algo que todavía no está (mismo criterio que ya
 // usa el propio menú "Ver todo" con sus badges "Próximamente").
 const BLOQUES = [
-  { emoji: "👤", clave: "cuenta" },
-  { emoji: "📅", clave: "partidos" },
-  { emoji: "🎾", clave: "marcadorcito" },
-  { emoji: "🏆", clave: "ranking" },
-  { emoji: "👥", clave: "comunidad" },
-  { emoji: "🤝", clave: "matchmaking" },
-  { emoji: "📍", clave: "canchas" },
-  { emoji: "💸", clave: "gastos" },
-  { emoji: "🚩", clave: "apelaciones" },
-  { emoji: "🏀", clave: "masAlla" },
+  { Icono: IconoPersona, clave: "cuenta" },
+  { Icono: IconoCalendario, clave: "partidos" },
+  { Icono: IconoPelota, clave: "marcadorcito" },
+  { Icono: IconoTrofeo, clave: "ranking" },
+  { Icono: IconoMensaje, clave: "comunidad" },
+  { Icono: IconoDuo, clave: "matchmaking" },
+  { Icono: IconoPin, clave: "canchas" },
+  { Icono: IconoBilletera, clave: "gastos" },
+  { Icono: IconoBandera, clave: "apelaciones" },
+  { Icono: IconoBasquet, clave: "masAlla" },
 ];
 
-const PROXIMAMENTE_CLAVES = ["proximamente1", "proximamente2", "proximamente3"];
+const PROXIMAMENTE_CLAVES = ["proximamente1", "proximamente2"];
 
 export default function ComoFuncionaForm() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function ComoFuncionaForm() {
   return (
     <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-5">
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-2xl font-semibold">❓ {t("comoFunciona.titulo")}</h1>
+        <h1 className="font-heading text-2xl font-semibold">{t("comoFunciona.titulo")}</h1>
         <button
           onClick={() => router.push("/menu")}
           className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
@@ -46,7 +47,7 @@ export default function ComoFuncionaForm() {
         {BLOQUES.map((b) => (
           <div key={b.clave} className="bg-bg border-2 border-outline rounded-[14px] p-4 flex flex-col gap-1">
             <span className="font-heading font-semibold flex items-center gap-2">
-              <span className="text-lg">{b.emoji}</span>
+              <b.Icono className="ico" aria-hidden />
               {t(`comoFunciona.${b.clave}Titulo`)}
             </span>
             <p className="text-sm text-muted">{t(`comoFunciona.${b.clave}Texto`)}</p>
