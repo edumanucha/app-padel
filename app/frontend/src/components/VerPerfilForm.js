@@ -618,8 +618,8 @@ export default function VerPerfilForm() {
   }
 
   return (
-    <div className="w-full max-w-md flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+    <div className="w-full max-w-md flex flex-col gap-4 pantalla-mosaico">
+      <div className="flex items-center justify-between col-completa">
         <h1 className="font-heading text-2xl font-semibold">{t("verPerfil.titulo")}</h1>
         <button
           onClick={() => router.push("/")}

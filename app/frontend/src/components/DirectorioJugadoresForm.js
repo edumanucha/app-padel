@@ -170,8 +170,8 @@ export default function DirectorioJugadoresForm() {
   }
 
   return (
-    <div className="w-full max-w-md flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+    <div className="w-full max-w-md flex flex-col gap-4 pantalla-grilla">
+      <div className="flex items-center justify-between col-completa">
         <h1 className="font-heading text-2xl font-semibold">{t("directorio.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
@@ -217,7 +217,7 @@ export default function DirectorioJugadoresForm() {
         </form>
       </div>
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && <p className="text-red-600 text-sm col-completa">{error}</p>}
 
       <div className="flex flex-col gap-3">
         <span className="flex items-center gap-1 pl-1">
