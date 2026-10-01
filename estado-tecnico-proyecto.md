@@ -2,7 +2,43 @@
 
 > **Qué es este documento:** el "puente" de contexto técnico entre los distintos chats del Proyecto (Crear la app, Diseño QA, Automatización, Aprender conceptos, Web de presentación). Se actualiza desde el chat "Crear la app" cada vez que se cierra una entrega funcional. Los demás chats pueden leerlo para saber sobre qué versión real de la app están trabajando, sin necesidad de que se les reexplique todo desde cero.
 
-**Última actualización:** 2026-09-12 — **Pasada de consistencia visual/UX en toda la app (sin funcionalidad nueva de backend).** *Nota honesta: este documento no se venía actualizando desde el 2026-09-05 pese a que en el medio se construyeron y probaron las 10 épicas completas del proyecto (ver la Bitácora de `tablero-proyecto.md`, que sí se mantuvo al día) — no se reconstruye acá esa historia faltante, solo se deja constancia de esta sesión, verificada contra el código real:*
+**Última actualización:** 2026-09-30 — **Repo en GitHub con deploy automático, seguridad, keep-alive, Marcadorcito listo para partido real (reloj, sin señal, compartir, terminar), vista para compu, guía de la app y datos demo.** *Nota honesta: entre el 2026-09-13 y el 2026-09-24 hubo trabajo que no quedó registrado acá (ver `tablero-proyecto.md` y el historial de git); esta entrada cubre lo que está verificado contra el código y el historial de git del 2026-09-25 al 2026-09-30.*
+
+**Infraestructura y seguridad**
+- **Repo público en GitHub** + **Vercel conectado**: cada `git push` a `main` publica solo (Root Directory = `app/frontend`). Ya no se usa `npx vercel deploy`.
+- **Secretos fuera del repo:** contraseña de las cuentas demo movida a `.env.local` (ignorado); `.gitignore` reforzado; **gitleaks** como hook antes de cada commit y en GitHub Actions (`.github/workflows/gitleaks.yml`). La contraseña demo que había quedado expuesta se invalidó con `061_rotar_password_cuentas_demo.sql`.
+- **Dependencias:** `next` 16.3.6 y parches de `brace-expansion`/`qs` (alertas de Dependabot), `npm audit` sin vulnerabilidades altas.
+- **Keep-alive de Supabase (plan gratis, se pausa a los 7 días sin uso):** `060_keep_alive.sql` + `062_keep_alive_latido.sql` (función `latido` que escribe en la base), llamada desde dos lados: Vercel Cron (`/api/keep-alive`) y GitHub Actions (`supabase-keep-alive.yml`).
+
+**Marcadorcito (`MarcadorForm.js`)**
+- **Selector de modo** con 4 opciones iguales: Manual, Gestos (cámara), Voz y **⌚ Reloj / auriculares**.
+- **Modo Reloj** (Media Session API + audio silencioso para que el reloj muestre los controles de música): ⏭️ = punto A, ⏮️ = punto B, ⏸️ una vez = deshacer, **⏸️⏸️ dos veces rápido (< 0,8 s) = cambiar saque**; al arrancar el partido (sin nada para deshacer) un toque solo también cambia el saque. El reloj muestra el tanteador en el título, formato por defecto `●40-15` / `G 1-0 · S 1-0` (otros formatos elegibles en ⚙️ Opciones). Solo avisa al final ("Partido ganado/perdido" + games por set). Página de prueba aislada: `/pruebas-reloj`.
+- **Blindaje para partido real:** pantalla siempre prendida (Wake Lock), guardado sin señal con reintento (`marcadorcito_pendiente_<id>`), aviso fijo de "sin señal", consejo de batería.
+- **Sin internet de punta a punta:** el service worker (`public/sw.js` v2) guarda las pantallas y archivos de la app; `lib/marcadorOffline.js` usa la sesión guardada en el celu, permite **crear un partido sin señal** (id generado en el celu) y lo **sube solo** cuando vuelve la conexión (`sincronizarTodo`, también en el evento `online`). Si no hay sesión y no hay señal, se muestra `/offline`.
+- **Botón atrás protegido:** pregunta "¿Salir del partido?" (Terminar partido / Salir / Seguir jugando). En el inicio aparece **"Tenés un partido en juego → Volver al partido"** (`marcadorcito_en_curso`).
+- **Terminar partido:** lo cierra en el momento y **no cuenta** para estadísticas ni ranking (el partido queda `cancelado`, el resultado no se marca finalizado). Solo cuentan los partidos que terminan jugando.
+- **Compartir resultado:** tarjeta "Tabla de TV" 1080×1350 (`lib/tarjetaResultado.js`) por la hoja de compartir del celu (WhatsApp/Instagram) o descarga. Diseño elegido en `/pruebas-tarjeta`.
+- **Demo del Marcadorcito** (`DemoMarcadorForm.js`): suma el modo ⌚ Reloj (muestra qué botón se aprieta) y el cambio de saque.
+
+**Toda la app**
+- **Vista para compu (opción C, elegida en `/pruebas-pc`):** desde 1024 px la barra de abajo se reemplaza por una **barra arriba** (`BottomNav.js`, clase `nav-escritorio`); el inicio es un **tablero** (2/3 principal, 1/3 accesos: `.pantalla-tablero`, `.home-principal`, `.home-lateral`); el resto de las pantallas usa todo el ancho en 2 columnas (3 desde 1440 px) con `.pantalla-grilla` / `.pantalla-mosaico` / `.col-completa` (`globals.css`). En monitores grandes la letra es un 12,5 % más grande. **En el celu no cambia nada.**
+- **Sin animaciones entre pantallas** (pedido del usuario: "se mueve todo, se ve raro"): `PageTransition.js` con `ANIMAR_PAGINAS = false`. La versión con animaciones quedó en el tag de git `antes-sin-animaciones` y se vuelve a prender poniendo `true`.
+- **Botón "Instalar app" (opción 2, elegida en `/pruebas-instalar`):** solo si la app no está instalada. En el inicio, franja amarilla arriba (se cierra con ✕ y vuelve a los 3 días); en el perfil, botón punteado; en Configuración, la tarjeta de siempre. Si el navegador no ofrece instalar con un toque, muestra el paso a paso (Android / iPhone). Componente `InstalarApp.js` (`variante`: franja / boton / tarjeta).
+- **Guía de la app con Padelito (opción 3, elegida en `/pruebas-guia`):** la primera vez que alguien entra al inicio, la pelotita pregunta si quiere la guía. "¡Dale!" → 7 pasos que remarcan elementos reales del inicio (atributos `data-guia`); "Después" → queda un botón "?" en el inicio. Se puede volver a ver desde Menú → "Ver la guía con Padelito" (`/?guia=1`). Componente `GuiaPadelito.js`, estado en `localStorage` (`padelito_guia`).
+- **"Se viene":** se sacó "Modo sin conexión" (ya está hecho); queda "Reservar cancha".
+
+**Base de datos (corridos por el usuario en el SQL Editor, 2026-09-30)**
+- `063_jugadores_demo_river.sql`: todos los jugadores que no se llaman Eduardo (y los invitados sin cuenta) pasan a tener **nombres de jugadores de River**, con respaldo de los nombres viejos en `_respaldo_nombres_063` (RLS sin políticas, solo visible desde el SQL Editor; al final del archivo está cómo deshacerlo). Nueva columna **`perfiles.es_demo`**: desde ahora los jugadores demo se reconocen por esta columna, no por "(demo N)" en el nombre. Inventa 70 partidos jugados entre ellos (últimos 60 días, ~15 de la semana actual); los puntos los suma el trigger de siempre.
+- `064_fix_ranking_mensual_hora_argentina.sql`: **BUG-029** — el ranking mensual/semanal cortaba el mes y la semana en hora UTC (ver `registro-errores.md`). Ahora usa `America/Argentina/Buenos_Aires`.
+- `065_partidos_demo_diarios.sql`: función `generar_partidos_demo(n)` (sin permiso para `anon`/`authenticated`) + tarea de **pg_cron** `partidos-demo-diarios` que juega 3 partidos demo por día a las 9 h de Argentina, para que el ranking mensual y el semanal nunca queden vacíos en la demo. Se apaga con `select cron.unschedule('partidos-demo-diarios');`.
+
+**Páginas de prueba / maquetas (no son parte del uso normal):** `/pruebas-reloj`, `/pruebas-tarjeta`, `/pruebas-pc`, `/pruebas-instalar`, `/pruebas-guia`, `/pruebas-manos-libres`. Todas con datos de ejemplo.
+
+**Pendiente de probar por el usuario en el celu:** modo sin señal (modo avión), cartel de salida + Terminar partido, doble toque ⏸️⏸️ del reloj, botón compartir, franja de instalar, guía de Padelito, vista para compu.
+
+**Explícitamente no hecho todavía:** separar ambiente de pruebas y producción (postergado por el usuario: "es mucho laburo"), pasar la app a Android / Google Play (idea a futuro: empaquetar la PWA como TWA y, si hace falta, Capacitor), la pantalla de estadísticas del perfil que lee `estadisticas_partido`.
+
+**Actualización anterior:** 2026-09-12 — **Pasada de consistencia visual/UX en toda la app (sin funcionalidad nueva de backend).** *Nota honesta: este documento no se venía actualizando desde el 2026-09-05 pese a que en el medio se construyeron y probaron las 10 épicas completas del proyecto (ver la Bitácora de `tablero-proyecto.md`, que sí se mantuvo al día) — no se reconstruye acá esa historia faltante, solo se deja constancia de esta sesión, verificada contra el código real:*
 - **Rediseño visual completo:** de bordes gruesos + sombra 3D dura + emoji a tarjetas claras con sombra suave (queda de referencia el Home viejo en `HomeForm.backup-estilo-bordes-gruesos-2026-09-12.js`). Set nuevo de ~25 íconos de línea dibujados a mano (`src/components/Icons.js`) reemplazando emoji en Home, menú, `BottomNav` y pantallas de detalle.
 - **Nueva barra de navegación inferior** (`BottomNav.js`): Home / Jugadores / Marcadorcito / Perfil, oculta en login, onboarding, completar perfil y el marcador en vivo.
 - **Nueva pantalla `/configuracion`** (`ConfiguracionForm.js`): habilita el `ThemeToggle` (ya existía construido, nunca estaba enlazado desde ningún lado), suma un selector de color de acento para los botones de acción principal (variable `--accent-cta`: amarillo/verde/turquesa — no es el `--accent` global completo, solo el de las CTA) y un selector de idioma real.
@@ -213,6 +249,10 @@ app/
 
 ## 6. Cómo correr el proyecto localmente
 
+**Publicar (desde 2026-09-25):** no hace falta correr nada a mano — cada `git push` a `main` dispara el deploy de Vercel a producción. Antes de cada commit corre gitleaks; si detecta algo que parece un secreto, el commit se frena.
+
+**Migraciones SQL:** se corren a mano, en orden, en el SQL Editor de Supabase (`app/backend/sql/NNN_*.sql`). La última es `065_partidos_demo_diarios.sql`.
+
 Backend:
 1. `cd app/backend`
 2. `npm install` (primera vez)
@@ -236,6 +276,14 @@ Nota Windows: si `npm run dev` (en cualquiera de las dos carpetas) falla con un 
 - **ADR (Architecture Decision Record):** `adr-decisiones-tecnicas.md`. Contiene ADR-001 (elección de Supabase).
 
 ## 8. Próximos pasos
+
+**Al 2026-09-30** (lo de abajo de esta lista es histórico, de la Épica 2):
+1. Que el usuario pruebe en el celu lo de la sesión del 2026-09-30 (ver "Pendiente de probar" arriba), sobre todo antes de un partido real.
+2. Separar ambiente de pruebas y producción (postergado).
+3. App de Android para Google Play (TWA sobre la PWA; requiere cuenta de desarrollador de Google Play, pago único).
+4. Pantalla de estadísticas del perfil leyendo `estadisticas_partido` (los datos ya están sembrados).
+
+**Histórico (2026-09-05):**
 
 **Épica 1 cerrada** (código + testing manual + fixes). **Épica 2 en curso: US-2.1 y US-2.2 cerradas y verificadas, faltan US-2.3 a US-2.6.**
 
