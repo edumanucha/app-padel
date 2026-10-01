@@ -11,6 +11,14 @@ import { useRef } from "react";
 // de esta lista tiene que ser el mismo que el de BottomNav.js.
 const ORDEN_TABS = ["/", "/jugadores", "/marcador-libre", "/perfil"];
 
+// Animaciones apagadas (2026-09-30, pedido del usuario: "al moverme entre
+// pestañas se mueve todo, se ve raro; sacale las animaciones pero guardá
+// cómo lo tenemos"). Para volver a prenderlas alcanza con poner esto en
+// true -- el código y los estilos quedan intactos. La versión con
+// animaciones también quedó marcada en git con el tag
+// "antes-sin-animaciones".
+const ANIMAR_PAGINAS = false;
+
 export default function PageTransition({ children }) {
   const pathname = usePathname();
   const prevPathnameRef = useRef(pathname);
@@ -38,6 +46,8 @@ export default function PageTransition({ children }) {
     }
     prevPathnameRef.current = pathname;
   }
+
+  if (!ANIMAR_PAGINAS) return children;
 
   return (
     <div key={pathname} className={`page-transition page-transition-${direccionRef.current}`}>
