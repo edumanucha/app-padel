@@ -4,6 +4,10 @@ import { useRouter } from "next/navigation";
 import FormularioFeedback from "@/components/FormularioFeedback";
 import { useLocale } from "@/i18n/LocaleContext";
 
+// Link público de donación (por ejemplo, cafecito.app/usuario). Mientras esté
+// vacío, la oración del cafecito no se muestra.
+const LINK_DONACION = "";
+
 export default function QuienesSomosForm() {
   const router = useRouter();
   const { t } = useLocale();
@@ -21,7 +25,25 @@ export default function QuienesSomosForm() {
           </button>
         </div>
 
-        <p className="text-sm text-ink leading-relaxed">{t("quienesSomos.texto")}</p>
+        <div className="flex flex-col gap-3 text-sm text-ink leading-relaxed">
+          <p>
+            <b>{t("quienesSomos.p1Negrita")}</b> {t("quienesSomos.p1")}
+          </p>
+          <p>{t("quienesSomos.p2")}</p>
+          <p>
+            <b>{t("quienesSomos.p3Negrita")}</b> {t("quienesSomos.p3")}
+          </p>
+          <p>{t("quienesSomos.p4")}</p>
+          {LINK_DONACION && (
+            <p>
+              {t("quienesSomos.donacionAntes")}
+              <a href={LINK_DONACION} target="_blank" rel="noopener noreferrer" className="underline font-semibold">
+                {t("quienesSomos.donacionLink")}
+              </a>
+              {t("quienesSomos.donacionDespues")}
+            </p>
+          )}
+        </div>
       </div>
 
       <FormularioFeedback titulo={t("quienesSomos.feedbackTitulo")} />
