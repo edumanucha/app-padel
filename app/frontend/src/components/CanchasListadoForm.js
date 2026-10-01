@@ -63,8 +63,8 @@ export default function CanchasListadoForm() {
   }
 
   return (
-    <div className="w-full max-w-md flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+    <div className="w-full max-w-md flex flex-col gap-4 pantalla-grilla">
+      <div className="flex items-center justify-between col-completa">
         <h1 className="font-heading text-2xl font-semibold">{t("canchas.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
@@ -74,10 +74,10 @@ export default function CanchasListadoForm() {
         </button>
       </div>
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && <p className="text-red-600 text-sm col-completa">{error}</p>}
 
       {canchas.length === 0 && (
-        <div className="bg-surface text-muted shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 text-sm">
+        <div className="bg-surface text-muted shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 text-sm col-completa">
           {t("canchas.sinCanchas")}
         </div>
       )}

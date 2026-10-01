@@ -117,8 +117,8 @@ export default function InvitacionesForm() {
   }
 
   return (
-    <div className="w-full max-w-md flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+    <div className="w-full max-w-md flex flex-col gap-4 pantalla-grilla">
+      <div className="flex items-center justify-between col-completa">
         <h1 className="font-heading text-2xl font-semibold">
           {t("invitaciones.titulo")}
         </h1>
@@ -130,11 +130,11 @@ export default function InvitacionesForm() {
         </button>
       </div>
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
-      {errorAccion && <p className="text-red-600 text-sm">{errorAccion}</p>}
+      {error && <p className="text-red-600 text-sm col-completa">{error}</p>}
+      {errorAccion && <p className="text-red-600 text-sm col-completa">{errorAccion}</p>}
 
       {invitaciones.length === 0 && (
-        <div className="bg-surface text-muted shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 text-sm">
+        <div className="bg-surface text-muted shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 text-sm col-completa">
           {t("invitaciones.sinPendientes")}
         </div>
       )}

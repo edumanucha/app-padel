@@ -575,3 +575,51 @@ button:not(:disabled):active {
     animation: none !important;
   }
 }
+
+/* ============================================
+   Vista para compu (2026-09-30, a pedido del usuario: "abrí la app desde
+   una PC y se ve del mismo ancho que en el celular"). Opción A elegida:
+   en pantallas anchas (>= 1024px) las pantallas de tarjetas usan más
+   ancho y acomodan las tarjetas en 2 columnas. En el celu no cambia nada.
+   - .pantalla-mosaico: tarjetas de distinto alto (Home, Menú) -> columnas
+     tipo mosaico, cada tarjeta entera en una columna.
+   - .pantalla-grilla: listas de tarjetas parecidas (partidos, canchas,
+     invitaciones) -> grilla de 2 columnas, en orden de lectura.
+   - .col-completa: lo que tiene que ocupar todo el ancho (títulos,
+     filtros, avisos, pie).
+   ============================================ */
+@media (min-width: 1024px) {
+  .pantalla-mosaico,
+  .pantalla-grilla {
+    max-width: 64rem !important;
+  }
+  .pantalla-mosaico {
+    display: block !important;
+    column-count: 2;
+    column-gap: 1.25rem;
+  }
+  .pantalla-mosaico > * {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+  .pantalla-mosaico > .col-completa {
+    column-span: all;
+  }
+  .pantalla-grilla {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    column-gap: 1.25rem;
+  }
+  .pantalla-mosaico > :empty {
+    display: none;
+  }
+  .pantalla-grilla > .col-completa {
+    grid-column: 1 / -1;
+  }
+}
+/* Contenedor vacío (ej. InstalarApp sin nada que mostrar): que no sume
+   espacio ni en el celu. */
+.col-completa:empty {
+  display: none;
+}

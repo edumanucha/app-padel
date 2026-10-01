@@ -372,13 +372,15 @@ export default function HomeForm() {
   if (!perfil) return null;
 
   return (
-    <div className="w-full max-w-md flex flex-col gap-4 pb-10">
-      <InstalarApp />
+    <div className="w-full max-w-md flex flex-col gap-4 pb-10 pantalla-mosaico">
+      <div className="col-completa">
+        <InstalarApp />
+      </div>
 
       {partidoEnCurso && (
         <button
           onClick={() => router.push(`/partido/${partidoEnCurso}/marcador`)}
-          className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-[20px] bg-accent text-accent-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer text-left"
+          className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-[20px] bg-accent text-accent-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer text-left col-completa"
         >
           <span className="flex flex-col">
             <span className="font-heading font-semibold">🎾 Tenés un partido en juego</span>
@@ -389,7 +391,7 @@ export default function HomeForm() {
       )}
 
       {/* 1. Saludo + ranking */}
-      <div className={`${tarjeta} flex items-center justify-between`}>
+      <div className={`${tarjeta} flex items-center justify-between col-completa`}>
         <button onClick={() => router.push("/perfil")} className="flex items-center gap-3 text-left cursor-pointer">
           <div className="w-12 h-12 rounded-full bg-bg overflow-hidden flex items-center justify-center flex-shrink-0">
             {perfil.avatar_url ? (
@@ -439,7 +441,7 @@ export default function HomeForm() {
       </div>
 
       {mostrarNotificaciones && (
-        <div className={`${tarjeta} flex flex-col gap-2`}>
+        <div className={`${tarjeta} flex flex-col gap-2 col-completa`}>
           <div className="flex items-center justify-between">
             <span className="font-heading font-semibold text-sm">{t("home.notificaciones")}</span>
             <div className="flex items-center gap-2">
@@ -471,7 +473,7 @@ export default function HomeForm() {
         </div>
       )}
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && <p className="text-red-600 text-sm col-completa">{error}</p>}
 
       {/* 2. Próximo partido -- con el chip de fecha tipo "calendario", como
           en la referencia que trajo el usuario. */}
@@ -816,7 +818,7 @@ export default function HomeForm() {
       </div>
 
       {/* 12. Pie de página */}
-      <p className="text-center text-xs text-muted pt-4">{t("home.footer")}</p>
+      <p className="text-center text-xs text-muted pt-4 col-completa">{t("home.footer")}</p>
     </div>
   );
 }

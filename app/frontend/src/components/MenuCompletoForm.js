@@ -125,8 +125,8 @@ export default function MenuCompletoForm() {
   }
 
   return (
-    <div className="w-full max-w-md flex flex-col gap-5">
-      <div className="flex items-center justify-between">
+    <div className="w-full max-w-md flex flex-col gap-5 pantalla-mosaico">
+      <div className="flex items-center justify-between col-completa">
         <h1 className="font-heading text-2xl font-semibold">{t("menu.verTodo")}</h1>
         <button
           onClick={() => router.push("/")}
