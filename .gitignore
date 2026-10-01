@@ -39,3 +39,6 @@ service-account*.json
 
 # Scripts SQL con datos de personas reales (nombres de amigos, etc.) -- solo locales
 *.privado.sql
+
+# Libro de diseño: capturas con datos reales -- solo local (se publica como página privada)
+docs/libro-diseno/
