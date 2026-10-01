@@ -14,13 +14,13 @@ export default function OfflinePage() {
       <span className="w-16 h-16 rounded-full bg-bg flex items-center justify-center text-muted">
         <IconoSinConexion width={32} height={32} />
       </span>
-      <h1 className="font-heading text-2xl font-semibold">Sin conexión</h1>
+      <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">Sin conexión</h1>
       <p className="text-muted text-sm">
         Padelito necesita internet para cargar tus partidos y tu perfil. Revisá tu conexión y volvé a intentar.
       </p>
       <button
         onClick={() => window.location.reload()}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer"
       >
         Reintentar
       </button>

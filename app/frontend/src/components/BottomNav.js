@@ -90,9 +90,7 @@ export default function BottomNav() {
           <button
             key={href}
             onClick={() => router.push(href)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-heading font-semibold cursor-pointer ${
-              activa ? "bg-accent text-accent-ink" : "text-muted hover:bg-accent/15 hover:text-ink"
-            }`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-[6px] text-sm font-heading font-semibold cursor-pointer ${ activa ? "bg-accent text-accent-ink" : "text-muted hover:bg-accent/15 hover:text-ink" }`}
           >
             <Icono width={18} height={18} />
             {texto(t)}
@@ -110,9 +108,7 @@ export default function BottomNav() {
         </button>
         <button
           onClick={() => router.push("/perfil")}
-          className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-heading font-semibold cursor-pointer ${
-            pathname.startsWith("/perfil") ? "bg-accent text-accent-ink" : "bg-surface text-ink"
-          }`}
+          className={`flex items-center gap-2 px-3 py-2 rounded-[6px] text-sm font-heading font-semibold cursor-pointer ${ pathname.startsWith("/perfil") ? "bg-accent text-accent-ink" : "bg-surface text-ink" }`}
         >
           <IconoPersona width={18} height={18} />
           {t("nav.perfil")}
@@ -121,8 +117,9 @@ export default function BottomNav() {
     </header>
     <nav
       data-guia="navegacion"
-      className="lg:hidden fixed bottom-4 left-4 right-4 max-w-md mx-auto flex items-center justify-around py-2.5 rounded-[20px] z-40"
-      style={{ background: "var(--nav-bg)", boxShadow: "0 4px 16px rgba(20,38,31,0.16)" }}
+      className="lg:hidden fixed bottom-4 left-4 right-4 max-w-md mx-auto flex items-center justify-around py-2.5 rounded-[8px] z-40"
+      /* Barra oscura tipo cartel (rediseño paso C, 2026-10-01). */
+      style={{ background: "#10201a", boxShadow: "0 4px 16px rgba(20,38,31,0.22)" }}
     >
       {TABS.map(({ href, key, Icono }) => {
         const activa = pathname === href;
@@ -130,9 +127,7 @@ export default function BottomNav() {
           <button
             key={href}
             onClick={() => router.push(href)}
-            className={`flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-[14px] cursor-pointer ${
-              activa ? "bg-accent/20 text-ink" : "text-muted"
-            }`}
+            className={`flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-[6px] cursor-pointer ${ activa ? "bg-accent text-accent-ink" : "text-[#8fb6ae]" }`}
           >
             <span>
               <Icono />

@@ -8,6 +8,7 @@ import CampoCancha from "@/components/CampoCancha";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
 
+import { IconoRayo } from "@/components/Icons";
 const inputClass =
   "rounded-xl bg-bg px-3 py-2 text-ink";
 
@@ -175,14 +176,14 @@ export default function CrearPartidoForm() {
 
   if (partidoCreado) {
     return (
-      <div className="w-full max-w-sm bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-3">
+      <div className="w-full max-w-sm bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <h1 className="font-heading text-2xl font-semibold">
+          <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">
             {t("crearPartido.creado")}
           </h1>
           <button
             onClick={() => router.push("/")}
-            className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+            className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
           >
             {t("crearPartido.volverAlInicio")}
           </button>
@@ -211,14 +212,14 @@ export default function CrearPartidoForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-sm bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4"
+      className="w-full max-w-sm bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-4"
     >
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-2xl font-semibold">{t("home.crearPartido")}</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("home.crearPartido")}</h1>
         <button
           type="button"
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
         >
           {t("crearPartido.volver")}
         </button>
@@ -228,9 +229,9 @@ export default function CrearPartidoForm() {
       <button
         type="button"
         onClick={generarPartidoRapido}
-        className="self-start font-heading font-semibold text-xs px-3 py-1.5 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+        className="self-start font-heading font-semibold text-xs px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
       >
-        ⚡ Generar partido rápido
+        <IconoRayo className="ico" aria-hidden /> Generar partido rápido
       </button>
 
       <label className="flex flex-col gap-1">
@@ -296,7 +297,7 @@ export default function CrearPartidoForm() {
       <button
         type="submit"
         disabled={cargando || !formularioCompleto}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
       >
         {cargando && <PelotaLoader />}
         {cargando ? t("crearPartido.creando") : t("home.crearPartido")}

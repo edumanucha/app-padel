@@ -5,7 +5,7 @@ export default function BasquelitoPage() {
     <main className="min-h-screen flex justify-center p-6">
       <DeporteMaquetaForm
         nombre="Basquelito"
-        emoji="🏀"
+        icono="basquet"
         colorAcento="#f2a65a"
         datosEjemplo={{
           proximoPartido: "Miércoles, 21hs · Gimnasio Central (ejemplo)",

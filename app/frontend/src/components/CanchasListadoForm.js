@@ -65,10 +65,10 @@ export default function CanchasListadoForm() {
   return (
     <div className="w-full max-w-md flex flex-col gap-4 pantalla-grilla">
       <div className="flex items-center justify-between col-completa">
-        <h1 className="font-heading text-2xl font-semibold">{t("canchas.titulo")}</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("canchas.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           {t("canchas.volver")}
         </button>
@@ -77,7 +77,7 @@ export default function CanchasListadoForm() {
       {error && <p className="text-red-600 text-sm col-completa">{error}</p>}
 
       {canchas.length === 0 && (
-        <div className="bg-surface text-muted shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 text-sm col-completa">
+        <div className="bg-surface text-muted border border-ink/10 rounded-[8px] p-6 text-sm col-completa">
           {t("canchas.sinCanchas")}
         </div>
       )}
@@ -86,7 +86,7 @@ export default function CanchasListadoForm() {
         <button
           key={c.id}
           onClick={() => router.push(`/canchas/${c.id}`)}
-          className="text-left bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[16px] p-4 flex flex-col gap-1 cursor-pointer"
+          className="text-left bg-surface text-ink border border-ink/10 rounded-[8px] p-4 flex flex-col gap-1 cursor-pointer"
         >
           <span className="font-heading font-semibold">{c.nombre}</span>
           {c.zona && <span className="text-sm text-muted">{c.zona}</span>}

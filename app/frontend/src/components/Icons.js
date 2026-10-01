@@ -404,3 +404,153 @@ export function IconoPulgar(props) {
     </svg>
   );
 }
+
+// Íconos sumados para sacar los emojis de la app (2026-10-01, rediseño "sin
+// olor a IA", paso A). Mismo trazo y grilla 24x24 que el resto del set.
+
+export function IconoReloj(props) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="6" y="6" width="12" height="12" rx="3" />
+      <path d="M9 6l.6-3h4.8l.6 3M9 18l.6 3h4.8l.6-3" />
+      <path d="M12 9.5V12l1.8 1.2" />
+    </svg>
+  );
+}
+
+export function IconoMicrofono(props) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5.5 11a6.5 6.5 0 0 0 13 0" />
+      <path d="M12 17.5V21M9 21h6" />
+    </svg>
+  );
+}
+
+export function IconoCamara(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M4 8h3l1.5-2.5h7L17 8h3v11H4V8Z" />
+      <circle cx="12" cy="13" r="3.5" />
+    </svg>
+  );
+}
+
+export function IconoDedo(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M10 13V5a1.6 1.6 0 0 1 3.2 0v6" />
+      <path d="M13.2 11h1.4a1.6 1.6 0 0 1 1.6 1.6V13h.6a1.6 1.6 0 0 1 1.6 1.6v1.6c0 2.9-2.3 4.8-5.2 4.8H11c-1.6 0-2.8-.8-3.7-2l-2.4-3.4a1.5 1.5 0 0 1 2.3-1.9L10 15" />
+      <path d="M7 4.5 5.5 3M15.5 4.5 17 3M6 8H4M19 8h-2" />
+    </svg>
+  );
+}
+
+export function IconoBateria(props) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="3" y="7.5" width="16" height="9" rx="2" />
+      <path d="M21 10.5v3" />
+      <path d="M6 10.5v3M9 10.5v3" />
+    </svg>
+  );
+}
+
+export function IconoParlante(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4v-5Z" />
+      <path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" />
+    </svg>
+  );
+}
+
+export function IconoMedalla(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M8 3h3l1 4M16 3h-3l-1 4" />
+      <circle cx="12" cy="14.5" r="5.5" />
+      <path d="m12 11.8.9 1.8 2 .3-1.4 1.4.3 2-1.8-1-1.8 1 .3-2-1.4-1.4 2-.3.9-1.8Z" />
+    </svg>
+  );
+}
+
+export function IconoDiana(props) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <circle cx="12" cy="12" r="5" />
+      <circle cx="12" cy="12" r="1.5" />
+    </svg>
+  );
+}
+
+export function IconoSenal(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M5 19v-2M9.7 19v-5M14.3 19v-8M19 19V6" />
+    </svg>
+  );
+}
+
+export function IconoRayo(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M13 3 5 13.5h6L10 21l8-10.5h-6L13 3Z" />
+    </svg>
+  );
+}
+
+// Estrella para puntuaciones: con `llena` se rellena del color actual.
+export function IconoEstrella({ llena, ...props }) {
+  return (
+    <svg {...base} {...props} fill={llena ? "currentColor" : "none"}>
+      <path d="m12 3.5 2.6 5.3 5.9.9-4.2 4.1 1 5.8L12 16.8l-5.3 2.8 1-5.8-4.2-4.1 5.9-.9L12 3.5Z" />
+    </svg>
+  );
+}
+
+export function IconoSol(props) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" />
+    </svg>
+  );
+}
+
+export function IconoLuna(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10Z" />
+    </svg>
+  );
+}
+
+export function IconoInstalar(props) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="6.5" y="2.5" width="11" height="19" rx="2.5" />
+      <path d="M12 7.5v7M9 11.5l3 3 3-3" />
+      <path d="M10.5 18.5h3" />
+    </svg>
+  );
+}
+
+export function IconoCronometro(props) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="13.5" r="7.5" />
+      <path d="M12 13.5V9.5M10 2.5h4M18.5 6l1.5-1.5" />
+    </svg>
+  );
+}
+
+export function IconoLlamada(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1Z" />
+    </svg>
+  );
+}

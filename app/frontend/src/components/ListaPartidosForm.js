@@ -252,12 +252,12 @@ export default function ListaPartidosForm() {
   return (
     <div className="w-full max-w-md flex flex-col gap-4 pantalla-grilla">
       <div className="flex items-center justify-between col-completa">
-        <h1 className="font-heading text-2xl font-semibold">
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">
           {t("partidosAbiertos.titulo")}
         </h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           {t("partidosAbiertos.volver")}
         </button>
@@ -266,7 +266,7 @@ export default function ListaPartidosForm() {
       {error && <p className="text-red-600 text-sm col-completa">{error}</p>}
       {errorAccion && <p className="text-red-600 text-sm col-completa">{errorAccion}</p>}
 
-      <div className="bg-surface shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[16px] p-3 flex flex-col gap-2 col-completa">
+      <div className="bg-surface border border-ink/10 rounded-[8px] p-3 flex flex-col gap-2 col-completa">
         <input
           type="text"
           value={filtroTexto}
@@ -297,7 +297,7 @@ export default function ListaPartidosForm() {
       </div>
 
       {partidosFiltrados.length === 0 && (
-        <div className="bg-surface text-muted shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 text-sm col-completa">
+        <div className="bg-surface text-muted border border-ink/10 rounded-[8px] p-6 text-sm col-completa">
           {partidos.length === 0
             ? t("partidosAbiertos.sinPartidosAbiertos")
             : t("partidosAbiertos.sinCoincidencias")}
@@ -327,7 +327,7 @@ export default function ListaPartidosForm() {
         return (
           <div
             key={partido.id}
-            className="bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-4 flex flex-col gap-2"
+            className="bg-surface text-ink border border-ink/10 rounded-[8px] p-4 flex flex-col gap-2"
           >
             <span className="font-heading font-semibold">
               {new Date(partido.fecha_hora).toLocaleString(INTL_LOCALE[locale] ?? "es-AR")}
@@ -348,7 +348,7 @@ export default function ListaPartidosForm() {
 
             <button
               onClick={() => router.push(`/partido/${partido.id}`)}
-              className="font-heading font-semibold text-xs px-3 py-1 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] self-start cursor-pointer"
+              className="font-heading font-semibold text-xs px-3 py-1 rounded-[6px] bg-bg text-ink border border-ink/10 self-start cursor-pointer"
             >
               {t("partidosAbiertos.verDetalle")}
             </button>
@@ -359,7 +359,7 @@ export default function ListaPartidosForm() {
                   <button
                     onClick={() => handleConfirmar(partido.id)}
                     disabled={accionEnCurso === partido.id}
-                    className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+                    className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
                   >
                     {accionEnCurso === partido.id && <PelotaLoader />}
                     {t("partidosAbiertos.confirmarAsistencia")}
@@ -375,7 +375,7 @@ export default function ListaPartidosForm() {
                         ? t("partidosAbiertos.faltaMenosDeUnaHoraTitle")
                         : undefined
                     }
-                    className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-red-600 shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+                    className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-red-600 border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
                   >
                     {accionEnCurso === partido.id && <PelotaLoader />}
                     {estoyConfirmado ? t("partidosAbiertos.cancelarAsistencia") : t("partidosAbiertos.salir")}
@@ -385,7 +385,7 @@ export default function ListaPartidosForm() {
                     <button
                       onClick={() => handleConfirmarLugarEspera(partido.id)}
                       disabled={accionEnCurso === partido.id || estaCompleto}
-                      className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+                      className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
                     >
                       {accionEnCurso === partido.id && <PelotaLoader />}
                       {estaCompleto ? t("misPartidos.listaEspera") : t("partidosAbiertos.confirmarMiLugar")}
@@ -393,7 +393,7 @@ export default function ListaPartidosForm() {
                     <button
                       onClick={() => handleSalir(partido.id)}
                       disabled={accionEnCurso === partido.id}
-                      className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-red-600 shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60"
+                      className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-red-600 border border-ink/10 cursor-pointer disabled:opacity-60"
                     >
                       {t("partidosAbiertos.salirDeLista")}
                     </button>
@@ -402,7 +402,7 @@ export default function ListaPartidosForm() {
                   <button
                     onClick={() => handleAnotarmeEnEspera(partido.id)}
                     disabled={accionEnCurso === partido.id}
-                    className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+                    className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
                   >
                     {accionEnCurso === partido.id && <PelotaLoader />}
                     {t("partidosAbiertos.anotarmeEnEspera")}
@@ -411,7 +411,7 @@ export default function ListaPartidosForm() {
                   <button
                     onClick={() => handleSumarme(partido.id)}
                     disabled={accionEnCurso === partido.id}
-                    className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+                    className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
                   >
                     {accionEnCurso === partido.id && <PelotaLoader />}
                     {t("partidoPublico.sumarme")}

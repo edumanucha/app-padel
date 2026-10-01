@@ -28,6 +28,9 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | # | Bandera | Fecha | Cambio | Estado |
 |---|---|---|---|---|
 | D-00 | `antes-rediseno` | 2026-10-01 | Punto de partida (app tal como estaba) | Base |
+| D-01 | `diseno-01-sin-emojis` | 2026-10-01 | Paso A: emojis → íconos de línea propios o solo texto | En `rediseno` |
+| D-02 | `diseno-02-titulos-cartel` | 2026-10-01 | Paso B: títulos en Big Shoulders, mayúscula | En `rediseno` |
+| D-03 | `diseno-03-jerarquia-cartel` | 2026-10-01 | Paso C: jerarquía "Cartel de estadio" | En `rediseno` |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -50,6 +53,28 @@ Diagnóstico "olor a IA" (revisión del código, a partir de una lista que trajo
 | Layout | ⚠️ Una columna | Todo centrado, tarjetas del mismo ancho (en compu: tablero 2/3 + 1/3) |
 
 Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos → **C** jerarquía de tarjetas → **D** botones con distintos pesos → **E** detalles propios (dígitos de marcador, textura de cancha).
+
+### Elección del estilo — `/pruebas-rediseno` (2026-10-01)
+
+- **Opciones mostradas:** Hoy · 1 Cartel de estadio · 2 Editorial · 3 Marcador (Inicio con los mismos datos).
+- **Elegida por el usuario:** **1 · Cartel de estadio** ("este estilo me encantó").
+- **Pedido:** aplicarlo a toda la app, después a la versión de compu; "cualquier cosa volvemos atrás".
+
+### D-01 · `diseno-01-sin-emojis` — paso A (2026-10-01)
+
+- **Qué cambió:** ~150 emojis fuera. Íconos de línea propios en botones, opciones, modos del Marcadorcito, estrellas, tema y deportes (14 íconos nuevos en `Icons.js` + clase `.ico` para íconos dentro de texto). Textos sin emojis decorativos (es/en/pt).
+- **Se quedan a propósito:** pelotita/Padelito, símbolos ⏭ ⏮ ⏸ del reloj (sin selector de emoji), manos que confirman el gesto de la cámara, ✕ y ✓.
+- **Pantallas:** todas (27 archivos).
+
+### D-02 · `diseno-02-titulos-cartel` — paso B (2026-10-01)
+
+- **Qué cambió:** fuente de títulos `--font-titulo` = Big Shoulders (next/font, eje `opsz`), mayúscula y más grande en los 32 títulos de pantalla y en las hojas de abajo. El texto sigue en Archivo.
+
+### D-03 · `diseno-03-jerarquia-cartel` — paso C (2026-10-01)
+
+- **Inicio:** saludo grande sin tarjeta (puesto y puntos como etiqueta), próximo partido como protagonista verde tablero con fecha amarilla, Marcadorcito como único botón amarillo, crear/abiertos en fila con líneas, invitación como una línea, números grandes con divisores.
+- **Toda la app:** esquinas 14–20 px → 6–8 px; 152 sombras → línea fina; 126 píldoras → rectángulos; 41 botones amarillos sin contorno grueso; barra de abajo oscura con la pestaña activa en amarillo.
+- **Pendiente:** adaptar la vista de compu (pedido del usuario); pasar `rediseno` a `main` cuando el usuario lo apruebe.
 
 <!-- Plantilla para cada cambio nuevo:
 
@@ -106,7 +131,7 @@ Para comparar las versiones (banderas) cuando el usuario quiera. Puntaje de 1 a 
 | Canchas | `/canchas` | | | | | |
 | Detalle de cancha | `/canchas/[id]` | | | | | |
 | Apelaciones (admin) | `/apelaciones` | | | | | |
-| Admin canchas | `/admin` | | | | | |
+| Admin canchas | `/admin/canchas` | | | | | |
 | Sin conexión | `/offline` | | | | | |
 | Hojas de abajo (opciones, filtros, etc.) | varias | | | | | |
 | Vista en compu (Inicio) | `/` en pantalla grande | | | | | |

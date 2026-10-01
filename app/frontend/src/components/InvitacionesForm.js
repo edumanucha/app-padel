@@ -119,12 +119,12 @@ export default function InvitacionesForm() {
   return (
     <div className="w-full max-w-md flex flex-col gap-4 pantalla-grilla">
       <div className="flex items-center justify-between col-completa">
-        <h1 className="font-heading text-2xl font-semibold">
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">
           {t("invitaciones.titulo")}
         </h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           {t("invitaciones.volver")}
         </button>
@@ -134,7 +134,7 @@ export default function InvitacionesForm() {
       {errorAccion && <p className="text-red-600 text-sm col-completa">{errorAccion}</p>}
 
       {invitaciones.length === 0 && (
-        <div className="bg-surface text-muted shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 text-sm col-completa">
+        <div className="bg-surface text-muted border border-ink/10 rounded-[8px] p-6 text-sm col-completa">
           {t("invitaciones.sinPendientes")}
         </div>
       )}
@@ -142,7 +142,7 @@ export default function InvitacionesForm() {
       {invitaciones.map((invitacion) => (
         <div
           key={invitacion.id}
-          className="bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-4 flex flex-col gap-2"
+          className="bg-surface text-ink border border-ink/10 rounded-[8px] p-4 flex flex-col gap-2"
         >
           <span className="font-heading font-semibold">
             {new Date(invitacion.partidos.fecha_hora).toLocaleString(INTL_LOCALE[locale] ?? "es-AR")}
@@ -153,7 +153,7 @@ export default function InvitacionesForm() {
             <button
               onClick={() => handleAceptar(invitacion.id)}
               disabled={accionEnCurso === invitacion.id}
-              className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+              className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
             >
               {accionEnCurso === invitacion.id && <PelotaLoader />}
               {t("invitaciones.aceptar")}
@@ -161,7 +161,7 @@ export default function InvitacionesForm() {
             <button
               onClick={() => handleRechazar(invitacion.id)}
               disabled={accionEnCurso === invitacion.id}
-              className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-red-600 shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60"
+              className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-red-600 border border-ink/10 cursor-pointer disabled:opacity-60"
             >
               {t("invitaciones.rechazar")}
             </button>

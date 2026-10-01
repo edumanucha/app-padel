@@ -7,7 +7,7 @@ import PelotaLoader from "@/components/PelotaLoader";
 import DotDigit from "@/components/DotDigit";
 import Toggle from "@/components/Toggle";
 import HojaAbajo, { PestanasHoja } from "@/components/HojaAbajo";
-import { IconoGirarTelefono } from "@/components/Icons";
+import { IconoGirarTelefono, IconoReloj, IconoDedo, IconoMicrofono, IconoMano, IconoCamara, IconoPelota, IconoEngranaje, IconoParlante, IconoMedalla, IconoDiana, IconoBandera, IconoCompartir } from "@/components/Icons";
 import { sumarPunto, setsGanados, formatearPuntos } from "@/lib/marcadorEngine";
 import styles from "@/components/Marcador.module.css";
 import { compartirTarjetaResultado } from "@/lib/tarjetaResultado";
@@ -70,7 +70,7 @@ function SelectorTema({ tema, onElegir }) {
         aria-haspopup="listbox"
         aria-expanded={abierto}
         aria-label="Tema del tablero"
-        className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer flex items-center gap-1"
+        className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer flex items-center gap-1"
       >
         {actual.texto}
         <span aria-hidden className="text-xs">▾</span>
@@ -79,7 +79,7 @@ function SelectorTema({ tema, onElegir }) {
         <ul
           role="listbox"
           aria-label="Tema del tablero"
-          className="absolute right-0 top-full mt-1 z-50 min-w-full bg-surface text-ink rounded-[14px] shadow-xl py-1 whitespace-nowrap"
+          className="absolute right-0 top-full mt-1 z-50 min-w-full bg-surface text-ink rounded-[6px] shadow-xl py-1 whitespace-nowrap"
         >
           {TEMAS.map((t) => (
             <li key={t.valor}>
@@ -134,20 +134,20 @@ function ElegirModo({ modos, bateria }) {
       </div>
       <p className="text-sm text-center text-muted min-h-[2.75em]">{actual.detalle}</p>
       {bateria && !bateria.cargando && bateria.nivel < 50 && actual.modo === "camara" && (
-        <p className="text-xs rounded-[12px] px-3 py-2 bg-amber-100 text-amber-900">
-          🔋 Batería: {bateria.nivel}%. La cámara consume bastante: para un partido entero conviene arrancar con más de 50%.
+        <p className="text-xs rounded-[6px] px-3 py-2 bg-amber-100 text-amber-900">
+          Batería al {bateria.nivel}%. La cámara consume bastante: para un partido entero conviene arrancar con más de 50%.
         </p>
       )}
       <button
         type="button"
         onClick={actual.activar}
-        className="rounded-full font-heading font-bold text-base py-3 bg-accent text-accent-ink border-2 border-outline cursor-pointer"
+        className="rounded-full font-heading font-bold text-base py-3 bg-accent text-accent-ink cursor-pointer"
       >
         Empezar con {actual.nombre} →
       </button>
       <p className="text-xs text-center text-muted -mt-1">
-        {bateria ? `🔋 ${bateria.nivel}%${bateria.cargando ? " (cargando)" : ""} · ` : ""}La pantalla queda prendida. Lo cambiás
-        cuando quieras desde ⚙️.
+        {bateria ? `Batería ${bateria.nivel}%${bateria.cargando ? " (cargando)" : ""} · ` : ""}La pantalla queda prendida. Lo cambiás
+        cuando quieras desde Opciones.
       </p>
     </>
   );
@@ -1242,11 +1242,11 @@ export default function MarcadorForm({ partidoId }) {
           const desde = resultadoRef.current?.created_at ? new Date(resultadoRef.current.created_at).getTime() : Date.now();
           const min = Math.max(0, Math.floor((Date.now() - desde) / 60000));
           const duracion = min >= 60 ? `${Math.floor(min / 60)}h ${String(min % 60).padStart(2, "0")}'` : `${min}'`;
-          const detalle = `${sets} · ⏱️ ${duracion}`;
+          const detalle = `${sets} · ${duracion}`;
           const mio = miEquipoRef.current;
           const titulo = mio
-            ? mio === evPartido.ganador ? "🏆 ¡Ganaste!" : "Perdiste"
-            : `🏁 Ganó ${nombreEquipoVoz(evPartido.ganador)}`;
+            ? mio === evPartido.ganador ? "¡Ganaste!" : "Perdiste"
+            : `Ganó ${nombreEquipoVoz(evPartido.ganador)}`;
           notificarReloj(titulo, detalle);
         }
       }
@@ -1401,7 +1401,7 @@ export default function MarcadorForm({ partidoId }) {
   // Una página no puede leer los botones del reloj, pero sí los comandos de
   // música del sistema (Media Session API) mientras reproduce audio -- se
   // reproduce en loop un silencio de 12 s (public/sonidos/silencio.wav) y
-  // se mapean: ⏭️ siguiente = punto A, ⏮️ anterior = punto B, ⏸️/▶️ =
+  // se mapean: ⏭ siguiente = punto A, ⏮ anterior = punto B, ⏸/▶️ =
   // deshacer. Probado con el Redmi Watch 5 Lite del usuario en
   // /pruebas-reloj (volumen +/- NO llega a la página: lo maneja el sistema).
   // Los handlers de media se registran una sola vez, por eso llaman a las
@@ -1460,7 +1460,7 @@ export default function MarcadorForm({ partidoId }) {
       relojSonandoRef.current = audio;
       navigator.mediaSession.metadata = new MediaMetadata({
         title: "Marcadorcito",
-        artist: "⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer · ⏸️⏸️ Saque",
+        artist: "⏭ Punto A · ⏮ Punto B · ⏸ Deshacer · ⏸⏸ Saque",
         album: "Padelito",
       });
       const conAntiRebote = (fn) => () => {
@@ -2057,7 +2057,7 @@ export default function MarcadorForm({ partidoId }) {
         <p className="text-red-600 text-sm">{error || "No se pudo cargar el marcador."}</p>
         <button
           onClick={() => router.push(`/partido/${partidoId}`)}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer self-start"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer self-start"
         >
           Volver
         </button>
@@ -2107,7 +2107,7 @@ export default function MarcadorForm({ partidoId }) {
           </p>
           <button
             onClick={seguirEnElPartido}
-            className="rounded-full font-heading font-bold text-base py-3 bg-accent text-accent-ink border-2 border-outline cursor-pointer"
+            className="rounded-full font-heading font-bold text-base py-3 bg-accent text-accent-ink cursor-pointer"
           >
             Seguir jugando
           </button>
@@ -2125,19 +2125,19 @@ export default function MarcadorForm({ partidoId }) {
             }}
             className="rounded-full font-heading font-semibold text-sm py-2.5 bg-red-600/10 text-red-600 cursor-pointer"
           >
-            🏁 Terminar partido
+            <IconoBandera className="ico" aria-hidden /> Terminar partido
           </button>
         </HojaAbajo>
       )}
       {sinSincronizar && (
-        <div className="fixed top-1.5 left-1.5 z-50 pointer-events-none rounded-full bg-amber-400 text-black text-[11px] font-semibold px-2.5 py-1 shadow">
-          📶 Sin señal · puntos guardados en el celu
+        <div className="fixed top-1.5 left-1.5 z-50 pointer-events-none rounded-[6px] bg-amber-400 text-black text-[11px] font-semibold px-2.5 py-1 shadow">
+          Sin señal · puntos guardados en el celu
         </div>
       )}
       <div className="w-full flex items-center justify-between gap-2 flex-wrap">
         <button
           onClick={() => router.push(`/partido/${partidoId}`)}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           Volver al detalle
         </button>
@@ -2145,7 +2145,7 @@ export default function MarcadorForm({ partidoId }) {
           <SelectorTema tema={tema} onElegir={elegirTema} />
           <button
             onClick={() => setModoApaisado((v) => !v)}
-            className={`${styles.botonApaisado} font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer`}
+            className={`${styles.botonApaisado} font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer`}
           >
             <IconoGirarTelefono width={16} height={16} />
             {modoApaisado ? "Modo vertical" : "Modo apaisado"}
@@ -2180,9 +2180,9 @@ export default function MarcadorForm({ partidoId }) {
             modos={[
               {
                 modo: "reloj",
-                icono: "⌚",
+                icono: <IconoReloj width={30} height={30} />,
                 nombre: "Reloj",
-                detalle: "⏭️ punto A · ⏮️ punto B · ⏸️ deshacer. Y el reloj te muestra el resultado.",
+                detalle: "⏭ punto A · ⏮ punto B · ⏸ deshacer. Y el reloj te muestra el resultado.",
                 activar: () => {
                   setModoElegido("reloj");
                   activarReloj();
@@ -2190,14 +2190,14 @@ export default function MarcadorForm({ partidoId }) {
               },
               {
                 modo: "botones",
-                icono: "👆",
+                icono: <IconoDedo width={30} height={30} />,
                 nombre: "Manual",
                 detalle: "Tocás los botones de la pantalla, uno por pareja.",
                 activar: () => setModoElegido("botones"),
               },
               {
                 modo: "voz",
-                icono: "🗣️",
+                icono: <IconoMicrofono width={30} height={30} />,
                 nombre: "Voz",
                 detalle: "Decí “marcador punto A” o “punto B”.",
                 activar: () => {
@@ -2207,9 +2207,9 @@ export default function MarcadorForm({ partidoId }) {
               },
               {
                 modo: "camara",
-                icono: "✋",
+                icono: <IconoMano width={30} height={30} />,
                 nombre: "Gestos",
-                detalle: "Con la cámara: ✋ mano abierta del lado de cada pareja · 👍 deshacer.",
+                detalle: "Con la cámara: mano abierta del lado de cada pareja; pulgar para deshacer.",
                 activar: () => {
                   setModoElegido("camara");
                   activarCamara();
@@ -2258,7 +2258,7 @@ export default function MarcadorForm({ partidoId }) {
                   padding: "2px 10px",
                 }}
               >
-                🏆 Set decisivo
+                Set decisivo
               </span>
             )}
           </div>
@@ -2266,7 +2266,7 @@ export default function MarcadorForm({ partidoId }) {
             {camaraActiva && (
               <span className={`${styles.pill} ${styles.pillMic}`}>
                 <span className={styles.pillDot} />
-                <span style={{ fontSize: 14, lineHeight: 1, verticalAlign: "middle" }}>📷</span> Cámara activa
+                <IconoCamara className="ico" aria-hidden /> Cámara activa
               </span>
             )}
             {escuchando && (
@@ -2290,7 +2290,7 @@ export default function MarcadorForm({ partidoId }) {
               aria-label="Cambiar saque"
               title="Cambiar saque"
             >
-              🎾
+              <IconoPelota width={16} height={16} aria-hidden />
             </button>
             <button
               onClick={() => setMostrarOpciones((v) => !v)}
@@ -2299,7 +2299,7 @@ export default function MarcadorForm({ partidoId }) {
               aria-label="Opciones"
               title="Opciones"
             >
-              ⚙️
+              <IconoEngranaje width={16} height={16} aria-hidden />
             </button>
           </div>
         </div>
@@ -2322,7 +2322,7 @@ export default function MarcadorForm({ partidoId }) {
             />
             {pestanaOpciones === "puntos" && (
             <div className="flex flex-col gap-3">
-              <FilaOpcion etiqueta="📷 Cámara (gestos)">
+              <FilaOpcion etiqueta={<><IconoCamara className="ico" aria-hidden /> Cámara (gestos)</>}>
                 <Toggle
                   checked={camaraActiva}
                   onChange={(v) => (v ? activarCamara() : desactivarCamara())}
@@ -2339,12 +2339,12 @@ export default function MarcadorForm({ partidoId }) {
               {ultimoGesto && <span className="text-xs text-muted pl-1">Último gesto: {ultimoGesto}</span>}
               {errorCamara && <span className="text-xs text-red-600 pl-1">{errorCamara}</span>}
 
-              <FilaOpcion etiqueta="⌚ Reloj / auriculares">
+              <FilaOpcion etiqueta={<><IconoReloj className="ico" aria-hidden /> Reloj o auriculares</>}>
                 <Toggle checked={relojActivo} onChange={(v) => (v ? activarReloj() : desactivarReloj())} />
               </FilaOpcion>
               {relojActivo && (
                 <>
-                  <span className="text-xs text-muted pl-1">⏭️ Punto A · ⏮️ Punto B · ⏸️ Deshacer · ⏸️⏸️ (dos rápido) cambiar saque. Tanteador en vivo en el reloj y aviso al terminar el partido.</span>
+                  <span className="text-xs text-muted pl-1">⏭ Punto A · ⏮ Punto B · ⏸ Deshacer · ⏸⏸ (dos rápido) cambiar saque. Tanteador en vivo en el reloj y aviso al terminar el partido.</span>
                   <span className="text-xs text-muted pl-1">Qué se ve en el reloj (● = quién saca):</span>
                   <div className="flex flex-col gap-1.5">
                     {[
@@ -2356,7 +2356,7 @@ export default function MarcadorForm({ partidoId }) {
                       <button
                         key={valor}
                         onClick={() => elegirFormatoReloj(valor)}
-                        className={`text-left rounded-[12px] px-3 py-2 border-2 cursor-pointer ${formatoReloj === valor ? "border-accent bg-bg" : "border-outline bg-surface"}`}
+                        className={`text-left rounded-[6px] px-3 py-2 border-2 cursor-pointer ${formatoReloj === valor ? "border-accent bg-bg" : "border-outline bg-surface"}`}
                       >
                         <span className="block text-sm font-semibold">{arriba}</span>
                         <span className="block text-xs text-muted">{abajo}</span>
@@ -2368,17 +2368,17 @@ export default function MarcadorForm({ partidoId }) {
               {errorReloj && <span className="text-xs text-red-600 pl-1">{errorReloj}</span>}
 
               {vozDisponible ? (
-                <FilaOpcion etiqueta="🎙️ Voz">
+                <FilaOpcion etiqueta={<><IconoMicrofono className="ico" aria-hidden /> Voz</>}>
                   <Toggle checked={escuchando} onChange={setEscuchando} />
                 </FilaOpcion>
               ) : (
                 <span className="text-xs text-muted">Voz no disponible en este navegador</span>
               )}
 
-              <FilaOpcion etiqueta="🔊 Anuncios">
+              <FilaOpcion etiqueta={<><IconoParlante className="ico" aria-hidden /> Anuncios</>}>
                 <Toggle checked={!silenciado} onChange={(v) => setSilenciado(!v)} />
               </FilaOpcion>
-              <FilaOpcion etiqueta="🔊 Sonidos">
+              <FilaOpcion etiqueta={<><IconoParlante className="ico" aria-hidden /> Sonidos</>}>
                 <Toggle checked={sonidoActivo} onChange={setSonidoActivo} />
               </FilaOpcion>
             </div>
@@ -2386,16 +2386,16 @@ export default function MarcadorForm({ partidoId }) {
 
             {pestanaOpciones === "reglas" && (
             <div className="flex flex-col gap-3">
-              <FilaOpcion etiqueta="🏅 Punto de oro">
+              <FilaOpcion etiqueta={<><IconoMedalla className="ico" aria-hidden /> Punto de oro</>}>
                 <Toggle checked={puntoDeOro} onChange={handleTogglePuntoDeOro} disabled={pausado} />
               </FilaOpcion>
               {setsA.length < 3 ? (
-                <FilaOpcion etiqueta="🎯 Súper tie-break (3er set)">
+                <FilaOpcion etiqueta={<><IconoDiana className="ico" aria-hidden /> Súper tie-break (3er set)</>}>
                   <Toggle checked={superTiebreak3erSet} onChange={handleToggleSuperTiebreak} disabled={pausado} />
                 </FilaOpcion>
               ) : (
                 esSuperTiebreakFinal && (
-                  <span className="text-xs text-muted">🎯 Jugando el 3er set a súper tie-break (a 10)</span>
+                  <span className="text-xs text-muted">Jugando el 3er set a súper tie-break (a 10)</span>
                 )
               )}
             </div>
@@ -2409,7 +2409,7 @@ export default function MarcadorForm({ partidoId }) {
                   onClick={() => handleCambiarSaque(saque === "A" ? "B" : "A")}
                   disabled={pausado}
                 >
-                  🎾 Cambiar saque
+                  <IconoPelota className="ico" aria-hidden /> Cambiar saque
                 </button>
                 <button
                   className="flex-1 font-heading font-semibold text-xs px-3 py-2 rounded-xl bg-bg text-ink border-2 border-outline cursor-pointer"
@@ -2428,7 +2428,7 @@ export default function MarcadorForm({ partidoId }) {
                     className="font-heading font-semibold text-xs px-3 py-2 rounded-xl bg-accent-3/15 text-accent-3-ink border-2 border-accent-3 cursor-pointer self-start"
                     onClick={() => setMostrarApelar((v) => !v)}
                   >
-                    🚩 Apelar
+                    <IconoBandera className="ico" aria-hidden /> Apelar
                   </button>
                   {mostrarApelar && (
                     <div className="flex flex-col gap-2">
@@ -2464,7 +2464,7 @@ export default function MarcadorForm({ partidoId }) {
                 className="font-heading font-semibold text-xs px-3 py-2 rounded-xl bg-red-600/10 text-red-600 border-2 border-red-600 cursor-pointer self-start"
                 onClick={() => setConfirmandoTerminar(true)}
               >
-                🏁 Terminar partido
+                <IconoBandera className="ico" aria-hidden /> Terminar partido
               </button>
             ) : (
               <div className="flex gap-2">
@@ -2578,13 +2578,13 @@ export default function MarcadorForm({ partidoId }) {
 
         {resultado.finalizado ? (
           <div className={styles.finalBanner}>
-            🏆 Partido para {nombreEquipo(resultado.ganador)}
+            Partido para {nombreEquipo(resultado.ganador)}
             <button
               className={`${styles.ctrlBtn} ${styles.ctrlBtnCompartir}`}
               onClick={handleCompartirResultado}
               disabled={compartiendo}
             >
-              {compartiendo ? "Armando..." : "📤 Compartir resultado"}
+              {compartiendo ? "Armando..." : <><IconoCompartir className="ico" aria-hidden /> Compartir resultado</>}
             </button>
           </div>
         ) : (
@@ -2593,7 +2593,7 @@ export default function MarcadorForm({ partidoId }) {
             <span className={styles.bigText} ref={bigTextRef} />
             <div className={styles.leyendoOverlay} ref={leyendoOverlayRef}>
               <div className={styles.leyendoRelleno} ref={leyendoRellenoRef} />
-              <span className={styles.leyendoEyebrow}>👀 Leyendo seña...</span>
+              <span className={styles.leyendoEyebrow}>Leyendo seña...</span>
               <span className={styles.leyendoIcon} ref={leyendoIconRef} />
               <span className={styles.leyendoAccion} ref={leyendoAccionRef} />
             </div>
@@ -2653,7 +2653,7 @@ export default function MarcadorForm({ partidoId }) {
         <div className={styles.caption}>
           {puntoDeOro ? "Punto de oro activado" : "Con ventaja (deuce tradicional)"}
           {camaraActiva
-            ? ' · ✋ mano abierta a la derecha = punto A · a la izquierda = punto B · 👎 pulgar solo = deshacer'
+            ? ' · mano abierta a la derecha = punto A · a la izquierda = punto B · pulgar solo = deshacer'
             : escuchando
             ? ' · decí "marcador, punto A/B" o "deshacer" para cantar el tanto, o "marcador, 40 15" para corregir'
             : ""}

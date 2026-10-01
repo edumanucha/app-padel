@@ -39,3 +39,11 @@ service-account*.json
 
 # Scripts SQL con datos de personas reales (nombres de amigos, etc.) -- solo locales
 *.privado.sql
+
+# Libro de diseño: capturas con datos reales -- solo local (se publica como página privada)
+docs/libro-diseno/
+
+# Herramienta de capturas: perfil temporal de Chrome y hoja de miniaturas
+herramientas/capturas-libro/.perfil-chrome/
+herramientas/capturas-libro/hoja.html
+herramientas/capturas-libro/hoja.png

@@ -12,20 +12,7 @@ import InstalarApp from "@/components/InstalarApp";
 import BarraEstadistica from "@/components/BarraEstadistica";
 import Toggle from "@/components/Toggle";
 import { calcularResumenEstadisticas, calcularPuntosRanking } from "@/lib/estadisticasMarcadorcito";
-import {
-  IconoTelefono,
-  IconoPersona,
-  IconoMapa,
-  IconoPin,
-  IconoMano,
-  IconoPelota,
-  IconoCampana,
-  IconoMensaje,
-  IconoOjo,
-  IconoOjoTachado,
-  IconoTrofeo,
-  IconoChevron,
-} from "@/components/Icons";
+import { IconoTelefono, IconoPersona, IconoMapa, IconoPin, IconoMano, IconoPelota, IconoCampana, IconoMensaje, IconoOjo, IconoOjoTachado, IconoTrofeo, IconoChevron, IconoEstrella } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
 
@@ -409,8 +396,8 @@ export default function VerPerfilForm() {
 
   if (perfilInactivo) {
     return (
-      <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
-        <h1 className="font-heading text-2xl font-semibold">
+      <div className="w-full max-w-md bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-4">
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">
           {t("verPerfil.cuentaDadaDeBaja")}
         </h1>
         <p className="text-muted text-sm">{t("verPerfil.preguntaReactivar")}</p>
@@ -423,7 +410,7 @@ export default function VerPerfilForm() {
           <button
             onClick={handleReactivar}
             disabled={reactivando}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
           >
             {reactivando && <PelotaLoader />}
             {reactivando ? t("verPerfil.reactivando") : t("verPerfil.reactivarCuenta")}
@@ -432,7 +419,7 @@ export default function VerPerfilForm() {
             type="button"
             onClick={handleCancelarReactivacion}
             disabled={reactivando}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60"
+            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer disabled:opacity-60"
           >
             {t("verPerfil.cancelar")}
           </button>
@@ -443,7 +430,7 @@ export default function VerPerfilForm() {
 
   if (error) {
     return (
-      <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6">
+      <div className="w-full max-w-md bg-surface text-ink border border-ink/10 rounded-[8px] p-6">
         <p className="text-red-600 text-sm">{error}</p>
       </div>
     );
@@ -458,9 +445,9 @@ export default function VerPerfilForm() {
     return (
       <form
         onSubmit={handleGuardar}
-        className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4"
+        className="w-full max-w-md bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-4"
       >
-        <h1 className="font-heading text-2xl font-semibold">{t("verPerfil.editarPerfil")}</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("verPerfil.editarPerfil")}</h1>
 
         <AvatarUpload
           userId={perfil.id}
@@ -589,7 +576,7 @@ export default function VerPerfilForm() {
           <button
             type="submit"
             disabled={guardando || !formularioEdicionCompleto}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
           >
             {guardando && <PelotaLoader />}
             {guardando ? t("verPerfil.guardando") : t("verPerfil.guardarCambios")}
@@ -598,7 +585,7 @@ export default function VerPerfilForm() {
             type="button"
             onClick={cancelarEdicion}
             disabled={guardando}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60"
+            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer disabled:opacity-60"
           >
             {t("verPerfil.cancelar")}
           </button>
@@ -610,10 +597,10 @@ export default function VerPerfilForm() {
   return (
     <div className="w-full max-w-md flex flex-col gap-4 pantalla-mosaico">
       <div className="flex items-center justify-between col-completa">
-        <h1 className="font-heading text-2xl font-semibold">{t("verPerfil.titulo")}</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("verPerfil.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           {t("verPerfil.volver")}
         </button>
@@ -642,7 +629,7 @@ export default function VerPerfilForm() {
             nivel") + ranking, los dos datos que más le importan a un
             jugador. */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-bg rounded-[16px] p-3 flex flex-col gap-1">
+          <div className="bg-bg rounded-[8px] p-3 flex flex-col gap-1">
             <span className="text-xs text-muted uppercase tracking-wide">
               {t("perfilJugador.nivelTemplate", { etiqueta: etiquetaNivel(perfil.nivel, t) })}
             </span>
@@ -651,19 +638,19 @@ export default function VerPerfilForm() {
               aria-label={t("verPerfil.estrellasAriaLabel", { n: 8 - perfil.nivel })}
             >
               {Array.from({ length: 8 - perfil.nivel }).map((_, i) => (
-                <span key={`llena-${i}`} className="estrella-llena-entra" style={{ animationDelay: `${i * 130}ms` }}>
-                  ⭐
+                <span key={`llena-${i}`} className="estrella-llena-entra text-accent" style={{ animationDelay: `${i * 130}ms` }}>
+                  <IconoEstrella llena className="ico" aria-hidden />
                 </span>
               ))}
               {Array.from({ length: perfil.nivel - 1 }).map((_, i) => (
-                <span key={`vacia-${i}`}>☆</span>
+                <IconoEstrella key={`vacia-${i}`} className="ico text-muted" aria-hidden />
               ))}
             </span>
           </div>
           <button
             type="button"
             onClick={irAEstadisticas}
-            className="bg-bg rounded-[16px] p-3 flex flex-col gap-1 text-left cursor-pointer"
+            className="bg-bg rounded-[8px] p-3 flex flex-col gap-1 text-left cursor-pointer"
           >
             <span className="text-xs text-muted uppercase tracking-wide">{t("perfilJugador.ranking")}</span>
             <span className="font-heading text-lg font-semibold flex items-center gap-1.5">
@@ -828,9 +815,7 @@ export default function VerPerfilForm() {
                       </span>
                       <span className="flex items-center gap-2 flex-shrink-0">
                         <span
-                          className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                            p.gane ? "bg-[#22c55e]/20 text-[#16a34a]" : "bg-[#ef4444]/20 text-[#dc2626]"
-                          }`}
+                          className={`text-xs font-bold px-2 py-0.5 rounded-[6px] ${ p.gane ? "bg-[#22c55e]/20 text-[#16a34a]" : "bg-[#ef4444]/20 text-[#dc2626]" }`}
                         >
                           {p.gane ? t("home.ganaste") : t("home.perdiste")}
                         </span>
@@ -895,13 +880,13 @@ export default function VerPerfilForm() {
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={comenzarEdicion}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer"
           >
             {t("verPerfil.editar")}
           </button>
           <button
             onClick={handleCerrarSesion}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
           >
             {t("verPerfil.cerrarSesion")}
           </button>
@@ -909,7 +894,7 @@ export default function VerPerfilForm() {
 
         <button
           onClick={() => setMostrarConfirmacionBaja(true)}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-surface text-red-600 shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer self-start"
+          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-red-600 border border-ink/10 cursor-pointer self-start"
         >
           {t("verPerfil.darDeBajaCuenta")}
         </button>
@@ -948,7 +933,7 @@ export default function VerPerfilForm() {
   );
 }
 
-const tarjeta = "bg-surface text-ink rounded-[18px] p-4 shadow-[0_1px_3px_rgba(20,38,31,0.08)]";
+const tarjeta = "bg-surface text-ink rounded-[8px] p-4 border border-ink/10";
 
 function Subtitulo({ children }) {
   return <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">{children}</span>;
@@ -956,7 +941,7 @@ function Subtitulo({ children }) {
 
 function Campo({ icono, etiqueta, valor }) {
   return (
-    <div className="bg-bg shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[14px] p-2.5 flex flex-col gap-0.5">
+    <div className="bg-bg border border-ink/10 rounded-[6px] p-2.5 flex flex-col gap-0.5">
       <span className="font-heading text-xs text-muted flex items-center gap-1">
         {icono && <span aria-hidden="true" className="flex items-center">{icono}</span>} {etiqueta}
       </span>

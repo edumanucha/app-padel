@@ -106,12 +106,12 @@ export default function ApelacionesForm() {
   return (
     <div className="w-full max-w-md flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-2xl font-semibold">
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">
           {esSuperusuario ? t("apelaciones.tituloSuperusuario") : t("apelaciones.tituloJugador")}
         </h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           {t("apelaciones.volver")}
         </button>
@@ -120,7 +120,7 @@ export default function ApelacionesForm() {
       {error && <p className="text-red-600 text-sm">{error}</p>}
 
       {apelaciones.length === 0 && (
-        <div className="bg-surface text-muted shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 text-sm">
+        <div className="bg-surface text-muted border border-ink/10 rounded-[8px] p-6 text-sm">
           {esSuperusuario ? t("apelaciones.sinApelacionesPendientes") : t("apelaciones.sinApelacionesTuyas")}
         </div>
       )}
@@ -128,7 +128,7 @@ export default function ApelacionesForm() {
       {apelaciones.map((ap) => (
         <div
           key={ap.id}
-          className="bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[16px] p-3 flex flex-col gap-2"
+          className="bg-surface text-ink border border-ink/10 rounded-[8px] p-3 flex flex-col gap-2"
         >
           <div className="flex items-center justify-between">
             <span className="font-heading font-semibold text-sm">
@@ -154,12 +154,12 @@ export default function ApelacionesForm() {
               {corrigiendoId !== ap.id ? (
                 <button
                   onClick={() => comenzarCorreccion(ap)}
-                  className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer self-start"
+                  className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer self-start"
                 >
                   {t("apelaciones.corregirResultado")}
                 </button>
               ) : (
-                <div className="bg-bg border-2 border-outline rounded-[14px] p-3 flex flex-col gap-2">
+                <div className="bg-bg border-2 border-outline rounded-[6px] p-3 flex flex-col gap-2">
                   <label className="flex flex-col gap-1">
                     <span className="text-xs">{t("apelaciones.gamesPorSetA", { pareja: ap.pareja_a })}</span>
                     <input
@@ -193,14 +193,14 @@ export default function ApelacionesForm() {
                     <button
                       onClick={() => handleResolver(ap.id)}
                       disabled={resolviendo}
-                      className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
+                      className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
                     >
                       {resolviendo && <PelotaLoader />}
                       {t("apelaciones.confirmarCorreccion")}
                     </button>
                     <button
                       onClick={() => setCorrigiendoId(null)}
-                      className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-surface text-ink border-2 border-outline cursor-pointer"
+                      className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink border-2 border-outline cursor-pointer"
                     >
                       {t("apelaciones.cancelar")}
                     </button>

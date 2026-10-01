@@ -36,13 +36,13 @@ export default function FormularioFeedback({ titulo }) {
     <div className="flex flex-col gap-2">
       <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">{tituloFinal}</span>
       {enviado ? (
-        <div className="bg-surface border-2 border-outline rounded-[14px] p-4 text-sm text-center">
+        <div className="bg-surface border-2 border-outline rounded-[6px] p-4 text-sm text-center">
           {t("feedback.gracias")}
         </div>
       ) : (
         <form
           onSubmit={handleEnviar}
-          className="bg-surface shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[16px] p-4 flex flex-col gap-2"
+          className="bg-surface border border-ink/10 rounded-[8px] p-4 flex flex-col gap-2"
         >
           <textarea
             value={comentario}
@@ -55,7 +55,7 @@ export default function FormularioFeedback({ titulo }) {
           <button
             type="submit"
             disabled={enviando || comentario.trim() === ""}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 self-start inline-flex items-center gap-2"
+            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 self-start inline-flex items-center gap-2"
           >
             {enviando && <PelotaLoader />}
             {t("feedback.enviarComentario")}

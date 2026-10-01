@@ -5,11 +5,11 @@ export default function FutbolitoPage() {
     <main className="min-h-screen flex justify-center p-6">
       <DeporteMaquetaForm
         nombre="Futbolito"
-        emoji="⚽"
+        icono="futbol"
         colorAcento="#8fd19e"
         datosEjemplo={{
           proximoPartido: "Domingo, 18hs · Cancha 5 (ejemplo)",
-          ultimoPartido: "🏆 Ganaron 4-2 vs. Los Pibes FC (ejemplo)",
+          ultimoPartido: "Ganaron 4-2 vs. Los Pibes FC (ejemplo)",
           stats: [
             { valor: "5", etiqueta: "Racha ganada" },
             { valor: "#8", etiqueta: "en el ranking" },

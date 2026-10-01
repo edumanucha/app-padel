@@ -28,46 +28,46 @@ function etiquetaPunto(propio, rival) {
 // normal, un deuce/ventaja, un deshacer y un game ganado -- lo que "vende"
 // el efecto visual, sin depender del azar.
 // "saque" (2026-09-30): muestra el cambio de saque, que en el reloj es
-// ⏸️⏸️ (dos toques rápidos).
+// ⏸⏸ (dos toques rápidos).
 const GUION = ["saque", "A", "A", "B", "A", "B", "B", "A", "B", "undo", "A", "A", "B", "A", "A"];
 
 // Modos que muestran la cápsula sobre el marcador antes de aplicar la
 // acción: la cámara "leyendo la seña" y el reloj "apretando el botón".
 const MODO_CAMARA = 0;
 const MODO_RELOJ = 2;
-const BOTON_RELOJ = { A: "⏭️", B: "⏮️", undo: "⏸️", saque: "⏸️⏸️" };
+const BOTON_RELOJ = { A: "⏭", B: "⏮", undo: "⏸", saque: "⏸⏸" };
 
 const MODOS = [
   {
-    label: "✊ Cámara",
+    label: "Cámara",
     textos: [
-      "✋ Modo Cámara: mano abierta a la derecha suma el punto a tu equipo",
-      "✋ Mano abierta a la izquierda suma el punto al equipo rival",
-      "👎 Pulgar solo (para arriba o para abajo) deshace el último punto",
-      "👀 Mientras sostenés la seña, un anillo te confirma que se está leyendo",
+      "Modo Cámara: mano abierta a la derecha suma el punto a tu equipo",
+      "Mano abierta a la izquierda suma el punto al equipo rival",
+      "Pulgar solo (para arriba o para abajo) deshace el último punto",
+      "Mientras sostenés la seña, un anillo te confirma que se está leyendo",
     ],
   },
   {
-    label: "🗣️ Voz",
+    label: "Voz",
     textos: [
-      '🗣️ Modo Voz: decí "marcador punto a", "marcador punto b" o "marcador deshacer"',
-      '🎙️ También podés decir "marcador 40-15" para corregir todo de una',
+      'Modo Voz: decí "marcador punto a", "marcador punto b" o "marcador deshacer"',
+      'También podés decir "marcador 40-15" para corregir todo de una',
     ],
   },
   {
     // Reloj (2026-09-30, pedido del usuario: que la demo muestre lo del
     // reloj) -- mismos controles que MarcadorForm (Media Session).
-    label: "⌚ Reloj",
+    label: "Reloj",
     textos: [
-      "⌚ Modo Reloj: con el reloj conectado al celu, usás los botones de música",
-      "⏭️ Siguiente = punto para tu equipo · ⏮️ Anterior = punto para el rival",
-      "⏸️ Pausa una vez = deshacer · ⏸️⏸️ dos veces rápido = cambiar el saque",
-      "🎧 También anda con auriculares Bluetooth que tengan esos botones",
+      "Modo Reloj: con el reloj conectado al celu, usás los botones de música",
+      "⏭ Siguiente = punto para tu equipo · ⏮ Anterior = punto para el rival",
+      "⏸ Pausa una vez = deshacer · ⏸⏸ dos veces rápido = cambiar el saque",
+      "También anda con auriculares Bluetooth que tengan esos botones",
     ],
   },
   {
-    label: "🔘 Botones",
-    textos: ["🔘 Modo Botones: el marcador de siempre, como respaldo si hace falta"],
+    label: "Botones",
+    textos: ["Modo Botones: el marcador de siempre, como respaldo si hace falta"],
   },
 ];
 
@@ -198,7 +198,7 @@ export default function DemoMarcadorForm() {
     const enReloj = modo === MODO_RELOJ;
     const { fondo, tinta } = COLOR_ACCION_DEMO[accion];
     if (leyendoEyebrowRef.current) {
-      leyendoEyebrowRef.current.textContent = enReloj ? "⌚ Botón del reloj" : "👀 Leyendo seña...";
+      leyendoEyebrowRef.current.textContent = enReloj ? "Botón del reloj" : "Leyendo seña...";
     }
     icono.textContent = enReloj ? BOTON_RELOJ[accion] : accion === "undo" ? "👎" : accion === "saque" ? "🔄" : "✋";
     etiqueta.textContent =
@@ -320,7 +320,7 @@ export default function DemoMarcadorForm() {
       <div className="w-full max-w-[1180px] flex items-center justify-between">
         <button
           onClick={() => router.push("/marcador-libre")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           Volver
         </button>
@@ -400,7 +400,7 @@ export default function DemoMarcadorForm() {
           <span className={styles.bigText} ref={bigTextRef} />
           <div className={styles.leyendoOverlay} ref={leyendoOverlayRef}>
             <div className={styles.leyendoRelleno} ref={leyendoRellenoRef} />
-            <span className={styles.leyendoEyebrow} ref={leyendoEyebrowRef}>👀 Leyendo seña...</span>
+            <span className={styles.leyendoEyebrow} ref={leyendoEyebrowRef}>Leyendo seña...</span>
             <span className={styles.leyendoIcon} ref={leyendoIconRef} />
             <span className={styles.leyendoAccion} ref={leyendoAccionRef} />
           </div>
@@ -435,13 +435,13 @@ export default function DemoMarcadorForm() {
           {MODOS[modoIdx].textos[textoIdx]}
         </div>
 
-        <p className={styles.caption}>🔁 Demo en loop -- datos de ejemplo, no se guarda nada.</p>
+        <p className={styles.caption}>Demo en loop, con datos de ejemplo: no se guarda nada.</p>
 
         <button
           onClick={() => router.push("/marcador-libre")}
-          className="font-heading font-semibold text-sm px-4 py-3 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-4 py-3 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer"
         >
-          Listo, quiero armar mi partido 🎾
+          Listo, quiero armar mi partido
         </button>
       </div>
       </div>
