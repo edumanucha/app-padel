@@ -636,6 +636,28 @@ button:not(:disabled):active {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+/* Opción C (2026-09-30, elegida por el usuario sobre /pruebas-pc): en la
+   compu la navegación pasa a una barra arriba (sin barra abajo) y el inicio
+   es un tablero: dos tercios para lo principal, un tercio para accesos. */
+@media (min-width: 1024px) {
+  body:has(.nav-escritorio) {
+    padding-top: 5rem;
+    padding-bottom: 1rem;
+  }
+  .pantalla-tablero {
+    max-width: 110rem !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 1.5rem;
+  }
+  .pantalla-tablero > .col-completa {
+    grid-column: 1 / -1;
+  }
+  .pantalla-tablero > :empty {
+    display: none;
+  }
+}
 /* Contenedor vacío (ej. InstalarApp sin nada que mostrar): que no sume
    espacio ni en el celu. */
 .col-completa:empty {

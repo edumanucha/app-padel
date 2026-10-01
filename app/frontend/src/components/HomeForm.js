@@ -372,7 +372,7 @@ export default function HomeForm() {
   if (!perfil) return null;
 
   return (
-    <div className="w-full max-w-md flex flex-col gap-4 pb-10 pantalla-mosaico">
+    <div className="w-full max-w-md flex flex-col gap-4 pb-10 pantalla-tablero">
       <div className="col-completa">
         <InstalarApp />
       </div>
@@ -475,6 +475,10 @@ export default function HomeForm() {
 
       {error && <p className="text-red-600 text-sm col-completa">{error}</p>}
 
+      {/* En la compu (opción C elegida por el usuario, 2026-09-30): lo
+          principal ocupa dos tercios y los accesos van en la columna de la
+          derecha. En el celu son dos bloques uno debajo del otro. */}
+      <div className="home-principal flex flex-col gap-4">
       {/* 2. Próximo partido -- con el chip de fecha tipo "calendario", como
           en la referencia que trajo el usuario. */}
       <div className={`${tarjeta} flex items-center gap-3`}>
@@ -623,19 +627,6 @@ export default function HomeForm() {
         </div>
       )}
 
-      {/* 9. Espacio de publicidad + cancha recomendada */}
-      <div className="bg-accent/15 rounded-[16px] p-4 flex items-center gap-3 relative overflow-hidden">
-        <span className="absolute top-1.5 right-2 text-[10px] uppercase tracking-wide text-muted font-heading font-semibold">
-          {t("home.auspiciadoEjemplo")}
-        </span>
-        <span ref={refPadelShop} className={`icono-pop ${visiblePadelShop ? "visible" : ""}`}>
-          <IconoCarrito width={26} height={26} />
-        </span>
-        <div className="flex flex-col text-ink">
-          <span className="font-heading font-semibold text-sm">Padel Pro Shop Mendoza</span>
-          <span className="text-sm text-muted">20% OFF en paletas esta semana con el código PADELAPP</span>
-        </div>
-      </div>
       {/* 10. Tip de pádel real -- reemplaza el tip fijo que escribíamos
           nosotros (2026-09-12, a pedido del usuario: "quiero que
           empecemos a poner algo real"). Es el título real del último
@@ -657,6 +648,22 @@ export default function HomeForm() {
           </a>
         </div>
       )}
+      </div>
+
+      <div className="home-lateral flex flex-col gap-4">
+      {/* 9. Espacio de publicidad + cancha recomendada */}
+      <div className="bg-accent/15 rounded-[16px] p-4 flex items-center gap-3 relative overflow-hidden">
+        <span className="absolute top-1.5 right-2 text-[10px] uppercase tracking-wide text-muted font-heading font-semibold">
+          {t("home.auspiciadoEjemplo")}
+        </span>
+        <span ref={refPadelShop} className={`icono-pop ${visiblePadelShop ? "visible" : ""}`}>
+          <IconoCarrito width={26} height={26} />
+        </span>
+        <div className="flex flex-col text-ink">
+          <span className="font-heading font-semibold text-sm">Padel Pro Shop Mendoza</span>
+          <span className="text-sm text-muted">20% OFF en paletas esta semana con el código PADELAPP</span>
+        </div>
+      </div>
 
       {/* 11. Resto de accesos, en secciones agrupadas -- tarjetas claras con
           tinte de color (accent-2/accent-3) en vez de bloques sólidos con
@@ -815,6 +822,8 @@ export default function HomeForm() {
         {proximamenteTocado && (
           <span className="text-xs text-muted">{t("home.enDesarrollo", { texto: proximamenteTocado })}</span>
         )}
+      </div>
+
       </div>
 
       {/* 12. Pie de página */}

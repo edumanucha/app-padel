@@ -3,7 +3,17 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { IconoCasa, IconoTrofeo, IconoPelota, IconoPersona } from "@/components/Icons";
+import {
+  IconoCasa,
+  IconoTrofeo,
+  IconoPelota,
+  IconoPersona,
+  IconoLista,
+  IconoPin,
+  IconoMensaje,
+  IconoMenu,
+} from "@/components/Icons";
+import Logo from "@/components/Logo";
 import { useLocale } from "@/i18n/LocaleContext";
 
 // Barra de navegación fija (2026-09-12, a pedido del usuario, inspirada en
@@ -17,6 +27,18 @@ const TABS = [
   { href: "/jugadores", key: "jugadores", Icono: IconoTrofeo },
   { href: "/marcador-libre", key: "marcadorcito", Icono: IconoPelota },
   { href: "/perfil", key: "perfil", Icono: IconoPersona },
+];
+
+// En la compu (opción C, 2026-09-30, elegida por el usuario sobre
+// /pruebas-pc) la navegación es una barra arriba con más accesos, y la de
+// abajo se oculta.
+const TABS_COMPU = [
+  { href: "/", texto: (t) => t("nav.home"), Icono: IconoCasa },
+  { href: "/jugadores", texto: (t) => t("nav.jugadores"), Icono: IconoTrofeo },
+  { href: "/marcador-libre", texto: (t) => t("nav.marcadorcito"), Icono: IconoPelota },
+  { href: "/mis-partidos", texto: (t) => t("home.misPartidos"), Icono: IconoLista },
+  { href: "/canchas", texto: (t) => t("home.canchas"), Icono: IconoPin },
+  { href: "/mensajes", texto: (t) => t("home.mensajesTitulo"), Icono: IconoMensaje },
 ];
 
 // Pantallas donde no tiene sentido mostrarla: previas a tener sesión/perfil
@@ -52,8 +74,52 @@ export default function BottomNav() {
   if (!conSesion || debeOcultarse(pathname)) return null;
 
   return (
+    <>
+    <header
+      className="nav-escritorio hidden lg:flex fixed top-0 left-0 right-0 z-40 items-center gap-2 px-6 py-3 border-b border-black/5"
+      style={{ background: "var(--nav-bg)" }}
+    >
+      <button onClick={() => router.push("/")} className="flex items-center gap-2 mr-4 cursor-pointer">
+        <Logo size={30} />
+        <span className="font-heading font-bold text-lg text-ink">Padelito</span>
+      </button>
+      {TABS_COMPU.map(({ href, texto, Icono }) => {
+        const activa = href === "/" ? pathname === "/" : pathname.startsWith(href);
+        return (
+          <button
+            key={href}
+            onClick={() => router.push(href)}
+            className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-heading font-semibold cursor-pointer ${
+              activa ? "bg-accent text-accent-ink" : "text-muted hover:bg-accent/15 hover:text-ink"
+            }`}
+          >
+            <Icono width={18} height={18} />
+            {texto(t)}
+          </button>
+        );
+      })}
+      <div className="ml-auto flex items-center gap-2">
+        <button
+          onClick={() => router.push("/menu")}
+          className="w-10 h-10 rounded-full bg-surface text-ink flex items-center justify-center cursor-pointer"
+          aria-label={t("home.verTodo")}
+          title={t("home.verTodo")}
+        >
+          <IconoMenu />
+        </button>
+        <button
+          onClick={() => router.push("/perfil")}
+          className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-heading font-semibold cursor-pointer ${
+            pathname.startsWith("/perfil") ? "bg-accent text-accent-ink" : "bg-surface text-ink"
+          }`}
+        >
+          <IconoPersona width={18} height={18} />
+          {t("nav.perfil")}
+        </button>
+      </div>
+    </header>
     <nav
-      className="fixed bottom-4 left-4 right-4 max-w-md mx-auto flex items-center justify-around py-2.5 rounded-[20px] z-40"
+      className="lg:hidden fixed bottom-4 left-4 right-4 max-w-md mx-auto flex items-center justify-around py-2.5 rounded-[20px] z-40"
       style={{ background: "var(--nav-bg)", boxShadow: "0 4px 16px rgba(20,38,31,0.16)" }}
     >
       {TABS.map(({ href, key, Icono }) => {
@@ -74,5 +140,6 @@ export default function BottomNav() {
         );
       })}
     </nav>
+    </>
   );
 }
