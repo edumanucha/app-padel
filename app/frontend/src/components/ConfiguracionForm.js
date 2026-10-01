@@ -18,7 +18,7 @@ const COLORES = [
   { valor: "turquesa", clave: "colorTurquesa", muestra: "#2fb5ad" },
 ];
 
-const tarjeta = "bg-surface text-ink rounded-[18px] p-4 shadow-[0_1px_3px_rgba(20,38,31,0.08)]";
+const tarjeta = "bg-surface text-ink rounded-[8px] p-4 border border-ink/10";
 
 export default function ConfiguracionForm() {
   const router = useRouter();
@@ -47,7 +47,7 @@ export default function ConfiguracionForm() {
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("config.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           {t("config.volver")}
         </button>
@@ -105,9 +105,7 @@ export default function ConfiguracionForm() {
             <button
               key={l.valor}
               onClick={() => setLocale(l.valor)}
-              className={`flex-1 text-sm font-heading font-semibold px-3 py-2 rounded-full cursor-pointer ${
-                locale === l.valor ? "bg-accent text-accent-ink" : "bg-bg text-ink"
-              }`}
+              className={`flex-1 text-sm font-heading font-semibold px-3 py-2 rounded-[6px] cursor-pointer ${ locale === l.valor ? "bg-accent text-accent-ink" : "bg-bg text-ink" }`}
             >
               {l.nombre}
             </button>

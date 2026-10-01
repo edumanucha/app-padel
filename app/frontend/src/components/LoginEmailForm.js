@@ -89,7 +89,7 @@ export default function LoginEmailForm() {
     return (
       <button
         onClick={() => setMostrarFormulario(true)}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
       >
         {t("loginEmail.ingresarConEmail")}
       </button>
@@ -103,7 +103,7 @@ export default function LoginEmailForm() {
         <button
           type="button"
           onClick={() => cambiarModo("login")}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer self-start"
+          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer self-start"
         >
           {t("loginEmail.entrar")}
         </button>
@@ -141,7 +141,7 @@ export default function LoginEmailForm() {
       <button
         type="submit"
         disabled={cargando || !formularioCompleto}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
       >
         {cargando && <PelotaLoader />}
         {cargando

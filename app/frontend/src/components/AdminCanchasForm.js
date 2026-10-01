@@ -120,7 +120,7 @@ export default function AdminCanchasForm() {
         <p className="text-red-600 text-sm">{t("admin.soloAdmins")}</p>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer self-start"
+          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer self-start"
         >
           {t("admin.volver")}
         </button>
@@ -134,7 +134,7 @@ export default function AdminCanchasForm() {
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("admin.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           {t("admin.volver")}
         </button>
@@ -143,7 +143,7 @@ export default function AdminCanchasForm() {
       {editandoId ? (
         <form
           onSubmit={handleGuardar}
-          className="bg-surface shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[16px] p-4 flex flex-col gap-2"
+          className="bg-surface border border-ink/10 rounded-[8px] p-4 flex flex-col gap-2"
         >
           <span className="font-heading font-semibold text-sm">
             {editandoId === "nueva" ? t("admin.nuevaCancha") : t("admin.editarCancha")}
@@ -202,7 +202,7 @@ export default function AdminCanchasForm() {
             <button
               type="submit"
               disabled={guardando}
-              className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
+              className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
             >
               {guardando && <PelotaLoader />}
               {t("admin.guardar")}
@@ -210,7 +210,7 @@ export default function AdminCanchasForm() {
             <button
               type="button"
               onClick={() => setEditandoId(null)}
-              className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-surface text-ink border-2 border-outline cursor-pointer"
+              className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink border-2 border-outline cursor-pointer"
             >
               {t("admin.cancelar")}
             </button>
@@ -219,7 +219,7 @@ export default function AdminCanchasForm() {
       ) : (
         <button
           onClick={comenzarAlta}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer self-start"
+          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer self-start"
         >
           + {t("admin.nuevaCancha")}
         </button>
@@ -230,7 +230,7 @@ export default function AdminCanchasForm() {
           <button
             key={c.id}
             onClick={() => comenzarEdicion(c)}
-            className="text-left bg-surface text-ink border-2 border-outline rounded-[14px] p-3 flex flex-col cursor-pointer"
+            className="text-left bg-surface text-ink border-2 border-outline rounded-[6px] p-3 flex flex-col cursor-pointer"
           >
             <span className="font-heading font-semibold text-sm">{c.nombre}</span>
             <span className="text-xs text-muted">{c.zona} · {c.provincia}</span>

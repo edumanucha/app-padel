@@ -167,10 +167,12 @@ const pantallas = [
   fs.mkdirSync(SALIDA, { recursive: true });
   const perfil = path.join(__dirname, ".perfil-chrome");
   fs.rmSync(perfil, { recursive: true, force: true });
-  const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, userDataDir: perfil });
   const resumen = [];
   for (const s of pantallas) {
     if (SOLO && !SOLO.includes(s.nombre)) continue;
+    // Un Chrome nuevo por pantalla: con uno solo para todas, se cortaba
+    // cerca de la captura 15 ("Session with given id not found").
+    const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, userDataDir: perfil });
     const page = await browser.newPage();
     try {
       const cdp = await page.createCDPSession();
@@ -216,9 +218,8 @@ const pantallas = [
     } catch (e) {
       resumen.push(`ERROR ${s.nombre.padEnd(22)} ${e.message.split("\n")[0]}`);
     } finally {
-      await page.close();
+      await browser.close();
     }
   }
-  await browser.close();
   console.log(resumen.join("\n"));
 })();

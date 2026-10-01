@@ -17,7 +17,7 @@ import {
 } from "@/lib/marcadorOffline";
 
 const inputClass = "rounded-xl bg-bg px-3 py-2 text-ink text-sm";
-const tarjeta = "bg-surface text-ink rounded-[18px] p-4 shadow-[0_1px_3px_rgba(20,38,31,0.08)]";
+const tarjeta = "bg-surface text-ink rounded-[8px] p-4 border border-ink/10";
 
 function Subtitulo({ children }) {
   return <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">{children}</span>;
@@ -69,7 +69,7 @@ function SlotJugador({ etiqueta, valor, onChange, excluirIds = [] }) {
         <span className="text-xs text-muted">Se va a cargar como invitado libre (sin cuenta)</span>
       )}
       {resultados.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-surface rounded-[12px] shadow-[0_2px_8px_rgba(20,38,31,0.15)] z-10 overflow-hidden">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-surface rounded-[6px] shadow-[0_2px_8px_rgba(20,38,31,0.15)] z-10 overflow-hidden">
           {resultados.map((r) => (
             <button
               key={r.id}
@@ -350,7 +350,7 @@ export default function MarcadorLibreForm() {
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">Marcadorcito</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           Volver
         </button>
@@ -359,7 +359,7 @@ export default function MarcadorLibreForm() {
       <button
         type="button"
         onClick={generarPartidoRapido}
-        className="self-start font-heading font-semibold text-xs px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+        className="self-start font-heading font-semibold text-xs px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
       >
         <IconoRayo className="ico" aria-hidden /> Generar partido rápido
       </button>
@@ -377,7 +377,7 @@ export default function MarcadorLibreForm() {
           <button
             type="button"
             onClick={() => router.push("/marcador-libre/demo")}
-            className="w-full font-heading font-semibold text-sm px-4 py-3 rounded-full border-2 border-accent-2 bg-accent-2/15 text-ink cursor-pointer flex items-center justify-center gap-2"
+            className="w-full font-heading font-semibold text-sm px-4 py-3 rounded-[6px] border-2 border-accent-2 bg-accent-2/15 text-ink cursor-pointer flex items-center justify-center gap-2"
           >
             <IconoPlay width={16} height={16} /> Ver cómo funciona (demo)
           </button>
@@ -436,7 +436,7 @@ export default function MarcadorLibreForm() {
         <button
           type="submit"
           disabled={cargando}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
         >
           {cargando && <PelotaLoader />}
           {cargando ? "Creando..." : (

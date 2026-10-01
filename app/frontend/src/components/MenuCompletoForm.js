@@ -93,7 +93,7 @@ const SE_VIENE = [
   { Icono: IconoSinConexion, claveTexto: "home.modoSinConexion" },
 ];
 
-const tarjeta = "bg-surface text-ink rounded-[14px] p-3 shadow-[0_1px_3px_rgba(20,38,31,0.08)]";
+const tarjeta = "bg-surface text-ink rounded-[6px] p-3 border border-ink/10";
 
 export default function MenuCompletoForm() {
   const router = useRouter();
@@ -131,7 +131,7 @@ export default function MenuCompletoForm() {
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("menu.verTodo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           {t("menu.volver")}
         </button>

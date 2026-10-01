@@ -44,7 +44,7 @@ export default function AvisoGirarTelefono() {
       </p>
       <button
         onClick={forzarGiro}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline cursor-pointer"
+        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink cursor-pointer"
       >
         Intentar forzar el giro
       </button>

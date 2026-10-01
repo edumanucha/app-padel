@@ -15,7 +15,7 @@ import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import GuiaPadelito from "@/components/GuiaPadelito";
 import { useEnPantalla } from "@/lib/useEnPantalla";
 import marcadorStyles from "@/components/Marcador.module.css";
-import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, IconoTrofeo, IconoCarrito, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion } from "@/components/Icons";
+import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, IconoTrofeo, IconoCarrito, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion, IconoChevron } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
 
@@ -49,7 +49,7 @@ function formatearResultado(setsA, setsB) {
 // border-[3px] + shadow offset queda guardada en
 // HomeForm.backup-estilo-bordes-gruesos-2026-09-12.js por si se quiere
 // volver atrás.
-const tarjeta = "bg-surface text-ink rounded-[18px] p-4 shadow-[0_1px_3px_rgba(20,38,31,0.08)]";
+const tarjeta = "bg-surface text-ink rounded-[8px] p-4 border border-ink/10";
 
 function Subtitulo({ children }) {
   return <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">{children}</span>;
@@ -338,7 +338,7 @@ export default function HomeForm() {
   if (homeSinSenal) {
     return (
       <div className="w-full max-w-md flex flex-col gap-4 pb-10">
-        <div className="bg-surface text-ink rounded-[20px] p-5 shadow-[0_1px_3px_rgba(20,38,31,0.08)] flex flex-col gap-3">
+        <div className="bg-surface text-ink rounded-[8px] p-5 border border-ink/10 flex flex-col gap-3">
           <h1 className="font-titulo text-3xl font-black uppercase leading-[0.95]"><IconoSinConexion className="ico" aria-hidden /> Estás sin señal</h1>
           <p className="text-sm text-muted">
             Igual podés llevar el marcador de un partido. Todo queda guardado en el celu y se sube solo cuando vuelva la
@@ -347,16 +347,14 @@ export default function HomeForm() {
           {partidoEnCurso && (
             <button
               onClick={() => router.push(`/partido/${partidoEnCurso}/marcador`)}
-              className="font-heading font-semibold px-4 py-3 rounded-full bg-accent text-accent-ink cursor-pointer"
+              className="font-heading font-semibold px-4 py-3 rounded-[6px] bg-accent text-accent-ink cursor-pointer"
             >
               Volver al partido en juego
             </button>
           )}
           <button
             onClick={() => router.push("/marcador-libre")}
-            className={`font-heading font-semibold px-4 py-3 rounded-full cursor-pointer ${
-              partidoEnCurso ? "bg-bg text-ink" : "bg-accent text-accent-ink"
-            }`}
+            className={`font-heading font-semibold px-4 py-3 rounded-[6px] cursor-pointer ${ partidoEnCurso ? "bg-bg text-ink" : "bg-accent text-accent-ink" }`}
           >
             Jugar un partido nuevo
           </button>
@@ -383,7 +381,7 @@ export default function HomeForm() {
       {partidoEnCurso && (
         <button
           onClick={() => router.push(`/partido/${partidoEnCurso}/marcador`)}
-          className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-[20px] bg-accent text-accent-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer text-left col-completa"
+          className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-[8px] bg-accent text-accent-ink border border-ink/10 cursor-pointer text-left col-completa"
         >
           <span className="flex flex-col">
             <span className="font-heading font-semibold">Tenés un partido en juego</span>
@@ -393,52 +391,56 @@ export default function HomeForm() {
         </button>
       )}
 
-      {/* 1. Saludo + ranking */}
-      <div data-guia="saludo" className={`${tarjeta} flex items-center justify-between col-completa`}>
-        <button onClick={() => router.push("/perfil")} className="flex items-center gap-3 text-left cursor-pointer">
-          <div className="w-12 h-12 rounded-full bg-bg overflow-hidden flex items-center justify-center flex-shrink-0">
-            {perfil.avatar_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
+      {/* 1. Saludo (rediseño paso C, estilo "Cartel de estadio", 2026-10-01):
+          sin tarjeta -- el saludo es un título grande, arriba el puesto y
+          los puntos como etiqueta, y los íconos sueltos a la derecha. */}
+      <div data-guia="saludo" className="flex items-start justify-between gap-3 col-completa pt-1">
+        <button onClick={() => router.push("/perfil")} className="flex items-center gap-3 text-left cursor-pointer min-w-0">
+          {perfil.avatar_url && (
+            <div className="w-12 h-12 rounded-full bg-bg overflow-hidden flex-shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={perfil.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
-            ) : (
-              <Logo size={26} />
-            )}
-          </div>
-          <div>
-            <span className="font-heading text-lg font-semibold block">
+            </div>
+          )}
+          <div className="min-w-0">
+            <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted block">
+              {resumen?.posicion_ranking
+                ? t("home.puestoYPuntos", { puesto: resumen.posicion_ranking, total: resumen.total_jugadores ?? "-", puntos: perfil.puntos_ranking })
+                : t("home.puntosRanking", { puntos: perfil.puntos_ranking })}
+            </span>
+            <span className="font-titulo font-black uppercase text-[2.6rem] leading-[0.9] block mt-1">
               {t("home.saludo", { nombre: perfil.nombre.split(" ")[0] })}
             </span>
-            <span className="text-muted text-sm">{t("home.puntosRanking", { puntos: perfil.puntos_ranking })}</span>
           </div>
         </button>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 text-ink pt-1">
           <button
-            onClick={() => router.push("/menu")}
-            className="w-9 h-9 rounded-full bg-bg flex items-center justify-center flex-shrink-0 cursor-pointer"
-            aria-label={t("home.verTodo")}
-            title={t("home.verTodo")}
+            onClick={handleAbrirNotificaciones}
+            className="relative w-9 h-9 flex items-center justify-center flex-shrink-0 cursor-pointer"
+            aria-label={t("home.notificaciones")}
           >
-            <IconoMenu />
+            <IconoCampana />
+            {noLeidas > 0 && (
+              <span className="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-semibold rounded-full w-[18px] h-[18px] flex items-center justify-center">
+                {noLeidas > 9 ? "9+" : noLeidas}
+              </span>
+            )}
           </button>
           <button
             onClick={() => router.push("/configuracion")}
-            className="w-9 h-9 rounded-full bg-bg flex items-center justify-center flex-shrink-0 cursor-pointer"
+            className="w-9 h-9 flex items-center justify-center flex-shrink-0 cursor-pointer"
             aria-label={t("home.configuracion")}
             title={t("home.configuracion")}
           >
             <IconoEngranaje />
           </button>
           <button
-            onClick={handleAbrirNotificaciones}
-            className="relative w-9 h-9 rounded-full bg-bg flex items-center justify-center flex-shrink-0 cursor-pointer"
-            aria-label={t("home.notificaciones")}
+            onClick={() => router.push("/menu")}
+            className="w-9 h-9 flex items-center justify-center flex-shrink-0 cursor-pointer"
+            aria-label={t("home.verTodo")}
+            title={t("home.verTodo")}
           >
-            <IconoCampana />
-            {noLeidas > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-heading font-semibold rounded-full w-5 h-5 flex items-center justify-center">
-                {noLeidas > 9 ? "9+" : noLeidas}
-              </span>
-            )}
+            <IconoMenu />
           </button>
         </div>
       </div>
@@ -463,9 +465,7 @@ export default function HomeForm() {
             <button
               key={n.id}
               onClick={() => handleClickNotificacion(n)}
-              className={`text-left rounded-[12px] p-2 flex flex-col gap-0.5 cursor-pointer ${
-                n.leida ? "bg-bg" : "bg-accent/20"
-              }`}
+              className={`text-left rounded-[6px] p-2 flex flex-col gap-0.5 cursor-pointer ${ n.leida ? "bg-bg" : "bg-accent/20" }`}
             >
               <span className="text-sm">{n.mensaje}</span>
               <span className="text-xs text-muted">{new Date(n.creado_en).toLocaleString("es-AR")}</span>
@@ -480,125 +480,126 @@ export default function HomeForm() {
           principal ocupa dos tercios y los accesos van en la columna de la
           derecha. En el celu son dos bloques uno debajo del otro. */}
       <div className="home-principal flex flex-col gap-4">
-      {/* 2. Próximo partido -- con el chip de fecha tipo "calendario", como
-          en la referencia que trajo el usuario. */}
-      <div data-guia="proximo" className={`${tarjeta} flex items-center gap-3`}>
-        {resumen?.proximo_partido ? (
-          (() => {
-            const { dia, mes } = diaYMesCorto(resumen.proximo_partido.fecha_hora, locale);
-            return (
-              <button
-                onClick={() => router.push(`/partido/${resumen.proximo_partido.partido_id}`)}
-                className="flex items-center gap-3 text-left cursor-pointer w-full"
-              >
-                <div className="w-11 h-11 rounded-[12px] bg-accent text-accent-ink flex flex-col items-center justify-center flex-shrink-0 leading-none">
-                  <span className="text-[10px] font-heading font-bold">{mes}</span>
-                  <span className="text-sm font-heading font-bold">{dia}</span>
-                </div>
-                <div>
-                  <span className="font-heading font-semibold text-sm block">{t("home.tuProximoPartido")}</span>
-                  <span className="text-muted text-sm">
-                    {formatearFecha(resumen.proximo_partido.fecha_hora, locale)} · {resumen.proximo_partido.cancha}
-                  </span>
-                </div>
-              </button>
-            );
-          })()
-        ) : (
-          <div>
-            <span className="font-heading font-semibold text-sm block mb-1">{t("home.tuProximoPartido")}</span>
-            <span className="text-sm text-muted">{t("home.sinProximoPartido")}</span>
-          </div>
-        )}
+      {/* 2. Próximo partido -- la protagonista del Inicio (rediseño paso C):
+          bloque verde tablero con la fecha en amarillo, como un cartel. */}
+      {resumen?.proximo_partido ? (
+        (() => {
+          const fecha = new Date(resumen.proximo_partido.fecha_hora);
+          const intl = INTL_LOCALE[locale] ?? "es-AR";
+          const diaSemana = fecha.toLocaleDateString(intl, { weekday: "short" }).replace(".", "");
+          const hora = fecha.toLocaleTimeString(intl, { hour: "2-digit", minute: "2-digit", hour12: false });
+          const { dia, mes } = diaYMesCorto(resumen.proximo_partido.fecha_hora, locale);
+          return (
+            <button
+              data-guia="proximo"
+              onClick={() => router.push(`/partido/${resumen.proximo_partido.partido_id}`)}
+              className="flex text-left cursor-pointer rounded-[6px] overflow-hidden bg-[#154139] text-[#eaf4f0]"
+            >
+              <span className="bg-accent text-accent-ink flex flex-col items-center justify-center px-3 py-3 min-w-[72px] font-titulo font-extrabold uppercase tracking-wide leading-none">
+                <span className="text-sm">{diaSemana}</span>
+                <span className="text-5xl font-black leading-[0.9]">{dia}</span>
+                <span className="text-sm">{mes}</span>
+              </span>
+              <span className="flex flex-col justify-center gap-1 px-4 py-3 min-w-0">
+                <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#8fb6ae]">
+                  {t("home.tuProximoPartido")} · {hora}
+                </span>
+                <span className="font-titulo font-extrabold uppercase text-[1.7rem] leading-none truncate">
+                  {resumen.proximo_partido.cancha}
+                </span>
+                <span className="text-xs text-[#c4dad3]">{formatearFecha(resumen.proximo_partido.fecha_hora, locale)}</span>
+              </span>
+            </button>
+          );
+        })()
+      ) : (
+        <div data-guia="proximo" className="rounded-[6px] bg-[#154139] text-[#eaf4f0] px-4 py-4 flex flex-col gap-1">
+          <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#8fb6ae]">{t("home.tuProximoPartido")}</span>
+          <span className="text-sm">{t("home.sinProximoPartido")}</span>
+        </div>
+      )}
+
+      {/* 4. Jugar: el Marcadorcito es el ÚNICO botón amarillo del Inicio;
+          crear y abiertos van como fila con líneas, más livianos. */}
+      <button
+        data-guia="marcador"
+        onClick={() => router.push("/marcador-libre")}
+        className="flex items-center justify-between gap-3 rounded-[6px] bg-accent text-accent-ink px-4 py-4 cursor-pointer text-left"
+      >
+        <span className="flex flex-col">
+          <span className="font-titulo font-black uppercase text-[1.75rem] leading-none">{t("home.abrirMarcadorcito")}</span>
+          <span className="text-xs opacity-80 mt-1">{t("home.marcadorcitoCorto")}</span>
+        </span>
+        <IconoChevron width={24} height={24} style={{ transform: "rotate(-90deg)" }} aria-hidden />
+      </button>
+
+      <div data-guia="jugar" className="grid grid-cols-2 border-y-2 border-ink">
+        <button
+          onClick={irACrearPartido}
+          className="flex items-center justify-center gap-2 py-3 font-semibold text-sm cursor-pointer"
+        >
+          <IconoCalendario width={18} height={18} aria-hidden /> {t("home.crearPartido")}
+        </button>
+        <button
+          onClick={irAPartidosAbiertos}
+          className="flex items-center justify-center gap-2 py-3 font-semibold text-sm cursor-pointer border-l-2 border-ink"
+        >
+          <IconoLupa width={18} height={18} aria-hidden /> {t("home.abiertos")}
+        </button>
       </div>
 
-      {/* 3. Invitaciones pendientes */}
+      {/* 3. Invitaciones pendientes: una línea, no un bloque amarillo. */}
       {resumen?.invitaciones_pendientes > 0 && (
         <button
           onClick={() => router.push("/invitaciones")}
-          className="font-heading font-semibold text-sm px-4 py-3 rounded-[16px] bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer text-left flex items-center gap-2"
+          className="flex items-center gap-2 text-sm font-semibold text-accent-2-ink cursor-pointer -mt-1"
         >
-          <IconoCampana />
+          <IconoSobre width={17} height={17} aria-hidden />
           {t(resumen.invitaciones_pendientes > 1 ? "home.invitacionPendientePlur" : "home.invitacionPendienteSing", {
             n: resumen.invitaciones_pendientes,
           })}
+          <IconoChevron width={14} height={14} style={{ transform: "rotate(-90deg)" }} aria-hidden />
         </button>
       )}
 
-      {/* 4. Sección "Jugar" -- Marcadorcito como hero + las dos acciones
-          más frecuentes debajo. */}
-      <div className="flex flex-col gap-3">
-        <Subtitulo>{t("home.jugar")}</Subtitulo>
-
-        <button
-          data-guia="marcador"
-          onClick={() => router.push("/marcador-libre")}
-          className="font-heading font-bold text-xl px-6 py-6 rounded-[20px] bg-accent text-accent-ink border-2 border-outline shadow-[0_2px_6px_rgba(20,38,31,0.12)] cursor-pointer flex items-center gap-4 text-left relative overflow-hidden"
-        >
-          <ContenidoMarcadorcitoDemo />
+      {/* 6/7/8. Números grandes con líneas divisorias, sin tarjetas. */}
+      <div data-guia="numeros" className="grid grid-cols-3">
+        <button onClick={handleVerHistorial} className="flex flex-col text-left cursor-pointer py-1">
+          <span className="font-titulo font-black text-[2.6rem] leading-none">
+            <ContadorNumero valor={resumen?.racha_actual ?? 0} />
+          </span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{t("home.rachaGanada")}</span>
         </button>
-
-        <div data-guia="jugar" className="flex gap-3">
-          <button
-            onClick={irACrearPartido}
-            className="tarjeta-pelota-loop flex-[2] font-heading font-semibold text-sm px-4 py-4 rounded-[16px] bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer flex items-center justify-center gap-2"
-          >
-            <span className={`icono-calendario-anim ${animandoCrear ? "anim-activa" : ""}`}><IconoCalendario /></span>{" "}
-            {t("home.crearPartido")}
-          </button>
-          <button
-            onClick={irAPartidosAbiertos}
-            className="flex-1 font-heading font-semibold text-sm px-4 py-4 rounded-[16px] bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer flex items-center justify-center gap-2"
-          >
-            <span className="icono-lupa-loop">
-              <span className={`icono-lupa-anim ${animandoAbiertos ? "anim-activa" : ""}`}><IconoLupa /></span>
-            </span>{" "}
-            {t("home.abiertos")}
-          </button>
-        </div>
+        <button onClick={() => router.push("/jugadores")} className="flex flex-col text-left cursor-pointer py-1 pl-3 border-l border-ink/15">
+          <span className="font-titulo font-black text-[2.6rem] leading-none">
+            {resumen?.posicion_ranking ? <ContadorNumero valor={resumen.posicion_ranking} prefijo="#" /> : "#-"}
+          </span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
+            {t("home.deRanking", { total: resumen?.total_jugadores ?? "-" })}
+          </span>
+        </button>
+        <button onClick={handleVerHistorial} className="flex flex-col text-left cursor-pointer py-1 pl-3 border-l border-ink/15">
+          <span className="font-titulo font-black text-[2.6rem] leading-none">
+            <ContadorNumero valor={resumen?.porcentaje_victorias ?? 0} sufijo="%" />
+          </span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
+            {t("home.jugadosSufijo", { n: resumen?.partidos_jugados ?? 0 })}
+          </span>
+        </button>
       </div>
 
-      {/* 5. Último partido jugado */}
-      <div className={tarjeta}>
-        <span className="font-heading font-semibold text-sm block mb-1">{t("home.ultimoPartidoJugado")}</span>
+      {/* 5. Último partido jugado: etiqueta + una línea. */}
+      <div className="flex flex-col gap-0.5">
+        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{t("home.ultimoPartidoJugado")}</span>
         {resumen?.ultimo_partido ? (
-          <span className="text-sm text-muted flex items-center gap-1.5">
-            {resumen.ultimo_partido.gano && (
-              <span className="icono-trofeo-festejo">
-                <IconoTrofeo width={15} height={15} />
-              </span>
-            )}
-            {resumen.ultimo_partido.gano ? t("home.ganaste") : t("home.perdiste")} {t("home.vs")}{" "}
-            {resumen.ultimo_partido.rival_nombres} (
-            {formatearResultado(resumen.ultimo_partido.sets_a, resumen.ultimo_partido.sets_b)})
+          <span className="text-sm">
+            <b>{resumen.ultimo_partido.gano ? t("home.ganaste") : t("home.perdiste")}</b>{" "}
+            {formatearResultado(resumen.ultimo_partido.sets_a, resumen.ultimo_partido.sets_b)} {t("home.vs")}{" "}
+            {resumen.ultimo_partido.rival_nombres}
           </span>
         ) : (
           <span className="text-sm text-muted">{t("home.noJugasteNinguno")}</span>
         )}
-      </div>
-
-      {/* 6/7/8. Racha, posición, estadística rápida */}
-      <div data-guia="numeros" className="grid grid-cols-3 gap-2">
-        <button onClick={handleVerHistorial} className={`${tarjeta} text-center cursor-pointer`}>
-          <span className="font-heading text-xl font-semibold block">
-            <ContadorNumero valor={resumen?.racha_actual ?? 0} />
-          </span>
-          <span className="text-xs text-muted">{t("home.rachaGanada")}</span>
-        </button>
-        <button onClick={() => router.push("/jugadores")} className={`${tarjeta} text-center cursor-pointer`}>
-          <span className="font-heading text-xl font-semibold block">
-            {resumen?.posicion_ranking ? <ContadorNumero valor={resumen.posicion_ranking} prefijo="#" /> : "#-"}
-          </span>
-          <span className="text-xs text-muted">
-            {t("home.deRanking", { total: resumen?.total_jugadores ?? "-" })}
-          </span>
-        </button>
-        <button onClick={handleVerHistorial} className={`${tarjeta} text-center cursor-pointer`}>
-          <span className="font-heading text-xl font-semibold block">
-            <ContadorNumero valor={resumen?.porcentaje_victorias ?? 0} sufijo="%" />
-          </span>
-          <span className="text-xs text-muted">{t("home.jugadosSufijo", { n: resumen?.partidos_jugados ?? 0 })}</span>
-        </button>
       </div>
 
       {mostrarHistorial && (
@@ -615,7 +616,7 @@ export default function HomeForm() {
           )}
           {!cargandoHistorial &&
             historial?.map((h) => (
-              <div key={h.partido_id} className="bg-bg rounded-[12px] p-2 flex flex-col gap-0.5">
+              <div key={h.partido_id} className="bg-bg rounded-[6px] p-2 flex flex-col gap-0.5">
                 <span className="text-xs text-muted">
                   {new Date(h.fecha_hora).toLocaleDateString(INTL_LOCALE[locale] ?? "es-AR")} · {h.cancha}
                 </span>
@@ -654,7 +655,7 @@ export default function HomeForm() {
 
       <div className="home-lateral flex flex-col gap-4">
       {/* 9. Espacio de publicidad + cancha recomendada */}
-      <div className="bg-accent/15 rounded-[16px] p-4 flex items-center gap-3 relative overflow-hidden">
+      <div className="bg-accent/15 rounded-[8px] p-4 flex items-center gap-3 relative overflow-hidden">
         <span className="absolute top-1.5 right-2 text-[10px] uppercase tracking-wide text-muted font-heading font-semibold">
           {t("home.auspiciadoEjemplo")}
         </span>
@@ -720,7 +721,7 @@ export default function HomeForm() {
               <span className="text-xs text-muted block truncate">{t("home.invitacionesDesc")}</span>
             </div>
             {resumen?.invitaciones_pendientes > 0 && (
-              <span className="ml-auto bg-accent text-accent-ink text-xs font-heading font-semibold rounded-full px-2 py-0.5 flex-shrink-0">
+              <span className="ml-auto bg-accent text-accent-ink text-xs font-heading font-semibold rounded-[6px] px-2 py-0.5 flex-shrink-0">
                 {resumen.invitaciones_pendientes}
               </span>
             )}
@@ -733,13 +734,13 @@ export default function HomeForm() {
         <div className="flex gap-2">
           <button
             onClick={() => router.push("/disponibilidad")}
-            className="flex-1 font-heading font-semibold text-sm px-4 py-3 rounded-[14px] bg-accent-2/15 border border-accent-2 text-ink shadow-[0_1px_3px_rgba(20,38,31,0.06)] cursor-pointer flex items-center justify-center gap-2"
+            className="flex-1 font-heading font-semibold text-sm px-4 py-3 rounded-[6px] bg-accent-2/15 border border-accent-2 text-ink shadow-[0_1px_3px_rgba(20,38,31,0.06)] cursor-pointer flex items-center justify-center gap-2"
           >
             <IconoRadar /> {t("home.disponibilidad")}
           </button>
           <button
             onClick={() => router.push("/companero-fijo")}
-            className="flex-1 font-heading font-semibold text-sm px-4 py-3 rounded-[14px] bg-accent-2/15 border border-accent-2 text-ink shadow-[0_1px_3px_rgba(20,38,31,0.06)] cursor-pointer flex items-center justify-center gap-2"
+            className="flex-1 font-heading font-semibold text-sm px-4 py-3 rounded-[6px] bg-accent-2/15 border border-accent-2 text-ink shadow-[0_1px_3px_rgba(20,38,31,0.06)] cursor-pointer flex items-center justify-center gap-2"
           >
             <span className="icono-duo-loop"><IconoDuo /></span> {t("home.companeroFijo")}
           </button>
@@ -751,13 +752,13 @@ export default function HomeForm() {
         <div className="flex gap-2">
           <button
             onClick={() => router.push("/canchas")}
-            className="flex-[2] font-heading font-semibold text-sm px-4 py-3 rounded-[20px] bg-accent-3/15 border border-accent-3 text-ink shadow-[0_1px_3px_rgba(20,38,31,0.06)] cursor-pointer flex items-center justify-center gap-2"
+            className="flex-[2] font-heading font-semibold text-sm px-4 py-3 rounded-[8px] bg-accent-3/15 border border-accent-3 text-ink shadow-[0_1px_3px_rgba(20,38,31,0.06)] cursor-pointer flex items-center justify-center gap-2"
           >
             <span className="icono-pin-loop"><IconoPin /></span> {t("home.canchas")}
           </button>
           <button
             onClick={() => router.push("/mis-partidos")}
-            className="flex-1 font-heading font-semibold text-sm px-4 py-3 rounded-[20px] bg-accent-3/15 border border-accent-3 text-ink shadow-[0_1px_3px_rgba(20,38,31,0.06)] cursor-pointer flex items-center justify-center gap-2"
+            className="flex-1 font-heading font-semibold text-sm px-4 py-3 rounded-[8px] bg-accent-3/15 border border-accent-3 text-ink shadow-[0_1px_3px_rgba(20,38,31,0.06)] cursor-pointer flex items-center justify-center gap-2"
           >
             <IconoLista /> {t("home.misPartidos")}
           </button>
@@ -769,13 +770,13 @@ export default function HomeForm() {
         <div className="flex gap-2">
           <button
             onClick={() => router.push("/perfil")}
-            className="flex-1 font-heading font-semibold text-sm px-4 py-3 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer flex items-center justify-center gap-2"
+            className="flex-1 font-heading font-semibold text-sm px-4 py-3 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer flex items-center justify-center gap-2"
           >
             <span className="icono-persona-corre"><IconoPersona /></span> {t("home.miPerfil")}
           </button>
           <button
             onClick={() => setMostrarMas((v) => !v)}
-            className="font-heading font-semibold text-sm px-4 py-3 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+            className="font-heading font-semibold text-sm px-4 py-3 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
           >
             {mostrarMas ? t("home.menos") : t("home.mas")}
           </button>
@@ -786,14 +787,14 @@ export default function HomeForm() {
             {perfil.es_superusuario && (
               <button
                 onClick={() => router.push("/admin/canchas")}
-                className="text-left font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink cursor-pointer flex items-center gap-2"
+                className="text-left font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink cursor-pointer flex items-center gap-2"
               >
                 <IconoLlave width={16} height={16} /> {t("home.adminCanchas")}
               </button>
             )}
             <button
               onClick={() => router.push("/elegir-deporte")}
-              className="text-left font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink cursor-pointer flex items-center gap-2"
+              className="text-left font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink cursor-pointer flex items-center gap-2"
             >
               <IconoPelota width={16} height={16} /> {t("home.cambiarDeporte")}
             </button>
@@ -811,9 +812,9 @@ export default function HomeForm() {
             <button
               key={item.clave}
               onClick={() => setProximamenteTocado(t(`home.${item.clave}`))}
-              className="relative font-heading font-semibold text-xs px-3 py-3 rounded-[12px] bg-bg text-muted cursor-pointer text-left opacity-70 flex items-center gap-2"
+              className="relative font-heading font-semibold text-xs px-3 py-3 rounded-[6px] bg-bg text-muted cursor-pointer text-left opacity-70 flex items-center gap-2"
             >
-              <span className="absolute -top-2 -right-1 bg-accent text-accent-ink text-[9px] px-1.5 py-0.5 rounded-full">
+              <span className="absolute -top-2 -right-1 bg-accent text-accent-ink text-[9px] px-1.5 py-0.5 rounded-[6px]">
                 {t("home.proximamente")}
               </span>
               <item.Icono width={16} height={16} className="icono-pulso-suave" /> {t(`home.${item.clave}`)}

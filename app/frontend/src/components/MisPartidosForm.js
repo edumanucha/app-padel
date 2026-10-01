@@ -103,7 +103,7 @@ export default function MisPartidosForm() {
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("misPartidos.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           {t("misPartidos.volver")}
         </button>
@@ -112,7 +112,7 @@ export default function MisPartidosForm() {
       {error && <p className="text-red-600 text-sm col-completa">{error}</p>}
 
       {partidos.length === 0 && (
-        <div className="bg-surface text-muted shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 text-sm col-completa">
+        <div className="bg-surface text-muted border border-ink/10 rounded-[8px] p-6 text-sm col-completa">
           {t("misPartidos.sinPartidos")}
         </div>
       )}
@@ -121,7 +121,7 @@ export default function MisPartidosForm() {
         <button
           key={p.id}
           onClick={() => router.push(`/partido/${p.id}`)}
-          className="text-left bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[16px] p-4 flex flex-col gap-1 cursor-pointer"
+          className="text-left bg-surface text-ink border border-ink/10 rounded-[8px] p-4 flex flex-col gap-1 cursor-pointer"
         >
           <div className="flex items-center justify-between">
             <span className="font-heading font-semibold text-sm">

@@ -143,7 +143,7 @@ export default function ConversacionForm({ otroId }) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => router.push("/mensajes")}
-            className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+            className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
           >
             ←
           </button>
@@ -151,7 +151,7 @@ export default function ConversacionForm({ otroId }) {
         </div>
         <button
           onClick={() => setMostrarReporte(true)}
-          className="font-heading font-semibold text-xs px-3 py-1.5 rounded-full bg-surface text-red-600 border-2 border-outline cursor-pointer"
+          className="font-heading font-semibold text-xs px-3 py-1.5 rounded-[6px] bg-surface text-red-600 border-2 border-outline cursor-pointer"
         >
           {t("conversacion.reportar")}
         </button>
@@ -191,7 +191,7 @@ export default function ConversacionForm({ otroId }) {
 
       {error && <p className="text-red-600 text-sm">{error}</p>}
 
-      <div className="flex-1 overflow-y-auto flex flex-col gap-2 bg-bg rounded-[16px] p-3">
+      <div className="flex-1 overflow-y-auto flex flex-col gap-2 bg-bg rounded-[8px] p-3">
         {mensajes.length === 0 && (
           <span className="text-sm text-muted text-center m-auto">{t("conversacion.sinMensajes")}</span>
         )}
@@ -200,9 +200,7 @@ export default function ConversacionForm({ otroId }) {
           return (
             <div
               key={m.id}
-              className={`max-w-[80%] rounded-[14px] px-3 py-2 text-sm flex flex-col gap-0.5 ${
-                esMio ? "self-end bg-accent text-accent-ink" : "self-start bg-surface text-ink border-2 border-outline"
-              }`}
+              className={`max-w-[80%] rounded-[6px] px-3 py-2 text-sm flex flex-col gap-0.5 ${ esMio ? "self-end bg-accent text-accent-ink" : "self-start bg-surface text-ink" }`}
             >
               <span>{m.contenido}</span>
               <span className={`text-[10px] self-end ${esMio ? "text-accent-ink/70" : "text-muted"}`}>
@@ -226,7 +224,7 @@ export default function ConversacionForm({ otroId }) {
         <button
           type="submit"
           disabled={enviando || texto.trim() === ""}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60"
+          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60"
         >
           {enviando ? <PelotaLoader /> : t("conversacion.enviar")}
         </button>

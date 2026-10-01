@@ -20,7 +20,7 @@ export default function OfflinePage() {
       </p>
       <button
         onClick={() => window.location.reload()}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer"
       >
         Reintentar
       </button>

@@ -56,7 +56,7 @@ export default function CampoCancha({ value, onChange, onElegir }) {
         className={inputClass}
       />
       {resultados.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-surface border-2 border-outline rounded-[12px] z-10 overflow-hidden">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-surface border-2 border-outline rounded-[6px] z-10 overflow-hidden">
           {resultados.map((c) => (
             <button
               key={c.id}

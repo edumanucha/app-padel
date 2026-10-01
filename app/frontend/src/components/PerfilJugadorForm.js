@@ -160,12 +160,12 @@ export default function PerfilJugadorForm({ jugadorId }) {
   }
 
   return (
-    <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
+    <div className="w-full max-w-md bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("perfilJugador.titulo")}</h1>
         <button
           onClick={() => router.push("/jugadores")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
         >
           {t("perfilJugador.volver")}
         </button>
@@ -176,7 +176,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
       {jugador && (
         <>
           <div className="flex items-center gap-3">
-            <div className="w-20 h-20 rounded-full shadow-[0_1px_3px_rgba(20,38,31,0.08)] bg-bg overflow-hidden flex items-center justify-center flex-shrink-0">
+            <div className="w-20 h-20 rounded-full border border-ink/10 bg-bg overflow-hidden flex items-center justify-center flex-shrink-0">
               {jugador.avatar_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={jugador.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
@@ -195,14 +195,14 @@ export default function PerfilJugadorForm({ jugadorId }) {
             <button
               onClick={() => router.push(`/mensajes/${jugadorId}`)}
               title={t("perfilJugador.enviarMensaje")}
-              className="font-heading font-semibold text-xs px-3 py-1.5 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+              className="font-heading font-semibold text-xs px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
             >
               <IconoMensaje width={16} height={16} />
             </button>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-bg shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[16px] p-3 flex flex-col gap-1">
+            <div className="bg-bg border border-ink/10 rounded-[8px] p-3 flex flex-col gap-1">
               <span className="text-xs text-muted uppercase tracking-wide">
                 {t("perfilJugador.nivelTemplate", { etiqueta: etiquetaNivel(jugador.nivel, t) })}
               </span>
@@ -215,7 +215,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
                 ))}
               </span>
             </div>
-            <div className="bg-bg shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[16px] p-3 flex flex-col gap-1">
+            <div className="bg-bg border border-ink/10 rounded-[8px] p-3 flex flex-col gap-1">
               <span className="text-xs text-muted uppercase tracking-wide">{t("perfilJugador.ranking")}</span>
               <span className="font-heading text-lg font-semibold flex items-center gap-1.5">
                 <IconoTrofeo width={16} height={16} />
@@ -225,25 +225,25 @@ export default function PerfilJugadorForm({ jugadorId }) {
           </div>
 
           <div className="grid grid-cols-2 gap-2">
-            <div className="bg-bg shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[14px] p-2.5 flex flex-col gap-0.5">
+            <div className="bg-bg border border-ink/10 rounded-[6px] p-2.5 flex flex-col gap-0.5">
               <span className="font-heading text-xs text-muted flex items-center gap-1">
                 <IconoPersona width={13} height={13} /> {t("perfilJugador.sexo")}
               </span>
               <span className="text-sm font-heading font-semibold">{sexoLabel(jugador.sexo, t)}</span>
             </div>
-            <div className="bg-bg shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[14px] p-2.5 flex flex-col gap-0.5">
+            <div className="bg-bg border border-ink/10 rounded-[6px] p-2.5 flex flex-col gap-0.5">
               <span className="font-heading text-xs text-muted flex items-center gap-1">
                 <IconoMano width={13} height={13} /> {t("perfilJugador.manoHabil")}
               </span>
               <span className="text-sm font-heading font-semibold">{manoHabilLabel(jugador.mano_habil, t)}</span>
             </div>
-            <div className="bg-bg shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[14px] p-2.5 flex flex-col gap-0.5">
+            <div className="bg-bg border border-ink/10 rounded-[6px] p-2.5 flex flex-col gap-0.5">
               <span className="font-heading text-xs text-muted flex items-center gap-1">
                 <IconoPelota width={13} height={13} /> {t("perfilJugador.posicion")}
               </span>
               <span className="text-sm font-heading font-semibold">{jugador.posicion === "reves" ? t("companero.reves") : t("companero.drive")}</span>
             </div>
-            <div className="bg-bg shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[14px] p-2.5 flex flex-col gap-0.5">
+            <div className="bg-bg border border-ink/10 rounded-[6px] p-2.5 flex flex-col gap-0.5">
               <span className="font-heading text-xs text-muted flex items-center gap-1">
                 <IconoGrafico width={13} height={13} /> {t("perfilJugador.partidos")}
               </span>
@@ -254,7 +254,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
               </span>
             </div>
             {jugador.no_shows > 0 && (
-              <div className="bg-bg shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[14px] p-2.5 flex flex-col gap-0.5">
+              <div className="bg-bg border border-ink/10 rounded-[6px] p-2.5 flex flex-col gap-0.5">
                 <span className="font-heading text-xs text-muted flex items-center gap-1">
                   <IconoBandera width={13} height={13} /> {t("perfilJugador.noShows")}
                 </span>
@@ -264,7 +264,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
           </div>
 
           {(jugador.veces_con > 0 || jugador.veces_contra > 0) && (
-            <div className="bg-bg border-2 border-outline rounded-[14px] p-3 flex flex-col gap-1 text-sm">
+            <div className="bg-bg border-2 border-outline rounded-[6px] p-3 flex flex-col gap-1 text-sm">
               {jugador.veces_con > 0 && <span>{t("perfilJugador.vecesCon", { n: jugador.veces_con })}</span>}
               {jugador.veces_contra > 0 && <span>{t("perfilJugador.vecesContra", { n: jugador.veces_contra })}</span>}
               {jugador.compatibilidad_pct != null && (
@@ -280,7 +280,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
               <button
                 type="button"
                 onClick={() => setMostrarPartidosRanking((v) => !v)}
-                className="w-full text-left flex items-center justify-between gap-2 cursor-pointer bg-bg rounded-[14px] p-3"
+                className="w-full text-left flex items-center justify-between gap-2 cursor-pointer bg-bg rounded-[6px] p-3"
               >
                 <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted">
                   Partidos y puntos de ranking
@@ -293,7 +293,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
               </button>
 
               {mostrarPartidosRanking && (
-                <div className="bg-bg rounded-[14px] p-3 flex flex-col gap-2">
+                <div className="bg-bg rounded-[6px] p-3 flex flex-col gap-2">
                   {partidosRanking.map((p, i) => (
                     <div
                       key={p.partido_id}
@@ -309,9 +309,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
                           type="button"
                           onClick={() => handleToggleKudos(p.partido_id)}
                           title="Felicitar este partido"
-                          className={`flex items-center gap-1 text-xs font-heading font-semibold px-2 py-1 rounded-full cursor-pointer ${
-                            p.ya_di_kudos ? "bg-accent-2 text-accent-2-ink" : "bg-surface text-muted"
-                          }`}
+                          className={`flex items-center gap-1 text-xs font-heading font-semibold px-2 py-1 rounded-[6px] cursor-pointer ${ p.ya_di_kudos ? "bg-accent-2 text-accent-2-ink" : "bg-surface text-muted" }`}
                         >
                           <IconoPulgar width={13} height={13} />
                           {p.kudos_count > 0 ? p.kudos_count : ""}
@@ -327,7 +325,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
           <p className="text-xs text-muted text-center">{t("perfilJugador.telefonoAviso")}</p>
 
           {misPartidosAbiertos.length > 0 && (
-            <div className="bg-bg border-2 border-outline rounded-[14px] p-3 flex flex-col gap-2">
+            <div className="bg-bg border-2 border-outline rounded-[6px] p-3 flex flex-col gap-2">
               <span className="font-heading text-sm font-semibold">{t("perfilJugador.invitarAUno")}</span>
               <select
                 value={partidoElegido}
@@ -343,7 +341,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
               <button
                 onClick={handleInvitar}
                 disabled={invitando}
-                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+                className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
               >
                 {invitando && <PelotaLoader />}
                 {t("perfilJugador.invitar")}

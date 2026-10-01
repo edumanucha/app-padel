@@ -30,12 +30,12 @@ export default function ComoFuncionaForm() {
   const { t } = useLocale();
 
   return (
-    <div className="w-full max-w-md bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-5">
+    <div className="w-full max-w-md bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-5">
       <div className="flex items-center justify-between">
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("comoFunciona.titulo")}</h1>
         <button
           onClick={() => router.push("/menu")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
         >
           {t("comoFunciona.volver")}
         </button>
@@ -45,7 +45,7 @@ export default function ComoFuncionaForm() {
 
       <div className="flex flex-col gap-3">
         {BLOQUES.map((b) => (
-          <div key={b.clave} className="bg-bg border-2 border-outline rounded-[14px] p-4 flex flex-col gap-1">
+          <div key={b.clave} className="bg-bg border-2 border-outline rounded-[6px] p-4 flex flex-col gap-1">
             <span className="font-heading font-semibold flex items-center gap-2">
               <b.Icono className="ico" aria-hidden />
               {t(`comoFunciona.${b.clave}Titulo`)}
@@ -61,7 +61,7 @@ export default function ComoFuncionaForm() {
           {PROXIMAMENTE_CLAVES.map((clave) => (
             <span
               key={clave}
-              className="text-sm px-4 py-3 rounded-[14px] border-2 border-outline border-dashed text-muted opacity-70"
+              className="text-sm px-4 py-3 rounded-[6px] border-2 border-outline border-dashed text-muted opacity-70"
             >
               {t(`comoFunciona.${clave}`)} · {t("home.proximamente")}
             </span>

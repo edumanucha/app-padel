@@ -11,7 +11,7 @@ import ContadorNumero from "@/components/ContadorNumero";
 import InfoEstadistica from "@/components/InfoEstadistica";
 
 import { IconoLupa } from "@/components/Icons";
-const tarjeta = "bg-surface text-ink rounded-[18px] p-4 shadow-[0_1px_3px_rgba(20,38,31,0.08)]";
+const tarjeta = "bg-surface text-ink rounded-[8px] p-4 border border-ink/10";
 
 function Subtitulo({ children }) {
   return <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">{children}</span>;
@@ -208,16 +208,14 @@ export default function DirectorioJugadoresForm() {
         <div className="flex items-center gap-2">
         <button
           onClick={() => setMostrarFiltros(true)}
-          className={`font-heading font-semibold text-sm px-3 py-1.5 rounded-full shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer ${
-            cantidadFiltros > 0 ? "bg-accent text-accent-ink border-2 border-outline" : "bg-surface text-ink"
-          }`}
+          className={`font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] border border-ink/10 cursor-pointer ${ cantidadFiltros > 0 ? "bg-accent text-accent-ink" : "bg-surface text-ink" }`}
         >
           <IconoLupa className="ico" aria-hidden /> {t("directorio.filtros")}
           {cantidadFiltros > 0 ? ` (${cantidadFiltros})` : ""}
         </button>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           {t("directorio.volver")}
         </button>
@@ -256,7 +254,7 @@ export default function DirectorioJugadoresForm() {
               <button
                 type="button"
                 onClick={limpiarFiltros}
-                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink cursor-pointer"
+                className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink cursor-pointer"
               >
                 {t("directorio.limpiarFiltros")}
               </button>
@@ -264,7 +262,7 @@ export default function DirectorioJugadoresForm() {
             <button
               type="submit"
               disabled={cargando}
-              className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+              className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
             >
               {cargando && <PelotaLoader />}
               {t("directorio.buscar")}
@@ -293,9 +291,7 @@ export default function DirectorioJugadoresForm() {
               key={valor}
               type="button"
               onClick={() => setPeriodo(valor)}
-              className={`font-heading font-semibold text-xs px-3 py-1.5 rounded-full cursor-pointer ${
-                periodo === valor ? "bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.12)]" : "text-muted"
-              }`}
+              className={`font-heading font-semibold text-xs px-3 py-1.5 rounded-[6px] cursor-pointer ${ periodo === valor ? "bg-surface text-ink border border-ink/10" : "text-muted" }`}
             >
               {etiqueta}
             </button>

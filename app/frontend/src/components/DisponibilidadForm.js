@@ -112,7 +112,7 @@ export default function DisponibilidadForm() {
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("disponibilidad.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           {t("disponibilidad.volver")}
         </button>
@@ -128,7 +128,7 @@ export default function DisponibilidadForm() {
           {sugerencias.map((s) => (
             <div
               key={s.grupo_id}
-              className="bg-accent text-accent-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[16px] p-4 flex flex-col gap-2"
+              className="bg-accent text-accent-ink border border-ink/10 rounded-[8px] p-4 flex flex-col gap-2"
             >
               <span className="font-heading font-semibold">
                 {t("disponibilidad.diaPorLaFranja", {
@@ -143,13 +143,13 @@ export default function DisponibilidadForm() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleResponder(s.grupo_id, true)}
-                    className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-surface text-ink border-2 border-outline cursor-pointer"
+                    className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink border-2 border-outline cursor-pointer"
                   >
                     {t("disponibilidad.confirmar")}
                   </button>
                   <button
                     onClick={() => handleResponder(s.grupo_id, false)}
-                    className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-surface text-red-600 border-2 border-outline cursor-pointer"
+                    className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-red-600 border-2 border-outline cursor-pointer"
                   >
                     {t("disponibilidad.rechazar")}
                   </button>
@@ -164,7 +164,7 @@ export default function DisponibilidadForm() {
 
       <form
         onSubmit={handleAgregar}
-        className="bg-surface shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[16px] p-4 flex flex-col gap-2"
+        className="bg-surface border border-ink/10 rounded-[8px] p-4 flex flex-col gap-2"
       >
         <span className="font-heading text-sm font-semibold">{t("disponibilidad.agregarDisponibilidad")}</span>
         <div className="flex gap-2">
@@ -187,7 +187,7 @@ export default function DisponibilidadForm() {
         <button
           type="submit"
           disabled={guardando}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 self-start inline-flex items-center gap-2"
+          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 self-start inline-flex items-center gap-2"
         >
           {guardando && <PelotaLoader />}
           {t("disponibilidad.agregar")}
@@ -202,7 +202,7 @@ export default function DisponibilidadForm() {
           {misSlots.map((s) => (
             <div
               key={s.id}
-              className="bg-bg border-2 border-outline rounded-[12px] p-2 flex items-center justify-between"
+              className="bg-bg border-2 border-outline rounded-[6px] p-2 flex items-center justify-between"
             >
               <span className="text-sm">
                 {etiquetaDia(s.dia_semana, t)} · {etiquetaFranja(s.franja, t)}

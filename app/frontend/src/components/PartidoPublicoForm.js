@@ -78,7 +78,7 @@ export default function PartidoPublicoForm({ partidoId }) {
   const cancelado = partido.estado === "cancelado";
 
   return (
-    <div className="w-full max-w-sm bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-3">
+    <div className="w-full max-w-sm bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-3">
       <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("partidoPublico.titulo")}</h1>
       <span className="font-heading font-semibold">
         {new Date(partido.fecha_hora).toLocaleString(INTL_LOCALE[locale] ?? "es-AR")}
@@ -99,7 +99,7 @@ export default function PartidoPublicoForm({ partidoId }) {
         <button
           onClick={handleSumarme}
           disabled={sumando}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
         >
           {sumando && <PelotaLoader />}
           {t("partidoPublico.sumarme")}
@@ -109,7 +109,7 @@ export default function PartidoPublicoForm({ partidoId }) {
       {!cancelado && !estaCompleto && !usuarioId && (
         <button
           onClick={handleIrALogin}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer"
         >
           {t("partidoPublico.iniciaSesion")}
         </button>

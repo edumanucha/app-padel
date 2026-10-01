@@ -14,12 +14,12 @@ export default function QuienesSomosForm() {
 
   return (
     <div className="w-full max-w-md flex flex-col gap-5">
-      <div className="bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
+      <div className="bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("quienesSomos.titulo")}</h1>
           <button
             onClick={() => router.push("/menu")}
-            className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+            className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
           >
             {t("quienesSomos.volver")}
           </button>

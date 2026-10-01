@@ -10,11 +10,11 @@ import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
 import { estadisticasDeLado, formatoSets, calcularPuntosRanking } from "@/lib/estadisticasMarcadorcito";
 
-const tarjeta = "bg-surface text-ink rounded-[18px] p-4 shadow-[0_1px_3px_rgba(20,38,31,0.08)]";
+const tarjeta = "bg-surface text-ink rounded-[8px] p-4 border border-ink/10";
 
 function Dato({ etiqueta, valor }) {
   return (
-    <div className="bg-bg shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[14px] p-2.5 flex flex-col gap-0.5">
+    <div className="bg-bg border border-ink/10 rounded-[6px] p-2.5 flex flex-col gap-0.5">
       <span className="font-heading text-xs text-muted">{etiqueta}</span>
       <span className="text-sm font-heading font-semibold">{valor}</span>
     </div>
@@ -125,7 +125,7 @@ export default function EstadisticasPartidoForm({ partidoId }) {
           <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("detalleEstadisticas.titulo")}</h1>
           <button
             onClick={() => router.back()}
-            className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+            className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
           >
             {t("detalleEstadisticas.volver")}
           </button>
@@ -143,7 +143,7 @@ export default function EstadisticasPartidoForm({ partidoId }) {
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("detalleEstadisticas.titulo")}</h1>
         <button
           onClick={() => router.back()}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           {t("detalleEstadisticas.volver")}
         </button>

@@ -70,7 +70,7 @@ function SelectorTema({ tema, onElegir }) {
         aria-haspopup="listbox"
         aria-expanded={abierto}
         aria-label="Tema del tablero"
-        className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer flex items-center gap-1"
+        className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer flex items-center gap-1"
       >
         {actual.texto}
         <span aria-hidden className="text-xs">▾</span>
@@ -79,7 +79,7 @@ function SelectorTema({ tema, onElegir }) {
         <ul
           role="listbox"
           aria-label="Tema del tablero"
-          className="absolute right-0 top-full mt-1 z-50 min-w-full bg-surface text-ink rounded-[14px] shadow-xl py-1 whitespace-nowrap"
+          className="absolute right-0 top-full mt-1 z-50 min-w-full bg-surface text-ink rounded-[6px] shadow-xl py-1 whitespace-nowrap"
         >
           {TEMAS.map((t) => (
             <li key={t.valor}>
@@ -134,14 +134,14 @@ function ElegirModo({ modos, bateria }) {
       </div>
       <p className="text-sm text-center text-muted min-h-[2.75em]">{actual.detalle}</p>
       {bateria && !bateria.cargando && bateria.nivel < 50 && actual.modo === "camara" && (
-        <p className="text-xs rounded-[12px] px-3 py-2 bg-amber-100 text-amber-900">
+        <p className="text-xs rounded-[6px] px-3 py-2 bg-amber-100 text-amber-900">
           Batería al {bateria.nivel}%. La cámara consume bastante: para un partido entero conviene arrancar con más de 50%.
         </p>
       )}
       <button
         type="button"
         onClick={actual.activar}
-        className="rounded-full font-heading font-bold text-base py-3 bg-accent text-accent-ink border-2 border-outline cursor-pointer"
+        className="rounded-full font-heading font-bold text-base py-3 bg-accent text-accent-ink cursor-pointer"
       >
         Empezar con {actual.nombre} →
       </button>
@@ -2057,7 +2057,7 @@ export default function MarcadorForm({ partidoId }) {
         <p className="text-red-600 text-sm">{error || "No se pudo cargar el marcador."}</p>
         <button
           onClick={() => router.push(`/partido/${partidoId}`)}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer self-start"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer self-start"
         >
           Volver
         </button>
@@ -2107,7 +2107,7 @@ export default function MarcadorForm({ partidoId }) {
           </p>
           <button
             onClick={seguirEnElPartido}
-            className="rounded-full font-heading font-bold text-base py-3 bg-accent text-accent-ink border-2 border-outline cursor-pointer"
+            className="rounded-full font-heading font-bold text-base py-3 bg-accent text-accent-ink cursor-pointer"
           >
             Seguir jugando
           </button>
@@ -2130,14 +2130,14 @@ export default function MarcadorForm({ partidoId }) {
         </HojaAbajo>
       )}
       {sinSincronizar && (
-        <div className="fixed top-1.5 left-1.5 z-50 pointer-events-none rounded-full bg-amber-400 text-black text-[11px] font-semibold px-2.5 py-1 shadow">
+        <div className="fixed top-1.5 left-1.5 z-50 pointer-events-none rounded-[6px] bg-amber-400 text-black text-[11px] font-semibold px-2.5 py-1 shadow">
           Sin señal · puntos guardados en el celu
         </div>
       )}
       <div className="w-full flex items-center justify-between gap-2 flex-wrap">
         <button
           onClick={() => router.push(`/partido/${partidoId}`)}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           Volver al detalle
         </button>
@@ -2145,7 +2145,7 @@ export default function MarcadorForm({ partidoId }) {
           <SelectorTema tema={tema} onElegir={elegirTema} />
           <button
             onClick={() => setModoApaisado((v) => !v)}
-            className={`${styles.botonApaisado} font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer`}
+            className={`${styles.botonApaisado} font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer`}
           >
             <IconoGirarTelefono width={16} height={16} />
             {modoApaisado ? "Modo vertical" : "Modo apaisado"}
@@ -2356,7 +2356,7 @@ export default function MarcadorForm({ partidoId }) {
                       <button
                         key={valor}
                         onClick={() => elegirFormatoReloj(valor)}
-                        className={`text-left rounded-[12px] px-3 py-2 border-2 cursor-pointer ${formatoReloj === valor ? "border-accent bg-bg" : "border-outline bg-surface"}`}
+                        className={`text-left rounded-[6px] px-3 py-2 border-2 cursor-pointer ${formatoReloj === valor ? "border-accent bg-bg" : "border-outline bg-surface"}`}
                       >
                         <span className="block text-sm font-semibold">{arriba}</span>
                         <span className="block text-xs text-muted">{abajo}</span>

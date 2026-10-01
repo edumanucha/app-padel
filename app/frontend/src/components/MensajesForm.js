@@ -62,7 +62,7 @@ export default function MensajesForm() {
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("mensajes.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           {t("mensajes.volver")}
         </button>
@@ -71,7 +71,7 @@ export default function MensajesForm() {
       {error && <p className="text-red-600 text-sm">{error}</p>}
 
       {conversaciones.length === 0 && (
-        <div className="bg-surface text-muted shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 text-sm">
+        <div className="bg-surface text-muted border border-ink/10 rounded-[8px] p-6 text-sm">
           {t("mensajes.sinConversaciones")}
         </div>
       )}
@@ -80,7 +80,7 @@ export default function MensajesForm() {
         <button
           key={c.jugador_id}
           onClick={() => router.push(`/mensajes/${c.jugador_id}`)}
-          className="text-left bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[16px] p-3 flex items-center gap-3 cursor-pointer"
+          className="text-left bg-surface text-ink border border-ink/10 rounded-[8px] p-3 flex items-center gap-3 cursor-pointer"
         >
           <div className="w-11 h-11 rounded-full border-2 border-outline bg-bg overflow-hidden flex items-center justify-center flex-shrink-0">
             {c.avatar_url ? (

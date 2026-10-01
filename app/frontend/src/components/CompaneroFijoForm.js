@@ -85,7 +85,7 @@ export default function CompaneroFijoForm() {
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("companero.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
         >
           {t("companero.volver")}
         </button>
@@ -95,7 +95,7 @@ export default function CompaneroFijoForm() {
 
       <button
         onClick={handleToggleBusco}
-        className="font-heading font-semibold text-sm px-4 py-3 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer self-start"
+        className="font-heading font-semibold text-sm px-4 py-3 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer self-start"
       >
         {busco ? t("companero.buscandoActivo") : t("companero.activarBusqueda")}
       </button>
@@ -106,7 +106,7 @@ export default function CompaneroFijoForm() {
         <div className="flex flex-col gap-2">
           <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">{t("companero.misDuplas")}</span>
           {misDuplas.map((d) => (
-            <div key={d.jugador_id} className="bg-accent-2 text-accent-2-ink border-2 border-outline rounded-[14px] p-3">
+            <div key={d.jugador_id} className="bg-accent-2 text-accent-2-ink border-2 border-outline rounded-[6px] p-3">
               <IconoDuo className="ico" aria-hidden /> {d.nombre}
             </div>
           ))}
@@ -122,7 +122,7 @@ export default function CompaneroFijoForm() {
           {candidatos.map((c) => (
             <div
               key={c.id}
-              className="bg-surface shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[16px] p-3 flex items-center justify-between gap-2"
+              className="bg-surface border border-ink/10 rounded-[8px] p-3 flex items-center justify-between gap-2"
             >
               <div>
                 <span className="font-heading font-semibold text-sm block">{c.nombre}</span>
@@ -136,7 +136,7 @@ export default function CompaneroFijoForm() {
               </div>
               <button
                 onClick={() => handleMarcarInteres(c.id)}
-                className="font-heading font-semibold text-xs px-3 py-1.5 rounded-full bg-accent text-accent-ink border-2 border-outline cursor-pointer"
+                className="font-heading font-semibold text-xs px-3 py-1.5 rounded-[6px] bg-accent text-accent-ink cursor-pointer"
               >
                 {t("companero.marcarInteres")}
               </button>

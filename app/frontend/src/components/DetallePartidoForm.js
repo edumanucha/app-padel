@@ -8,9 +8,9 @@ import { IconoPelota, IconoCompartir, IconoRepetir, IconoBilletera, IconoTelefon
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
 
-const tarjeta = "bg-surface text-ink rounded-[18px] p-4 shadow-[0_1px_3px_rgba(20,38,31,0.08)]";
-const tarjetaChica = "bg-bg rounded-[14px] p-3 flex flex-col gap-2";
-const botonSuave = "font-heading font-semibold text-sm px-4 py-2 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer";
+const tarjeta = "bg-surface text-ink rounded-[8px] p-4 border border-ink/10";
+const tarjetaChica = "bg-bg rounded-[6px] p-3 flex flex-col gap-2";
+const botonSuave = "font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer";
 
 // Campo "nombre" de un gasto (US-10.1): busca contra cuentas reales
 // (buscar_jugadores, mismo RPC que ya usa el marcador libre ad-hoc,
@@ -46,7 +46,7 @@ function CampoJugadorGasto({ valor, onChange }) {
       />
       {valor.jugadorId && <span className="text-[10px] text-muted">{t("detallePartido.cuentaReal")}</span>}
       {resultados.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-surface rounded-[12px] shadow-[0_2px_8px_rgba(20,38,31,0.15)] z-10 overflow-hidden">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-surface rounded-[6px] shadow-[0_2px_8px_rgba(20,38,31,0.15)] z-10 overflow-hidden">
           {resultados.map((r) => (
             <button
               key={r.id}
@@ -359,7 +359,7 @@ export default function DetallePartidoForm({ partidoId }) {
           {canchaId && (
             <button
               onClick={() => router.push(`/canchas/${canchaId}`)}
-              className="font-heading font-semibold text-xs px-2 py-0.5 rounded-full bg-bg text-ink cursor-pointer"
+              className="font-heading font-semibold text-xs px-2 py-0.5 rounded-[6px] bg-bg text-ink cursor-pointer"
             >
               {t("detallePartido.verCancha")}
             </button>
@@ -375,7 +375,7 @@ export default function DetallePartidoForm({ partidoId }) {
         {(partido.estado === "jugado" || partido.estado === "completo") && (
           <button
             onClick={() => router.push(`/partido/${partidoId}/marcador`)}
-            className="font-heading font-bold text-lg px-6 py-5 rounded-[20px] bg-accent text-accent-ink border-2 border-outline shadow-[0_2px_6px_rgba(20,38,31,0.12)] cursor-pointer self-center w-full flex flex-col items-center gap-1"
+            className="font-heading font-bold text-lg px-6 py-5 rounded-[8px] bg-accent text-accent-ink border border-ink/10 cursor-pointer self-center w-full flex flex-col items-center gap-1"
           >
             <IconoPelota width={26} height={26} />
             {partido.estado === "jugado" ? t("detallePartido.verMarcadorcito") : t("detallePartido.irAlMarcadorcito")}
@@ -389,11 +389,11 @@ export default function DetallePartidoForm({ partidoId }) {
               <button
                 onClick={handleConfirmarLugarEspera}
                 disabled={!hayLugar}
-                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline cursor-pointer disabled:opacity-60"
+                className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60"
               >
                 {hayLugar ? t("partidosAbiertos.confirmarMiLugar") : t("detallePartido.esperandoLugar")}
               </button>
-              <button onClick={handleSalirDeLaLista} className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-surface text-red-600 cursor-pointer">
+              <button onClick={handleSalirDeLaLista} className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-red-600 cursor-pointer">
                 {t("partidosAbiertos.salirDeLista")}
               </button>
             </div>
@@ -403,14 +403,14 @@ export default function DetallePartidoForm({ partidoId }) {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={handleCompartir}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer flex items-center gap-2"
+            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer flex items-center gap-2"
           >
             <IconoCompartir width={16} height={16} /> {t("detallePartido.compartir")}
           </button>
           {puedeRepetir && (
             <button
               onClick={handleRepetir}
-              className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer flex items-center gap-2"
+              className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer flex items-center gap-2"
             >
               <IconoRepetir width={16} height={16} /> {t("detallePartido.repetirPartido")}
             </button>
@@ -454,7 +454,7 @@ export default function DetallePartidoForm({ partidoId }) {
               <button
                 type="button"
                 onClick={agregarFilaGasto}
-                className="font-heading font-semibold text-xs px-3 py-1 rounded-full bg-surface text-ink self-start cursor-pointer"
+                className="font-heading font-semibold text-xs px-3 py-1 rounded-[6px] bg-surface text-ink self-start cursor-pointer"
               >
                 + {t("detallePartido.agregarJugador")}
               </button>
@@ -462,14 +462,14 @@ export default function DetallePartidoForm({ partidoId }) {
                 <button
                   type="submit"
                   disabled={guardandoGastos}
-                  className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-accent text-accent-ink border-2 border-outline cursor-pointer disabled:opacity-60"
+                  className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60"
                 >
                   {t("admin.guardar")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setEditandoGastos(false)}
-                  className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-surface text-ink cursor-pointer"
+                  className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink cursor-pointer"
                 >
                   {t("admin.cancelar")}
                 </button>
@@ -506,7 +506,7 @@ export default function DetallePartidoForm({ partidoId }) {
                   {soyOrganizador && (
                     <button
                       onClick={() => setEditandoGastos(true)}
-                      className="font-heading font-semibold text-xs px-3 py-1 rounded-full bg-surface text-ink self-start cursor-pointer"
+                      className="font-heading font-semibold text-xs px-3 py-1 rounded-[6px] bg-surface text-ink self-start cursor-pointer"
                     >
                       {t("verPerfil.editar")}
                     </button>
@@ -517,7 +517,7 @@ export default function DetallePartidoForm({ partidoId }) {
           ) : soyOrganizador ? (
             <button
               onClick={() => setEditandoGastos(true)}
-              className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-surface text-ink cursor-pointer self-start"
+              className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink cursor-pointer self-start"
             >
               {t("detallePartido.cargarGastos")}
             </button>
@@ -530,7 +530,7 @@ export default function DetallePartidoForm({ partidoId }) {
         {puedeCancelar && !confirmandoCancelacion && (
           <button
             onClick={() => setConfirmandoCancelacion(true)}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer text-red-600 self-start"
+            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer text-red-600 self-start"
           >
             {t("detallePartido.cancelarPartido")}
           </button>
@@ -543,7 +543,7 @@ export default function DetallePartidoForm({ partidoId }) {
               <button
                 onClick={handleCancelar}
                 disabled={cancelando}
-                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-red-600 text-white cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
+                className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-red-600 text-white cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
               >
                 {cancelando && <PelotaLoader />}
                 {t("detallePartido.siCancelar")}
@@ -574,7 +574,7 @@ export default function DetallePartidoForm({ partidoId }) {
             {soyOrganizador && partido.estado === "jugado" && p.estado === "confirmado" && p.jugador_id !== usuarioId && (
               <button
                 onClick={() => handleMarcarNoShow(p.jugador_id, p.no_show)}
-                className="font-heading font-semibold text-xs px-3 py-1 rounded-full bg-bg text-ink self-start cursor-pointer"
+                className="font-heading font-semibold text-xs px-3 py-1 rounded-[6px] bg-bg text-ink self-start cursor-pointer"
               >
                 {p.no_show ? t("detallePartido.desmarcarNoShow") : t("detallePartido.marcarNoShow")}
               </button>
@@ -592,7 +592,7 @@ export default function DetallePartidoForm({ partidoId }) {
                     href={`https://wa.me/${p.telefono.replace(/[^0-9]/g, "")}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-heading font-semibold text-xs px-3 py-1 rounded-full bg-accent text-accent-ink"
+                    className="font-heading font-semibold text-xs px-3 py-1 rounded-[6px] bg-accent text-accent-ink"
                   >
                     WhatsApp
                   </a>

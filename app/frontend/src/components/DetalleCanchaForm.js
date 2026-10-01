@@ -116,7 +116,7 @@ export default function DetalleCanchaForm({ canchaId }) {
         <p className="text-red-600 text-sm">{error || t("detalleCancha.noEncontrada")}</p>
         <button
           onClick={() => router.push("/canchas")}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer self-start"
+          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer self-start"
         >
           {t("detalleCancha.volverAlListado")}
         </button>
@@ -128,12 +128,12 @@ export default function DetalleCanchaForm({ canchaId }) {
     <div className="w-full max-w-md flex flex-col gap-4">
       <button
         onClick={() => router.push("/canchas")}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer self-start"
+        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer self-start"
       >
         {t("detalleCancha.volverAlListado")}
       </button>
 
-      <div className="bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-5 flex flex-col gap-3">
+      <div className="bg-surface text-ink border border-ink/10 rounded-[8px] p-5 flex flex-col gap-3">
         <span className="font-heading text-xl font-semibold">{cancha.nombre}</span>
 
         {cancha.direccion && (
@@ -159,7 +159,7 @@ export default function DetalleCanchaForm({ canchaId }) {
               href={`https://wa.me/${cancha.telefono.replace(/[^0-9]/g, "")}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-heading font-semibold text-xs px-3 py-1 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)]"
+              className="font-heading font-semibold text-xs px-3 py-1 rounded-[6px] bg-accent text-accent-ink border border-ink/10"
             >
               WhatsApp
             </a>
@@ -167,7 +167,7 @@ export default function DetalleCanchaForm({ canchaId }) {
         )}
       </div>
 
-      <div className="bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-5 flex flex-col gap-3">
+      <div className="bg-surface text-ink border border-ink/10 rounded-[8px] p-5 flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <span className="font-heading text-lg font-semibold">{t("detalleCancha.resenas")}</span>
           {resenas.length > 0 && (
@@ -180,7 +180,7 @@ export default function DetalleCanchaForm({ canchaId }) {
         {resenas.length === 0 && <span className="text-sm text-muted">{t("detalleCancha.sinResenas")}</span>}
 
         {resenas.map((r, i) => (
-          <div key={i} className="bg-bg border-2 border-outline rounded-[14px] p-3 flex flex-col gap-1">
+          <div key={i} className="bg-bg border-2 border-outline rounded-[6px] p-3 flex flex-col gap-1">
             <div className="flex items-center justify-between">
               <span className="font-heading font-semibold text-sm">{r.nombre}</span>
               <span className="text-sm text-accent inline-flex" aria-label={`${r.puntuacion} de 5`}>{Array.from({ length: r.puntuacion }, (_, i) => <IconoEstrella key={i} llena className="ico" aria-hidden />)}</span>
@@ -215,7 +215,7 @@ export default function DetalleCanchaForm({ canchaId }) {
             <button
               type="submit"
               disabled={enviandoResena}
-              className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 self-start inline-flex items-center gap-2"
+              className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 self-start inline-flex items-center gap-2"
             >
               {enviandoResena && <PelotaLoader />}
               {t("detalleCancha.enviarResena")}

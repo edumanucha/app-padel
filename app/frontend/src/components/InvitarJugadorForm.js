@@ -80,7 +80,7 @@ export default function InvitarJugadorForm({ partidoId, onInvitado }) {
     return (
       <button
         onClick={handleAbrir}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer self-start"
+        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer self-start"
       >
         {t("invitarJugador.invitarJugador")}
       </button>
@@ -100,7 +100,7 @@ export default function InvitarJugadorForm({ partidoId, onInvitado }) {
         <button
           type="submit"
           disabled={buscando || termino.trim() === ""}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
+          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
         >
           {buscando && <PelotaLoader />}
           {t("directorio.buscar")}
@@ -119,7 +119,7 @@ export default function InvitarJugadorForm({ partidoId, onInvitado }) {
               <button
                 onClick={() => handleInvitar(jugador.id)}
                 disabled={invitandoA === jugador.id}
-                className="font-heading font-semibold text-sm px-3 py-1 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
+                className="font-heading font-semibold text-sm px-3 py-1 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
               >
                 {invitandoA === jugador.id && <PelotaLoader />}
                 {t("perfilJugador.invitar")}
@@ -135,7 +135,7 @@ export default function InvitarJugadorForm({ partidoId, onInvitado }) {
           <button
             onClick={() => handleInvitar(jugador.id)}
             disabled={invitandoA === jugador.id}
-            className="font-heading font-semibold text-sm px-3 py-1 rounded-full bg-accent text-accent-ink border-2 border-outline shadow-[0_1px_3px_rgba(20,38,31,0.08)] cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
+            className="font-heading font-semibold text-sm px-3 py-1 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
           >
             {invitandoA === jugador.id && <PelotaLoader />}
             {t("perfilJugador.invitar")}
@@ -145,7 +145,7 @@ export default function InvitarJugadorForm({ partidoId, onInvitado }) {
 
       <button
         onClick={() => setAbierto(false)}
-        className="font-heading font-semibold text-sm px-3 py-1.5 rounded-full bg-bg text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] self-start"
+        className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 self-start"
       >
         {t("invitarJugador.cerrar")}
       </button>
