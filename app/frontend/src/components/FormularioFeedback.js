@@ -34,28 +34,29 @@ export default function FormularioFeedback({ titulo }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">{tituloFinal}</span>
+      <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{tituloFinal}</span>
       {enviado ? (
-        <div className="bg-surface border-2 border-outline rounded-[6px] p-4 text-sm text-center">
+        <div className="border-y border-ink/10 py-3 text-sm">
           {t("feedback.gracias")}
         </div>
       ) : (
         <form
           onSubmit={handleEnviar}
-          className="bg-surface border border-ink/10 rounded-[8px] p-4 flex flex-col gap-2"
+          className="flex flex-col gap-2"
         >
+          {/* Rediseño Cartel (2026-10-01): sin caja, campo con contorno fino. */}
           <textarea
             value={comentario}
             onChange={(e) => setComentario(e.target.value)}
             placeholder={t("feedback.placeholder")}
             rows={3}
             maxLength={1000}
-            className="rounded-xl bg-bg px-3 py-2 text-sm"
+            className="rounded-[6px] bg-transparent border border-ink/15 px-3 py-2 text-sm text-ink"
           />
           <button
             type="submit"
             disabled={enviando || comentario.trim() === ""}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 self-start inline-flex items-center gap-2"
+            className="text-sm font-semibold px-4 py-2 rounded-[6px] border border-ink/15 text-ink cursor-pointer disabled:opacity-60 self-start inline-flex items-center gap-2"
           >
             {enviando && <PelotaLoader />}
             {t("feedback.enviarComentario")}

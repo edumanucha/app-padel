@@ -45,7 +45,7 @@ export default function AvatarUpload({ userId, avatarUrl, onUploaded, size = 84 
     <div className="flex items-center gap-3">
       <div
         style={{ width: size, height: size }}
-        className="rounded-full border border-ink/10 bg-bg overflow-hidden flex items-center justify-center flex-shrink-0"
+        className="rounded-full border border-ink/15 bg-surface overflow-hidden flex items-center justify-center flex-shrink-0"
       >
         {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -54,7 +54,7 @@ export default function AvatarUpload({ userId, avatarUrl, onUploaded, size = 84 
           <Logo size={size * 0.6} />
         )}
       </div>
-      <label className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer inline-flex items-center gap-2">
+      <label className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer inline-flex items-center gap-2">
         {subiendo ? "Subiendo..." : "Cambiar foto"}
         <input type="file" accept="image/*" onChange={handleFile} disabled={subiendo} className="hidden" />
       </label>

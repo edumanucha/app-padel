@@ -38,8 +38,11 @@ function etiquetaNivel(n, t) {
   return t("directorio.opcionNivelGenerica", { n });
 }
 
+// Rediseño Cartel (2026-10-01): campos con contorno fino y etiquetas chicas
+// en mayúscula, igual que CrearPartidoForm.
 const inputClass =
-  "rounded-xl bg-bg px-3 py-2 text-ink";
+  "rounded-[6px] bg-transparent border border-ink/15 px-3 py-2 text-ink";
+const etiquetaClass = "text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted";
 
 // Formulario de "completar perfil" (US-1.2): se muestra la primera vez que
 // alguien inicia sesión y todavía no tiene una fila en la tabla `perfiles`.
@@ -154,13 +157,15 @@ export default function CompletarPerfilForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-sm bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-4"
+      className="w-full max-w-sm text-ink flex flex-col gap-5"
     >
+      {/* Rediseño Cartel (2026-10-01): formulario sin tarjeta y un solo botón
+          amarillo grande al final. */}
       <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("completarPerfil.titulo")}</h1>
-      <p className="text-muted text-sm">{t("completarPerfil.subtitulo")}</p>
+      <p className="text-muted text-sm -mt-3">{t("completarPerfil.subtitulo")}</p>
 
       <label className="flex flex-col gap-1">
-        <span className="font-heading text-sm">{t("completarPerfil.nombre")}</span>
+        <span className={etiquetaClass}>{t("completarPerfil.nombre")}</span>
         <input
           type="text"
           value={nombre}
@@ -171,7 +176,7 @@ export default function CompletarPerfilForm() {
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="font-heading text-sm">{t("completarPerfil.telefono")}</span>
+        <span className={etiquetaClass}>{t("completarPerfil.telefono")}</span>
         <input
           type="tel"
           value={telefono}
@@ -182,7 +187,7 @@ export default function CompletarPerfilForm() {
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="font-heading text-sm">{t("completarPerfil.sexo")}</span>
+        <span className={etiquetaClass}>{t("completarPerfil.sexo")}</span>
         <select
           value={sexo}
           onChange={(e) => setSexo(e.target.value)}
@@ -198,7 +203,7 @@ export default function CompletarPerfilForm() {
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="font-heading text-sm">{t("completarPerfil.provincia")}</span>
+        <span className={etiquetaClass}>{t("completarPerfil.provincia")}</span>
         <select
           value={provincia}
           onChange={(e) => setProvincia(e.target.value)}
@@ -214,7 +219,7 @@ export default function CompletarPerfilForm() {
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="font-heading text-sm">{t("completarPerfil.zona")}</span>
+        <span className={etiquetaClass}>{t("completarPerfil.zona")}</span>
         <select
           value={zona}
           onChange={(e) => setZona(e.target.value)}
@@ -234,7 +239,7 @@ export default function CompletarPerfilForm() {
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="font-heading text-sm">{t("completarPerfil.nivelDeJuego")}</span>
+        <span className={etiquetaClass}>{t("completarPerfil.nivelDeJuego")}</span>
         <select
           value={nivel}
           onChange={(e) => setNivel(e.target.value)}
@@ -253,7 +258,7 @@ export default function CompletarPerfilForm() {
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="font-heading text-sm">{t("completarPerfil.manoHabil")}</span>
+        <span className={etiquetaClass}>{t("completarPerfil.manoHabil")}</span>
         <select
           value={manoHabil}
           onChange={(e) => setManoHabil(e.target.value)}
@@ -269,7 +274,7 @@ export default function CompletarPerfilForm() {
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="font-heading text-sm">{t("completarPerfil.posicion")}</span>
+        <span className={etiquetaClass}>{t("completarPerfil.posicion")}</span>
         <select
           value={posicion}
           onChange={(e) => setPosicion(e.target.value)}
@@ -289,7 +294,7 @@ export default function CompletarPerfilForm() {
       <button
         type="submit"
         disabled={cargando || !formularioCompleto}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+        className="w-full font-titulo font-black uppercase text-[1.75rem] leading-none px-4 py-4 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
       >
         {cargando && <PelotaLoader />}
         {cargando ? t("completarPerfil.guardando") : t("completarPerfil.guardarPerfil")}

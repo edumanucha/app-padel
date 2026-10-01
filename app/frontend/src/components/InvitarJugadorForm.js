@@ -80,7 +80,7 @@ export default function InvitarJugadorForm({ partidoId, onInvitado }) {
     return (
       <button
         onClick={handleAbrir}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer self-start"
+        className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer self-start"
       >
         {t("invitarJugador.invitarJugador")}
       </button>
@@ -88,19 +88,22 @@ export default function InvitarJugadorForm({ partidoId, onInvitado }) {
   }
 
   return (
-    <div className="flex flex-col gap-2 border-t-2 border-outline pt-3 mt-1">
+    // Rediseño Cartel (2026-10-01): buscador con contorno fino y resultados
+    // como filas con línea; los botones son livianos porque el amarillo del
+    // detalle de partido es otro.
+    <div className="flex flex-col gap-2 border-t border-ink/10 pt-3 mt-1">
       <form onSubmit={handleBuscar} className="flex gap-2">
         <input
           type="text"
           value={termino}
           onChange={(e) => setTermino(e.target.value)}
           placeholder={t("directorio.buscarPorNombre")}
-          className="rounded-xl bg-bg px-3 py-1.5 text-ink text-sm flex-1"
+          className="rounded-[6px] bg-transparent border border-ink/15 px-3 py-1.5 text-ink text-sm flex-1 min-w-0"
         />
         <button
           type="submit"
           disabled={buscando || termino.trim() === ""}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
         >
           {buscando && <PelotaLoader />}
           {t("directorio.buscar")}
@@ -111,15 +114,15 @@ export default function InvitarJugadorForm({ partidoId, onInvitado }) {
       {mensaje && <p className="text-sm text-muted">{mensaje}</p>}
 
       {resultados.length === 0 && frecuentes.length > 0 && (
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-muted uppercase">{t("invitarJugador.tusFrecuentes")}</span>
+        <div className="flex flex-col">
+          <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted pb-1">{t("invitarJugador.tusFrecuentes")}</span>
           {frecuentes.map((jugador) => (
-            <div key={jugador.id} className="flex items-center justify-between gap-2">
+            <div key={jugador.id} className="flex items-center justify-between gap-2 border-b border-ink/10 py-2">
               <span className="text-sm"><IconoEstrella llena className="ico text-accent" aria-hidden /> {jugador.nombre}</span>
               <button
                 onClick={() => handleInvitar(jugador.id)}
                 disabled={invitandoA === jugador.id}
-                className="font-heading font-semibold text-sm px-3 py-1 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
+                className="text-sm font-semibold px-3 py-1 rounded-[6px] border border-ink/15 text-ink cursor-pointer disabled:opacity-60 inline-flex items-center gap-2 flex-shrink-0"
               >
                 {invitandoA === jugador.id && <PelotaLoader />}
                 {t("perfilJugador.invitar")}
@@ -130,12 +133,12 @@ export default function InvitarJugadorForm({ partidoId, onInvitado }) {
       )}
 
       {resultados.map((jugador) => (
-        <div key={jugador.id} className="flex items-center justify-between gap-2">
+        <div key={jugador.id} className="flex items-center justify-between gap-2 border-b border-ink/10 py-2">
           <span className="text-sm">{jugador.nombre}</span>
           <button
             onClick={() => handleInvitar(jugador.id)}
             disabled={invitandoA === jugador.id}
-            className="font-heading font-semibold text-sm px-3 py-1 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
+            className="text-sm font-semibold px-3 py-1 rounded-[6px] border border-ink/15 text-ink cursor-pointer disabled:opacity-60 inline-flex items-center gap-2 flex-shrink-0"
           >
             {invitandoA === jugador.id && <PelotaLoader />}
             {t("perfilJugador.invitar")}
@@ -145,7 +148,7 @@ export default function InvitarJugadorForm({ partidoId, onInvitado }) {
 
       <button
         onClick={() => setAbierto(false)}
-        className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 self-start"
+        className="text-sm font-semibold text-muted px-1 py-1.5 cursor-pointer self-start"
       >
         {t("invitarJugador.cerrar")}
       </button>
