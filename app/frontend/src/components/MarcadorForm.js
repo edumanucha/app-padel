@@ -6,6 +6,7 @@ import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import DotDigit from "@/components/DotDigit";
 import Toggle from "@/components/Toggle";
+import HojaAbajo, { PestanasHoja } from "@/components/HojaAbajo";
 import { IconoGirarTelefono } from "@/components/Icons";
 import { sumarPunto, setsGanados, formatearPuntos } from "@/lib/marcadorEngine";
 import styles from "@/components/Marcador.module.css";
@@ -29,15 +30,6 @@ function FilaOpcion({ etiqueta, children }) {
   return (
     <div className="flex items-center justify-between gap-3">
       <span className="text-sm">{etiqueta}</span>
-      {children}
-    </div>
-  );
-}
-
-function TarjetaOpciones({ titulo, children }) {
-  return (
-    <div className="bg-surface text-ink border-2 border-outline rounded-[14px] p-3 flex flex-col gap-2.5">
-      <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted">{titulo}</span>
       {children}
     </div>
   );
@@ -110,6 +102,54 @@ function SelectorTema({ tema, onElegir }) {
         </ul>
       )}
     </div>
+  );
+}
+
+// Contenido de la hoja "¿Cómo llevamos los puntos?": 4 íconos redondos,
+// el detalle del elegido y "Empezar con ...". Arranca marcado el Reloj.
+function ElegirModo({ modos, bateria }) {
+  const [elegido, setElegido] = useState("reloj");
+  const actual = modos.find((m) => m.modo === elegido) ?? modos[0];
+  return (
+    <>
+      <div className="flex justify-between gap-1">
+        {modos.map((m) => (
+          <button
+            key={m.modo}
+            type="button"
+            onClick={() => setElegido(m.modo)}
+            aria-pressed={m.modo === elegido}
+            className="flex-1 flex flex-col items-center gap-1 cursor-pointer"
+          >
+            <span
+              className={`w-14 h-14 rounded-full flex items-center justify-center text-3xl border-2 ${
+                m.modo === elegido ? "bg-accent border-outline" : "border-black/10"
+              }`}
+            >
+              {m.icono}
+            </span>
+            <span className={`text-xs ${m.modo === elegido ? "font-bold" : "text-muted"}`}>{m.nombre}</span>
+          </button>
+        ))}
+      </div>
+      <p className="text-sm text-center text-muted min-h-[2.75em]">{actual.detalle}</p>
+      {bateria && !bateria.cargando && bateria.nivel < 50 && actual.modo === "camara" && (
+        <p className="text-xs rounded-[12px] px-3 py-2 bg-amber-100 text-amber-900">
+          🔋 Batería: {bateria.nivel}%. La cámara consume bastante: para un partido entero conviene arrancar con más de 50%.
+        </p>
+      )}
+      <button
+        type="button"
+        onClick={actual.activar}
+        className="rounded-full font-heading font-bold text-base py-3 bg-accent text-accent-ink border-2 border-outline cursor-pointer"
+      >
+        Empezar con {actual.nombre} →
+      </button>
+      <p className="text-xs text-center text-muted -mt-1">
+        {bateria ? `🔋 ${bateria.nivel}%${bateria.cargando ? " (cargando)" : ""} · ` : ""}La pantalla queda prendida. Lo cambiás
+        cuando quieras desde ⚙️.
+      </p>
+    </>
   );
 }
 
@@ -339,6 +379,7 @@ export default function MarcadorForm({ partidoId }) {
   const [ahora, setAhora] = useState(Date.now());
   const [confirmandoTerminar, setConfirmandoTerminar] = useState(false);
   const [mostrarOpciones, setMostrarOpciones] = useState(false);
+  const [pestanaOpciones, setPestanaOpciones] = useState("puntos");
   const [mostrarApelar, setMostrarApelar] = useState(false);
   const [compartiendo, setCompartiendo] = useState(false);
   const [motivoApelacion, setMotivoApelacion] = useState("");
@@ -2131,76 +2172,58 @@ export default function MarcadorForm({ partidoId }) {
       <audio ref={relojAudio2Ref} src="/sonidos/silencio2.wav" preload="auto" className="hidden" />
       <canvas ref={canvasRef} className="hidden" />
 
+      {/* Elegir cómo llevar los puntos (2026-10-01, opción B elegida por el
+          usuario en /pruebas-marcadorcito): el tablero ya se ve atrás y desde
+          abajo sube una hoja con los 4 modos. Antes era una tarjeta con una
+          grilla 2x2 ("me parece que es medio fea esa opción"). */}
       {mostrarChooser && (
-        <div className="w-full max-w-sm bg-surface text-ink shadow-[0_1px_3px_rgba(20,38,31,0.08)] rounded-[20px] p-6 flex flex-col gap-4">
-          {/* Selector de modo (2026-09-30, pedido del usuario): las 4 formas de
-              llevar los puntos, todas iguales y bien claras -- antes el
-              título empujaba la cámara y el manual quedaba escondido. */}
-          <h1 className="font-heading text-xl font-semibold">¿Cómo querés llevar los puntos?</h1>
-          <p className="text-sm text-muted -mt-2">Podés cambiarlo en cualquier momento desde &quot;⚙️ Opciones&quot;.</p>
-          {bateria && (
-            <p className={`text-xs rounded-[12px] px-3 py-2 ${!bateria.cargando && bateria.nivel < 50 ? "bg-amber-100 text-amber-900" : "bg-bg text-muted"}`}>
-              🔋 Batería: {bateria.nivel}%{bateria.cargando ? " (cargando)" : ""}.{" "}
-              {!bateria.cargando && bateria.nivel < 50
-                ? "La cámara consume bastante: para un partido entero conviene arrancar con más de 50%, o usar voz/botones."
-                : "La pantalla va a quedar prendida mientras dure el partido."}
-            </p>
-          )}
-          <div className="grid grid-cols-2 gap-3">
-            {[
+        <HojaAbajo titulo="¿Cómo llevamos los puntos?">
+          <ElegirModo
+            bateria={bateria}
+            modos={[
               {
-                modo: "botones",
-                icono: "🔘",
-                nombre: "Manual",
-                detalle: "Tocás los botones de la pantalla",
-                activar: () => setModoElegido("botones"),
+                modo: "reloj",
+                icono: "⌚",
+                nombre: "Reloj",
+                detalle: "⏭️ punto A · ⏮️ punto B · ⏸️ deshacer. Y el reloj te muestra el resultado.",
+                activar: () => {
+                  setModoElegido("reloj");
+                  activarReloj();
+                },
               },
               {
-                modo: "camara",
-                icono: "✋",
-                nombre: "Gestos (cámara)",
-                detalle: "✋ Mano abierta del lado de cada pareja · 👍 deshacer",
-                activar: () => {
-                  setModoElegido("camara");
-                  activarCamara();
-                },
+                modo: "botones",
+                icono: "👆",
+                nombre: "Manual",
+                detalle: "Tocás los botones de la pantalla, uno por pareja.",
+                activar: () => setModoElegido("botones"),
               },
               {
                 modo: "voz",
                 icono: "🗣️",
                 nombre: "Voz",
-                detalle: "Decí “marcador punto A” o “punto B”",
+                detalle: "Decí “marcador punto A” o “punto B”.",
                 activar: () => {
                   setModoElegido("voz");
                   setEscuchando(true);
                 },
               },
               {
-                modo: "reloj",
-                icono: "⌚",
-                nombre: "Reloj",
-                detalle: "⏭️ punto A · ⏮️ punto B · ⏸️ deshacer",
+                modo: "camara",
+                icono: "✋",
+                nombre: "Gestos",
+                detalle: "Con la cámara: ✋ mano abierta del lado de cada pareja · 👍 deshacer.",
                 activar: () => {
-                  setModoElegido("reloj");
-                  activarReloj();
+                  setModoElegido("camara");
+                  activarCamara();
                 },
               },
-            ].map((op) => (
-              <button
-                key={op.modo}
-                onClick={op.activar}
-                className="flex flex-col items-center text-center gap-1 rounded-[16px] border-2 border-outline bg-bg px-3 py-4 cursor-pointer hover:border-accent"
-              >
-                <span className="text-3xl">{op.icono}</span>
-                <span className="font-heading font-semibold">{op.nombre}</span>
-                <span className="text-xs text-muted leading-snug">{op.detalle}</span>
-              </button>
-            ))}
-          </div>
-        </div>
+            ]}
+          />
+        </HojaAbajo>
       )}
 
-      {!mostrarChooser && (
+      {(
       <div
         className={`${styles.board} ${
           tema === "neon" ? styles.temaNeon : tema === "contraste" ? styles.temaAltoContraste : ""
@@ -2284,9 +2307,24 @@ export default function MarcadorForm({ partidoId }) {
           </div>
         </div>
 
+        {/* Opciones (2026-10-01, opción A elegida por el usuario en
+            /pruebas-marcadorcito): hoja que sube desde abajo, ENCIMA del
+            tablero, con 3 pestañas. Antes eran tarjetas apiladas adentro del
+            tablero que lo empujaban hacia abajo (y en apaisado ocupaban
+            toda la pantalla). */}
         {mostrarOpciones && (
-          <div className="flex flex-col gap-2.5 w-full">
-            <TarjetaOpciones titulo="Cómo cantar los puntos">
+          <HojaAbajo titulo="Opciones" onCerrar={() => setMostrarOpciones(false)}>
+            <PestanasHoja
+              pestanas={[
+                ["puntos", "Puntos"],
+                ["reglas", "Reglas"],
+                ["partido", "Partido"],
+              ]}
+              activa={pestanaOpciones}
+              onCambiar={setPestanaOpciones}
+            />
+            {pestanaOpciones === "puntos" && (
+            <div className="flex flex-col gap-3">
               <FilaOpcion etiqueta="📷 Cámara (gestos)">
                 <Toggle
                   checked={camaraActiva}
@@ -2346,9 +2384,11 @@ export default function MarcadorForm({ partidoId }) {
               <FilaOpcion etiqueta="🔊 Sonidos">
                 <Toggle checked={sonidoActivo} onChange={setSonidoActivo} />
               </FilaOpcion>
-            </TarjetaOpciones>
+            </div>
+            )}
 
-            <TarjetaOpciones titulo="Reglas del set">
+            {pestanaOpciones === "reglas" && (
+            <div className="flex flex-col gap-3">
               <FilaOpcion etiqueta="🏅 Punto de oro">
                 <Toggle checked={puntoDeOro} onChange={handleTogglePuntoDeOro} disabled={pausado} />
               </FilaOpcion>
@@ -2361,10 +2401,19 @@ export default function MarcadorForm({ partidoId }) {
                   <span className="text-xs text-muted">🎯 Jugando el 3er set a súper tie-break (a 10)</span>
                 )
               )}
-            </TarjetaOpciones>
+            </div>
+            )}
 
-            <TarjetaOpciones titulo="Partido">
+            {pestanaOpciones === "partido" && (
+            <div className="flex flex-col gap-3">
               <div className="flex gap-2">
+                <button
+                  className="flex-1 font-heading font-semibold text-xs px-3 py-2 rounded-xl bg-bg text-ink border-2 border-outline cursor-pointer disabled:opacity-60"
+                  onClick={() => handleCambiarSaque(saque === "A" ? "B" : "A")}
+                  disabled={pausado}
+                >
+                  🎾 Cambiar saque
+                </button>
                 <button
                   className="flex-1 font-heading font-semibold text-xs px-3 py-2 rounded-xl bg-bg text-ink border-2 border-outline cursor-pointer"
                   onClick={handleTogglePausa}
@@ -2412,7 +2461,6 @@ export default function MarcadorForm({ partidoId }) {
                   )}
                 </>
               )}
-            </TarjetaOpciones>
 
             {!confirmandoTerminar ? (
               <button
@@ -2441,7 +2489,9 @@ export default function MarcadorForm({ partidoId }) {
                 </button>
               </div>
             )}
-          </div>
+            </div>
+            )}
+          </HojaAbajo>
         )}
 
         <div>
