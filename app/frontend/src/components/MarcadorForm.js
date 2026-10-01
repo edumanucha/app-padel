@@ -713,7 +713,6 @@ export default function MarcadorForm({ partidoId }) {
   // Next no se entere de ese "atrás" y no cambie de pantalla.
   const enJuego = !!resultado && !resultado.finalizado;
   const [confirmarSalida, setConfirmarSalida] = useState(false);
-  const [confirmarDescartar, setConfirmarDescartar] = useState(false);
   const saliendoRef = useRef(false);
   useEffect(() => {
     if (!enJuego) return;
@@ -1733,41 +1732,23 @@ export default function MarcadorForm({ partidoId }) {
     anunciar(pausado ? "Partido en pausa." : "Partido reanudado.");
   }
 
-  // Terminar el partido manualmente antes de llegar al resultado normal
-  // (alguien se lesiona, deciden cortar, etc.) -- el ganador se define por
-  // sets ganados hasta el momento, y si están empatados en sets, por total
-  // de games. Si sigue empatado (rarísimo), no se puede definir un
-  // ganador y se pide seguir jugando.
+  // "Terminar partido" (2026-09-30, pedido del usuario: "si pones terminar
+  // partido que lo cierre, nada más que no guarde estadística ni juegos
+  // ganados"): corta el partido en el momento, vaya como vaya. El partido
+  // queda cancelado y el marcador NO se marca como finalizado -- así no
+  // dispara el trigger de ranking ni entra en estadísticas. Solo cuentan los
+  // partidos que terminan jugando (el motor los cierra solo).
   function handleTerminarPartido() {
     const actual = resultadoRef.current;
     if (!actual || actual.finalizado) return;
-    const { a: setsA, b: setsB } = setsGanados(actual.estado.setsA, actual.estado.setsB);
-    let ganador = null;
-    if (setsA !== setsB) {
-      ganador = setsA > setsB ? "A" : "B";
-    } else {
-      const gamesA = actual.estado.setsA.reduce((acc, g) => acc + g, 0);
-      const gamesB = actual.estado.setsB.reduce((acc, g) => acc + g, 0);
-      if (gamesA !== gamesB) ganador = gamesA > gamesB ? "A" : "B";
-    }
-
-    if (!ganador) {
-      // Empatado (ej. 0-0, nunca arrancaron): no hay ganador posible, se
-      // ofrece descartarlo para que no quede colgado (2026-09-30, pedido
-      // del usuario: "si no queda siempre ese partido en stand by").
-      setConfirmarDescartar(true);
-      return;
-    }
-
-    persistir(actual.estado, true, ganador);
-    anunciar(`Partido terminado. Gana ${nombreEquipoVoz(ganador)}.`);
+    anunciar("Partido terminado.");
+    handleDescartarPartido();
   }
 
-  // Descartar un partido empatado: se cancela (no cuenta para estadísticas
-  // ni ranking) y se borra lo guardado en el celu. Si fue creado sin señal
-  // y nunca se subió, alcanza con borrarlo del celu.
+  // Cierra el partido sin que cuente: se cancela y se borra lo guardado en
+  // el celu. Si fue creado sin señal y nunca se subió, alcanza con borrarlo
+  // del celu.
   async function handleDescartarPartido() {
-    setConfirmarDescartar(false);
     const local = leerPartidoLocal(partidoId);
     if (!(local?.creadoSinSenal && !local.subido)) {
       const { error: cancelarError } = await supabase.from("partidos").update({ estado: "cancelado" }).eq("id", partidoId);
@@ -2011,7 +1992,7 @@ export default function MarcadorForm({ partidoId }) {
             <h2 className="font-heading text-lg font-semibold">¿Salir del partido?</h2>
             <p className="text-sm text-muted">
               El partido sigue en juego. Los puntos quedan guardados y podés volver desde el inicio
-              cuando quieras.
+              cuando quieras. Si lo terminás, se cierra y no cuenta para estadísticas ni ranking.
             </p>
             <div className="flex flex-wrap gap-2 justify-end">
               <button
@@ -2032,30 +2013,6 @@ export default function MarcadorForm({ partidoId }) {
               </button>
               <button
                 onClick={seguirEnElPartido}
-                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink cursor-pointer"
-              >
-                Seguir jugando
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {confirmarDescartar && (
-        <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4">
-          <div className="w-full max-w-sm bg-surface text-ink rounded-[20px] p-5 flex flex-col gap-3 shadow-xl">
-            <h2 className="font-heading text-lg font-semibold">Está empatado</h2>
-            <p className="text-sm text-muted">
-              No hay ganador para cerrarlo. ¿Lo descartamos? No va a contar para estadísticas ni ranking.
-            </p>
-            <div className="flex gap-2 justify-end">
-              <button
-                onClick={handleDescartarPartido}
-                className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-red-600 text-white cursor-pointer"
-              >
-                Descartar partido
-              </button>
-              <button
-                onClick={() => setConfirmarDescartar(false)}
                 className="font-heading font-semibold text-sm px-4 py-2 rounded-full bg-accent text-accent-ink cursor-pointer"
               >
                 Seguir jugando
@@ -2413,7 +2370,7 @@ export default function MarcadorForm({ partidoId }) {
                     handleTerminarPartido();
                   }}
                 >
-                  ¿Seguro? Sí, terminar
+                  ¿Seguro? Se cierra y no cuenta
                 </button>
                 <button
                   className="font-heading font-semibold text-xs px-3 py-2 rounded-xl bg-bg text-ink border-2 border-outline cursor-pointer"
