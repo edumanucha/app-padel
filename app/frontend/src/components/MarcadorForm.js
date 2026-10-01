@@ -10,6 +10,15 @@ import { IconoGirarTelefono } from "@/components/Icons";
 import { sumarPunto, setsGanados, formatearPuntos } from "@/lib/marcadorEngine";
 import styles from "@/components/Marcador.module.css";
 import { compartirTarjetaResultado } from "@/lib/tarjetaResultado";
+import {
+  usuarioActual,
+  sinConexion,
+  esErrorDeRed,
+  leerPartidoLocal,
+  guardarCopiaPartido,
+  actualizarResultadoLocalGuardado,
+  subirPartidoSinSenal,
+} from "@/lib/marcadorOffline";
 
 // Toggle tipo switch, con la misma paleta clara del resto de la app
 // (bg-surface / text-ink / --accent) -- usado en el panel "⚙️ Opciones",
@@ -621,6 +630,21 @@ export default function MarcadorForm({ partidoId }) {
   async function enviarPendiente() {
     const pendiente = leerPendiente();
     if (!pendiente || enviandoRef.current) return;
+    // Partido creado sin señal y todavía no subido: se sube entero (con el
+    // último estado adentro) en vez de actualizar una fila que no existe.
+    const local = leerPartidoLocal(partidoId);
+    if (local?.creadoSinSenal && !local.subido) {
+      enviandoRef.current = true;
+      const ok = await subirPartidoSinSenal(partidoId);
+      enviandoRef.current = false;
+      if (!ok) {
+        setSinSincronizar(true);
+        return;
+      }
+      if (leerPendiente()) enviarPendiente();
+      else setSinSincronizar(false);
+      return;
+    }
     enviandoRef.current = true;
     const { error: updateError } = await supabase
       .from("resultados_partido")
@@ -757,11 +781,13 @@ export default function MarcadorForm({ partidoId }) {
 
   useEffect(() => {
     async function iniciar() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // Sin señal usa la sesión guardada en el celu (marcadorOffline.js).
+      const user = await usuarioActual();
       if (!user) {
-        router.replace("/login");
+        // Sin señal y sin sesión guardada: la pantalla de login no se puede
+        // abrir, se muestra la de "sin conexión".
+        if (sinConexion()) window.location.replace("/offline");
+        else router.replace("/login");
         return;
       }
       setUsuarioId(user.id);
@@ -775,9 +801,44 @@ export default function MarcadorForm({ partidoId }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usuarioId]);
 
+  // Arma el plantel y el marcador a partir de los datos (de la base o de
+  // la copia guardada en el celu).
+  function aplicarPlantel(filas) {
+    const nombreDe = (f) => f.perfiles?.nombre ?? f.invitado_nombre ?? "Jugador";
+    setEquipoA(filas.filter((f) => f.equipo === "A").map(nombreDe));
+    // En qué pareja juega el usuario (para el aviso final del modo Reloj:
+    // "Ganaste"/"Perdiste"). Null si opera el marcador sin jugar.
+    miEquipoRef.current = filas.find((f) => f.jugador_id === usuarioId)?.equipo ?? null;
+    setEquipoB(filas.filter((f) => f.equipo === "B").map(nombreDe));
+  }
+
+  // Sin señal (2026-09-30): partido creado en el celu y todavía no subido,
+  // o copia de uno que ya estaba en la base. Lo pendiente gana siempre.
+  function cargarDesdeElCelu(local) {
+    setPartido(local.partido);
+    aplicarPlantel(local.filas);
+    const pendiente = leerPendiente();
+    actualizarResultadoLocal(
+      pendiente
+        ? { ...local.resultado, estado: pendiente.estado, finalizado: pendiente.finalizado, ganador: pendiente.ganador }
+        : local.resultado
+    );
+    const faltaSubir = !!pendiente || (local.creadoSinSenal && !local.subido);
+    setSinSincronizar(faltaSubir);
+    if (pendiente) enviarPendiente();
+    setCargando(false);
+  }
+
   async function cargarTodo() {
     setCargando(true);
     setError("");
+
+    const local = leerPartidoLocal(partidoId);
+    if (local?.creadoSinSenal && !local.subido) {
+      cargarDesdeElCelu(local);
+      if (!leerPendiente()) subirPartidoSinSenal(partidoId).then((ok) => ok && setSinSincronizar(false));
+      return;
+    }
 
     // Las 3 lecturas iniciales no dependen entre sí (2026-09-13, arreglo
     // de performance: antes iban una atrás de la otra -- 3 viajes de ida
@@ -797,6 +858,10 @@ export default function MarcadorForm({ partidoId }) {
       supabase.from("resultados_partido").select("*").eq("partido_id", partidoId).maybeSingle(),
     ]);
 
+    if (partidoRes.error && local && esErrorDeRed(partidoRes.error)) {
+      cargarDesdeElCelu(local);
+      return;
+    }
     if (partidoRes.error) {
       setError(`No se pudo cargar el partido: ${partidoRes.error.message}`);
       setCargando(false);
@@ -830,12 +895,7 @@ export default function MarcadorForm({ partidoId }) {
       filas = refetch.data ?? [];
     }
 
-    const nombreDe = (f) => f.perfiles?.nombre ?? f.invitado_nombre ?? "Jugador";
-    setEquipoA(filas.filter((f) => f.equipo === "A").map(nombreDe));
-    // En qué pareja juega el usuario (para el aviso final del modo Reloj:
-    // "Ganaste"/"Perdiste"). Null si opera el marcador sin jugar.
-    miEquipoRef.current = filas.find((f) => f.jugador_id === usuarioId)?.equipo ?? null;
-    setEquipoB(filas.filter((f) => f.equipo === "B").map(nombreDe));
+    aplicarPlantel(filas);
 
     let resultadoRes = resultadoResInicial;
 
@@ -859,6 +919,9 @@ export default function MarcadorForm({ partidoId }) {
       setCargando(false);
       return;
     }
+
+    // Copia en el celu, para poder reabrir este marcador sin señal.
+    guardarCopiaPartido(partidoId, { partido: partidoRes.data, filas, resultado: resultadoRes.data });
 
     // Si quedó un punto sin subir (se recargó la página sin haber podido
     // sincronizar), manda lo guardado en el celular -- es más nuevo que lo
@@ -892,6 +955,8 @@ export default function MarcadorForm({ partidoId }) {
           // llega del servidor: no pisarlo (se pisa recién al sincronizar).
           if (leerPendiente()) return;
           actualizarResultadoLocal(payload.new);
+          const { estado, finalizado, ganador } = payload.new;
+          actualizarResultadoLocalGuardado(partidoId, { estado, finalizado, ganador });
         }
       )
       .subscribe();
@@ -998,6 +1063,7 @@ export default function MarcadorForm({ partidoId }) {
     // pendiente, se reintenta solo y lo avisa el cartelito de "sin señal".
     try {
       localStorage.setItem(clavePendiente, JSON.stringify({ estado: nuevoEstado, finalizado, ganador, ts: Date.now() }));
+      actualizarResultadoLocalGuardado(partidoId, { estado: nuevoEstado, finalizado, ganador });
     } catch {
       // Sin almacenamiento local (caso raro): se envía directo, como antes.
       const { error: updateError } = await supabase

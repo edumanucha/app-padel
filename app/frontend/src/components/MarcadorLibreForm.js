@@ -6,6 +6,15 @@ import { supabase } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import CampoCancha from "@/components/CampoCancha";
 import { IconoPlay, IconoPelota } from "@/components/Icons";
+import { crearEstadoInicial } from "@/lib/marcadorEngine";
+import {
+  usuarioActual,
+  sinConexion,
+  esErrorDeRed,
+  guardarNombrePropio,
+  leerNombrePropio,
+  crearPartidoSinSenal,
+} from "@/lib/marcadorOffline";
 
 const inputClass = "rounded-xl bg-bg px-3 py-2 text-ink text-sm";
 const tarjeta = "bg-surface text-ink rounded-[18px] p-4 shadow-[0_1px_3px_rgba(20,38,31,0.08)]";
@@ -100,15 +109,19 @@ export default function MarcadorLibreForm() {
 
   useEffect(() => {
     async function verificarSesion() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // Sin señal (2026-09-30): se usa la sesión y el nombre guardados en el
+      // celu -- ver marcadorOffline.js.
+      const user = await usuarioActual();
       if (!user) {
-        router.replace("/login");
+        if (sinConexion()) window.location.replace("/offline");
+        else router.replace("/login");
         return;
       }
-      const { data: perfil } = await supabase.from("perfiles").select("nombre").eq("id", user.id).single();
-      setNombrePropio(perfil?.nombre ?? "Vos");
+      const { data: perfil } = sinConexion()
+        ? { data: null }
+        : await supabase.from("perfiles").select("nombre").eq("id", user.id).maybeSingle();
+      if (perfil?.nombre) guardarNombrePropio(perfil.nombre);
+      setNombrePropio(perfil?.nombre ?? leerNombrePropio() ?? "Vos");
       setVerificandoSesion(false);
     }
     verificarSesion();
@@ -121,7 +134,7 @@ export default function MarcadorLibreForm() {
   // Los 3 jugadores quedan como invitados libres (texto), no hace falta
   // vincular cuentas reales para probar rápido.
   async function generarPartidoRapido() {
-    if (cancha.trim() === "") {
+    if (cancha.trim() === "" && !sinConexion()) {
       const { data } = await supabase
         .from("canchas")
         .select("id, nombre")
@@ -148,12 +161,10 @@ export default function MarcadorLibreForm() {
     e.preventDefault();
     setError("");
 
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-    if (userError || !user) {
-      router.replace("/login");
+    const user = await usuarioActual();
+    if (!user) {
+      if (sinConexion()) window.location.replace("/offline");
+      else router.replace("/login");
       return;
     }
 
@@ -169,7 +180,7 @@ export default function MarcadorLibreForm() {
     // con lo que se guardó.
     let canchaEfectiva = cancha;
     let canchaIdEfectivo = canchaId;
-    if (canchaEfectiva.trim() === "") {
+    if (canchaEfectiva.trim() === "" && !sinConexion()) {
       const { data } = await supabase
         .from("canchas")
         .select("id, nombre")
@@ -213,6 +224,35 @@ export default function MarcadorLibreForm() {
 
     setCargando(true);
 
+    // Sin señal: el partido se arma solo en el celu y se sube cuando vuelve
+    // la conexión (marcadorOffline.js). También si el insert falla por red.
+    const { finalizado: _f, ganador: _g, ...estadoBase } = crearEstadoInicial();
+    const armarSinSenal = () => {
+      const id = crearPartidoSinSenal({
+        usuario: user,
+        nombrePropio,
+        cancha: canchaEfectiva,
+        puntoDeOro,
+        // Misma forma que ESTADO_INICIAL de MarcadorForm.js.
+        estadoInicial: { ...estadoBase, historial: [], pausado: false, superTiebreak3erSet: false },
+        jugadores: [
+          { equipo: "A", jugadorId: companeroEfectivo.jugadorId, nombre: companeroEfectivo.nombre },
+          { equipo: "B", jugadorId: rival1Efectivo.jugadorId, nombre: rival1Efectivo.nombre },
+          { equipo: "B", jugadorId: rival2Efectivo.jugadorId, nombre: rival2Efectivo.nombre },
+        ],
+      });
+      setCargando(false);
+      if (!id) {
+        setError("No hay señal y no se pudo guardar el partido en el celu.");
+        return;
+      }
+      router.replace(`/partido/${id}/marcador`);
+    };
+    if (sinConexion()) {
+      armarSinSenal();
+      return;
+    }
+
     const { data: partido, error: partidoError } = await supabase
       .from("partidos")
       .insert({
@@ -227,6 +267,10 @@ export default function MarcadorLibreForm() {
       .select()
       .single();
 
+    if (partidoError && esErrorDeRed(partidoError)) {
+      armarSinSenal();
+      return;
+    }
     if (partidoError) {
       setCargando(false);
       setError(`No se pudo crear el partido: ${partidoError.message}`);

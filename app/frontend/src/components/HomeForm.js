@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import { usuarioActual, sinConexion } from "@/lib/marcadorOffline";
 import PelotaLoader from "@/components/PelotaLoader";
 import Logo from "@/components/Logo";
 import DotDigit from "@/components/DotDigit";
@@ -165,6 +166,7 @@ export default function HomeForm() {
   const [proximamenteTocado, setProximamenteTocado] = useState(null);
   const [mostrarMas, setMostrarMas] = useState(false);
   const [partidoEnCurso, setPartidoEnCurso] = useState(null);
+  const [homeSinSenal, setHomeSinSenal] = useState(false);
 
   // "Volver al partido" (2026-09-30, pedido del usuario): el Marcadorcito
   // guarda en el celu el id del partido mientras está en juego. Se confirma
@@ -177,15 +179,23 @@ export default function HomeForm() {
       return;
     }
     if (!id) return;
+    if (sinConexion()) {
+      Promise.resolve().then(() => setPartidoEnCurso(id));
+      return;
+    }
     supabase
       .from("resultados_partido")
       .select("finalizado")
       .eq("partido_id", id)
       .maybeSingle()
-      .then(({ data }) => {
-        if (data && !data.finalizado) {
+      .then(({ data, error }) => {
+        // Error (ej. se cortó la señal) o partido creado sin señal que
+        // todavía no se subió: se muestra igual, no se borra.
+        if (error || !data) {
           setPartidoEnCurso(id);
-        } else if (!data || data.finalizado) {
+        } else if (!data.finalizado) {
+          setPartidoEnCurso(id);
+        } else {
           try {
             localStorage.removeItem("marcadorcito_en_curso");
           } catch {
@@ -197,15 +207,24 @@ export default function HomeForm() {
 
   useEffect(() => {
     async function cargar() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // Sin señal (2026-09-30): no se puede cargar el resumen, pero sí
+      // jugar con el Marcadorcito -- se muestra una pantalla simple.
+      if (sinConexion()) {
+        const guardado = await usuarioActual();
+        if (guardado) {
+          setHomeSinSenal(true);
+          setCargando(false);
+          return;
+        }
+      }
+      const user = await usuarioActual();
 
       if (!user) {
         // A pedido del usuario (2026-09-06): la app ahora arranca por
         // "Elegí tu deporte" (sin sesión), no directo al login -- ver
         // ElegirDeporteForm.js.
-        router.replace("/elegir-deporte");
+        if (sinConexion()) window.location.replace("/offline");
+        else router.replace("/elegir-deporte");
         return;
       }
 
@@ -310,6 +329,42 @@ export default function HomeForm() {
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-2 text-muted">
         <PelotaLoader />
         <p>{t("home.cargando")}</p>
+      </div>
+    );
+  }
+
+  if (homeSinSenal) {
+    return (
+      <div className="w-full max-w-md flex flex-col gap-4 pb-10">
+        <div className="bg-surface text-ink rounded-[20px] p-5 shadow-[0_1px_3px_rgba(20,38,31,0.08)] flex flex-col gap-3">
+          <h1 className="font-heading text-xl font-semibold">📶 Estás sin señal</h1>
+          <p className="text-sm text-muted">
+            Igual podés llevar el marcador de un partido. Todo queda guardado en el celu y se sube solo cuando vuelva la
+            conexión.
+          </p>
+          {partidoEnCurso && (
+            <button
+              onClick={() => router.push(`/partido/${partidoEnCurso}/marcador`)}
+              className="font-heading font-semibold px-4 py-3 rounded-full bg-accent text-accent-ink cursor-pointer"
+            >
+              🎾 Volver al partido en juego
+            </button>
+          )}
+          <button
+            onClick={() => router.push("/marcador-libre")}
+            className={`font-heading font-semibold px-4 py-3 rounded-full cursor-pointer ${
+              partidoEnCurso ? "bg-bg text-ink" : "bg-accent text-accent-ink"
+            }`}
+          >
+            Jugar un partido nuevo
+          </button>
+          <button
+            onClick={() => window.location.reload()}
+            className="text-sm text-muted underline cursor-pointer self-center"
+          >
+            Ya tengo señal, recargar
+          </button>
+        </div>
       </div>
     );
   }
