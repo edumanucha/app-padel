@@ -27,7 +27,15 @@ function etiquetaPunto(propio, rival) {
 // Guion prearmado (a propósito, no random): en cada vuelta muestra un punto
 // normal, un deuce/ventaja, un deshacer y un game ganado -- lo que "vende"
 // el efecto visual, sin depender del azar.
-const GUION = ["A", "A", "B", "A", "B", "B", "A", "B", "undo", "A", "A", "B", "A", "A"];
+// "saque" (2026-09-30): muestra el cambio de saque, que en el reloj es
+// ⏸️⏸️ (dos toques rápidos).
+const GUION = ["saque", "A", "A", "B", "A", "B", "B", "A", "B", "undo", "A", "A", "B", "A", "A"];
+
+// Modos que muestran la cápsula sobre el marcador antes de aplicar la
+// acción: la cámara "leyendo la seña" y el reloj "apretando el botón".
+const MODO_CAMARA = 0;
+const MODO_RELOJ = 2;
+const BOTON_RELOJ = { A: "⏭️", B: "⏮️", undo: "⏸️", saque: "⏸️⏸️" };
 
 const MODOS = [
   {
@@ -44,6 +52,17 @@ const MODOS = [
     textos: [
       '🗣️ Modo Voz: decí "marcador punto a", "marcador punto b" o "marcador deshacer"',
       '🎙️ También podés decir "marcador 40-15" para corregir todo de una',
+    ],
+  },
+  {
+    // Reloj (2026-09-30, pedido del usuario: que la demo muestre lo del
+    // reloj) -- mismos controles que MarcadorForm (Media Session).
+    label: "⌚ Reloj",
+    textos: [
+      "⌚ Modo Reloj: con el reloj conectado al celu, usás los botones de música",
+      "⏭️ Siguiente = punto para tu equipo · ⏮️ Anterior = punto para el rival",
+      "⏸️ Pausa una vez = deshacer · ⏸️⏸️ dos veces rápido = cambiar el saque",
+      "🎧 También anda con auriculares Bluetooth que tengan esos botones",
     ],
   },
   {
@@ -84,6 +103,7 @@ export default function DemoMarcadorForm() {
   // prearmado (ver mostrarLeyendoYLuego). Solo se muestra mientras el
   // chip "✊ Cámara" está activo, para no confundir durante Voz/Botones.
   const leyendoOverlayRef = useRef(null);
+  const leyendoEyebrowRef = useRef(null);
   const leyendoRellenoRef = useRef(null);
   const leyendoIconRef = useRef(null);
   const leyendoAccionRef = useRef(null);
@@ -93,6 +113,7 @@ export default function DemoMarcadorForm() {
     A: { fondo: "#3fd0c7", tinta: "#062421" },
     B: { fondo: "#f2955f", tinta: "#331002" },
     undo: { fondo: "#ef5b50", tinta: "#ffffff" },
+    saque: { fondo: "#f2c53d", tinta: "#1a1305" },
   };
 
   // Animaciones "fire and forget" disparadas por classList directo (mismo
@@ -169,13 +190,19 @@ export default function DemoMarcadorForm() {
     const relleno = leyendoRellenoRef.current;
     const icono = leyendoIconRef.current;
     const etiqueta = leyendoAccionRef.current;
-    if (!overlay || !relleno || !icono || !etiqueta || modoIdxRef.current !== 0) {
+    const modo = modoIdxRef.current;
+    if (!overlay || !relleno || !icono || !etiqueta || (modo !== MODO_CAMARA && modo !== MODO_RELOJ)) {
       cb();
       return;
     }
+    const enReloj = modo === MODO_RELOJ;
     const { fondo, tinta } = COLOR_ACCION_DEMO[accion];
-    icono.textContent = accion === "undo" ? "👎" : "✋";
-    etiqueta.textContent = accion === "undo" ? "Deshacer" : `Punto ${accion}`;
+    if (leyendoEyebrowRef.current) {
+      leyendoEyebrowRef.current.textContent = enReloj ? "⌚ Botón del reloj" : "👀 Leyendo seña...";
+    }
+    icono.textContent = enReloj ? BOTON_RELOJ[accion] : accion === "undo" ? "👎" : accion === "saque" ? "🔄" : "✋";
+    etiqueta.textContent =
+      accion === "undo" ? "Deshacer" : accion === "saque" ? "Cambiar saque" : `Punto ${accion}`;
     relleno.style.backgroundColor = fondo;
     relleno.style.transition = "none";
     relleno.style.transform = "scale(0)";
@@ -187,7 +214,8 @@ export default function DemoMarcadorForm() {
 
     setTimeout(() => {
       icono.textContent = "✅";
-      etiqueta.textContent = accion === "undo" ? "¡DESHECHO!" : `¡PUNTO ${accion}!`;
+      etiqueta.textContent =
+        accion === "undo" ? "¡DESHECHO!" : accion === "saque" ? "¡CAMBIO DE SAQUE!" : `¡PUNTO ${accion}!`;
       overlay.style.color = tinta;
       overlay.classList.add(styles.leyendoConfirmado);
       setTimeout(() => {
@@ -206,7 +234,20 @@ export default function DemoMarcadorForm() {
 
     mostrarLeyendoYLuego(accion, () => {
       const e = estadoRef.current;
-      const skipBigText = modoIdxRef.current === 0;
+      const skipBigText = modoIdxRef.current === MODO_CAMARA || modoIdxRef.current === MODO_RELOJ;
+
+      if (accion === "saque") {
+        estadoRef.current = { ...e, saque: e.saque === "A" ? "B" : "A" };
+        const bigText = bigTextRef.current;
+        if (!skipBigText && bigText) {
+          bigText.classList.remove(styles.showA, styles.showB, styles.showUndo, styles.showGame);
+          void bigText.offsetWidth;
+          bigText.textContent = "CAMBIO DE SAQUE";
+          bigText.classList.add(styles.showGame);
+        }
+        forceRender();
+        return;
+      }
 
       if (accion === "undo") {
         const snap = snapshotsRef.current.pop();
@@ -359,7 +400,7 @@ export default function DemoMarcadorForm() {
           <span className={styles.bigText} ref={bigTextRef} />
           <div className={styles.leyendoOverlay} ref={leyendoOverlayRef}>
             <div className={styles.leyendoRelleno} ref={leyendoRellenoRef} />
-            <span className={styles.leyendoEyebrow}>👀 Leyendo seña...</span>
+            <span className={styles.leyendoEyebrow} ref={leyendoEyebrowRef}>👀 Leyendo seña...</span>
             <span className={styles.leyendoIcon} ref={leyendoIconRef} />
             <span className={styles.leyendoAccion} ref={leyendoAccionRef} />
           </div>
