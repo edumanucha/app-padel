@@ -89,7 +89,7 @@ export default function LoginEmailForm() {
     return (
       <button
         onClick={() => setMostrarFormulario(true)}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
+        className="font-semibold text-sm px-4 py-2.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
       >
         {t("loginEmail.ingresarConEmail")}
       </button>
@@ -98,12 +98,12 @@ export default function LoginEmailForm() {
 
   if (cuentaCreada) {
     return (
-      <div className="flex flex-col gap-2 border-t-2 border-outline/30 pt-4">
+      <div className="flex flex-col gap-2 border-t border-ink/10 pt-4">
         <p className="text-sm">{t("loginEmail.cuentaCreada")}</p>
         <button
           type="button"
           onClick={() => cambiarModo("login")}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer self-start"
+          className="font-semibold text-sm px-4 py-2 rounded-[6px] border border-ink/15 text-ink cursor-pointer self-start"
         >
           {t("loginEmail.entrar")}
         </button>
@@ -112,27 +112,27 @@ export default function LoginEmailForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 border-t-2 border-outline/30 pt-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 border-t border-ink/10 pt-4">
       <label className="flex flex-col gap-1">
-        <span className="font-heading text-sm">{t("loginEmail.email")}</span>
+        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{t("loginEmail.email")}</span>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="rounded-xl bg-bg px-3 py-2 text-ink"
+          className="rounded-[6px] border border-ink/15 bg-surface px-3 py-2 text-ink"
         />
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="font-heading text-sm">{t("loginEmail.contrasena")}</span>
+        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{t("loginEmail.contrasena")}</span>
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={6}
-          className="rounded-xl bg-bg px-3 py-2 text-ink"
+          className="rounded-[6px] border border-ink/15 bg-surface px-3 py-2 text-ink"
         />
       </label>
 
@@ -141,7 +141,7 @@ export default function LoginEmailForm() {
       <button
         type="submit"
         disabled={cargando || !formularioCompleto}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+        className="font-titulo font-black uppercase text-lg px-4 py-2.5 rounded-[6px] bg-ink text-surface cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
       >
         {cargando && <PelotaLoader />}
         {cargando

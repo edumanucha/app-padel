@@ -31,8 +31,8 @@ export default function BarraEstadistica({ etiqueta, valor, total, texto, varian
           {texto ?? `${valor}/${total}`}
         </span>
       </div>
-      <div className="h-2 rounded-full bg-bg overflow-hidden">
-        <div className={`h-full rounded-full ${color ? color.barra : "bg-accent"}`} style={{ width: `${pct}%` }} />
+      <div className="h-1.5 rounded-[2px] bg-ink/10 overflow-hidden">
+        <div className={`h-full rounded-[2px] ${color ? color.barra : "bg-accent"}`} style={{ width: `${pct}%` }} />
       </div>
     </div>
   );

@@ -112,7 +112,7 @@ export default function DisponibilidadForm() {
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("disponibilidad.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
         >
           {t("disponibilidad.volver")}
         </button>
@@ -120,42 +120,45 @@ export default function DisponibilidadForm() {
 
       <p className="text-sm text-muted">{t("disponibilidad.descripcion")}</p>
 
+      {/* Rediseño Cartel (2026-10-01): las sugerencias de grupo son la
+          protagonista en verde tablero; "Agregar" es el único botón
+          amarillo y los horarios van como filas con línea. */}
       {sugerencias.length > 0 && (
         <div className="flex flex-col gap-2">
-          <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">
+          <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">
             {t("disponibilidad.sugerenciasGrupo")}
           </span>
           {sugerencias.map((s) => (
             <div
               key={s.grupo_id}
-              className="bg-accent text-accent-ink border border-ink/10 rounded-[8px] p-4 flex flex-col gap-2"
+              className="rounded-[6px] bg-[#154139] text-[#eaf4f0] px-4 py-4 flex flex-col gap-2"
             >
-              <span className="font-heading font-semibold">
+              <span className="font-titulo font-extrabold uppercase text-[1.7rem] leading-none">
                 {t("disponibilidad.diaPorLaFranja", {
                   dia: etiquetaDia(s.dia_semana, t),
                   franja: etiquetaFranja(s.franja, t).toLowerCase(),
                 })}
               </span>
-              <span className="text-sm">
+              <span className="text-sm text-[#c4dad3]">
                 {t("disponibilidad.confirmaronTemplate", { aceptados: s.aceptados, total: s.total })}
               </span>
               {s.mi_estado === "pendiente" ? (
-                <div className="flex gap-2">
+                <div className="flex gap-2 mt-1">
                   <button
                     onClick={() => handleResponder(s.grupo_id, true)}
-                    className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink border-2 border-outline cursor-pointer"
+                    className="text-sm font-semibold px-4 py-2 rounded-[6px] bg-[#eaf4f0] text-[#154139] cursor-pointer"
                   >
                     {t("disponibilidad.confirmar")}
                   </button>
                   <button
                     onClick={() => handleResponder(s.grupo_id, false)}
-                    className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-red-600 border-2 border-outline cursor-pointer"
+                    className="text-sm font-semibold px-4 py-2 rounded-[6px] border border-[#8fb6ae]/50 text-[#eaf4f0] cursor-pointer"
                   >
                     {t("disponibilidad.rechazar")}
                   </button>
                 </div>
               ) : (
-                <span className="text-sm">{t("disponibilidad.yaConfirmaste")}</span>
+                <span className="text-sm text-[#c4dad3]">{t("disponibilidad.yaConfirmaste")}</span>
               )}
             </div>
           ))}
@@ -164,18 +167,18 @@ export default function DisponibilidadForm() {
 
       <form
         onSubmit={handleAgregar}
-        className="bg-surface border border-ink/10 rounded-[8px] p-4 flex flex-col gap-2"
+        className="flex flex-col gap-2"
       >
-        <span className="font-heading text-sm font-semibold">{t("disponibilidad.agregarDisponibilidad")}</span>
+        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{t("disponibilidad.agregarDisponibilidad")}</span>
         <div className="flex gap-2">
-          <select value={dia} onChange={(e) => setDia(e.target.value)} className="flex-1 rounded-xl bg-bg px-2 py-2 text-sm">
+          <select value={dia} onChange={(e) => setDia(e.target.value)} className="flex-1 rounded-[6px] bg-bg border border-ink/15 px-2 py-2 text-sm text-ink">
             {DIAS_VALORES.map((d) => (
               <option key={d} value={d}>
                 {etiquetaDia(d, t)}
               </option>
             ))}
           </select>
-          <select value={franja} onChange={(e) => setFranja(e.target.value)} className="flex-1 rounded-xl bg-bg px-2 py-2 text-sm">
+          <select value={franja} onChange={(e) => setFranja(e.target.value)} className="flex-1 rounded-[6px] bg-bg border border-ink/15 px-2 py-2 text-sm text-ink">
             {FRANJAS_VALORES.map((f) => (
               <option key={f} value={f}>
                 {etiquetaFranja(f, t)}
@@ -187,7 +190,7 @@ export default function DisponibilidadForm() {
         <button
           type="submit"
           disabled={guardando}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 self-start inline-flex items-center gap-2"
+          className="font-titulo font-black uppercase text-[1.4rem] leading-none px-4 py-4 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
         >
           {guardando && <PelotaLoader />}
           {t("disponibilidad.agregar")}
@@ -195,19 +198,19 @@ export default function DisponibilidadForm() {
       </form>
 
       {misSlots.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">
+        <div className="flex flex-col">
+          <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted pb-1">
             {t("disponibilidad.misHorarios")}
           </span>
           {misSlots.map((s) => (
             <div
               key={s.id}
-              className="bg-bg border-2 border-outline rounded-[6px] p-2 flex items-center justify-between"
+              className="py-3 border-b border-ink/10 flex items-center justify-between"
             >
-              <span className="text-sm">
+              <span className="font-titulo font-extrabold uppercase text-xl leading-none">
                 {etiquetaDia(s.dia_semana, t)} · {etiquetaFranja(s.franja, t)}
               </span>
-              <button onClick={() => handleQuitar(s.id)} className="text-red-600 text-sm cursor-pointer">
+              <button onClick={() => handleQuitar(s.id)} className="w-8 h-8 flex items-center justify-center text-red-600 text-sm cursor-pointer">
                 ✕
               </button>
             </div>

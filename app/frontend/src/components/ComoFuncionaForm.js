@@ -30,39 +30,44 @@ export default function ComoFuncionaForm() {
   const { t } = useLocale();
 
   return (
-    <div className="w-full max-w-md bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-5">
-      <div className="flex items-center justify-between">
+    <div className="w-full max-w-md text-ink flex flex-col gap-5">
+      {/* Rediseño Cartel (2026-10-01): sin tarjeta contenedora ni cajas
+          iguales -- cada función es un bloque numerado separado por líneas,
+          con el título en la tipografía de cartel. */}
+      <div className="flex items-center justify-between gap-3">
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("comoFunciona.titulo")}</h1>
         <button
           onClick={() => router.push("/menu")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
         >
           {t("comoFunciona.volver")}
         </button>
       </div>
 
-      <p className="text-sm text-muted">{t("comoFunciona.subtitulo")}</p>
+      <p className="text-[15px] text-muted leading-relaxed -mt-1">{t("comoFunciona.subtitulo")}</p>
 
-      <div className="flex flex-col gap-3">
-        {BLOQUES.map((b) => (
-          <div key={b.clave} className="bg-bg border-2 border-outline rounded-[6px] p-4 flex flex-col gap-1">
-            <span className="font-heading font-semibold flex items-center gap-2">
-              <b.Icono className="ico" aria-hidden />
-              {t(`comoFunciona.${b.clave}Titulo`)}
+      <div className="flex flex-col border-t-2 border-ink">
+        {BLOQUES.map((b, i) => (
+          <div key={b.clave} className="flex gap-3 py-4 border-b border-ink/10">
+            <span className="font-titulo font-black text-[1.6rem] leading-none text-muted w-8 flex-shrink-0 tabular-nums">
+              {String(i + 1).padStart(2, "0")}
             </span>
-            <p className="text-sm text-muted">{t(`comoFunciona.${b.clave}Texto`)}</p>
+            <div className="flex flex-col gap-1 min-w-0">
+              <span className="font-titulo font-extrabold uppercase text-xl leading-none flex items-center gap-2">
+                <b.Icono className="ico" aria-hidden />
+                {t(`comoFunciona.${b.clave}Titulo`)}
+              </span>
+              <p className="text-sm text-muted leading-relaxed">{t(`comoFunciona.${b.clave}Texto`)}</p>
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="flex flex-col gap-2">
-        <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">{t("home.seViene")}</span>
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col">
+        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted pb-2">{t("home.seViene")}</span>
+        <div className="flex flex-col border-t border-ink/10">
           {PROXIMAMENTE_CLAVES.map((clave) => (
-            <span
-              key={clave}
-              className="text-sm px-4 py-3 rounded-[6px] border-2 border-outline border-dashed text-muted opacity-70"
-            >
+            <span key={clave} className="text-sm py-3 border-b border-ink/10 text-muted">
               {t(`comoFunciona.${clave}`)} · {t("home.proximamente")}
             </span>
           ))}

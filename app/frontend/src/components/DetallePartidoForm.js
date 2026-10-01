@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
-import { IconoPelota, IconoCompartir, IconoRepetir, IconoBilletera, IconoTelefono } from "@/components/Icons";
+import { IconoPelota, IconoCompartir, IconoRepetir, IconoBilletera, IconoTelefono, IconoChevron } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
 
-const tarjeta = "bg-surface text-ink rounded-[8px] p-4 border border-ink/10";
-const tarjetaChica = "bg-bg rounded-[6px] p-3 flex flex-col gap-2";
-const botonSuave = "font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer";
+// Rediseño Cartel (2026-10-01): sin tarjetas -- el botón suave es el
+// "Volver" de la guía (contorno fino, sin fondo).
+const botonSuave = "text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer";
 
 // Campo "nombre" de un gasto (US-10.1): busca contra cuentas reales
 // (buscar_jugadores, mismo RPC que ya usa el marcador libre ad-hoc,
@@ -42,11 +42,11 @@ function CampoJugadorGasto({ valor, onChange }) {
         value={valor.nombre}
         onChange={(e) => buscar(e.target.value)}
         placeholder={t("completarPerfil.nombre")}
-        className="w-full rounded-xl bg-bg px-2 py-1 text-sm"
+        className="w-full rounded-[6px] bg-surface border border-ink/15 px-2 py-1 text-sm"
       />
       {valor.jugadorId && <span className="text-[10px] text-muted">{t("detallePartido.cuentaReal")}</span>}
       {resultados.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-surface rounded-[6px] shadow-[0_2px_8px_rgba(20,38,31,0.15)] z-10 overflow-hidden">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-surface rounded-[6px] border border-ink/15 z-10 overflow-hidden">
           {resultados.map((r) => (
             <button
               key={r.id}
@@ -339,6 +339,11 @@ export default function DetallePartidoForm({ partidoId }) {
     cargarDetalle();
   }
 
+  // Rediseño Cartel (2026-10-01): el Marcadorcito es el único botón
+  // amarillo cuando aparece; si no, lo es "Confirmar mi lugar" de la lista
+  // de espera. Solo cambia la clase, la lógica es la misma.
+  const muestraMarcadorcito = partido.estado === "jugado" || partido.estado === "completo";
+
   return (
     <div className="w-full max-w-md flex flex-col gap-4 pantalla-grilla">
       <div className="flex items-center justify-between col-completa">
@@ -350,77 +355,108 @@ export default function DetallePartidoForm({ partidoId }) {
 
       {error && <p className="text-red-600 text-sm col-completa">{error}</p>}
 
-      <div className={`${tarjeta} flex flex-col gap-2`}>
-        <span className="font-heading font-semibold">
-          {new Date(partido.fecha_hora).toLocaleString(INTL_LOCALE[locale] ?? "es-AR")}
-        </span>
-        <div className="flex items-center gap-2">
-          <span className="text-muted text-sm">{partido.cancha}</span>
-          {canchaId && (
-            <button
-              onClick={() => router.push(`/canchas/${canchaId}`)}
-              className="font-heading font-semibold text-xs px-2 py-0.5 rounded-[6px] bg-bg text-ink cursor-pointer"
-            >
-              {t("detallePartido.verCancha")}
-            </button>
-          )}
-        </div>
-        <span className="text-sm">
-          {t("crearPartido.estado")} <strong>{etiquetaEstadoPartido(partido.estado, t)}</strong>
-        </span>
-        <span className="text-sm">
-          {t("partidoPublico.jugadoresTemplate", { ocupados: participantes.length, cantidad: partido.cantidad_jugadores })}
-        </span>
+      {/* Rediseño Cartel (2026-10-01): sin la tarjeta grande -- arriba la
+          protagonista verde tablero (fecha amarilla, cancha y cupo, como el
+          próximo partido del Inicio) y abajo las acciones livianas con líneas. */}
+      <div className="flex flex-col gap-4">
+        {(() => {
+          const fecha = new Date(partido.fecha_hora);
+          const intl = INTL_LOCALE[locale] ?? "es-AR";
+          const diaSemana = fecha.toLocaleDateString(intl, { weekday: "short" }).replace(".", "");
+          const dia = fecha.toLocaleDateString(intl, { day: "2-digit" });
+          const mes = fecha.toLocaleDateString(intl, { month: "short" }).replace(".", "").toUpperCase();
+          const hora = fecha.toLocaleTimeString(intl, { hour: "2-digit", minute: "2-digit", hour12: false });
+          return (
+            <div className="flex rounded-[6px] overflow-hidden bg-[#154139] text-[#eaf4f0]">
+              <span className="bg-accent text-accent-ink flex flex-col items-center justify-center px-3 py-3 min-w-[72px] font-titulo font-extrabold uppercase tracking-wide leading-none">
+                <span className="text-sm">{diaSemana}</span>
+                <span className="text-5xl font-black leading-[0.9]">{dia}</span>
+                <span className="text-sm">{mes}</span>
+              </span>
+              <div className="flex flex-col justify-center gap-1 px-4 py-3 min-w-0 flex-1">
+                <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#8fb6ae]">
+                  {t("crearPartido.estado")} <strong className="text-[#eaf4f0]">{etiquetaEstadoPartido(partido.estado, t)}</strong> · {hora}
+                </span>
+                <span className="font-titulo font-extrabold uppercase text-[1.7rem] leading-none truncate">
+                  {partido.cancha}
+                </span>
+                <span className="text-xs text-[#c4dad3]">{fecha.toLocaleString(intl)}</span>
+                <div className="flex items-center justify-between gap-2 mt-1">
+                  <span className="text-sm font-semibold">
+                    {t("partidoPublico.jugadoresTemplate", { ocupados: participantes.length, cantidad: partido.cantidad_jugadores })}
+                  </span>
+                  {canchaId && (
+                    <button
+                      onClick={() => router.push(`/canchas/${canchaId}`)}
+                      className="text-xs font-semibold underline text-[#c4dad3] cursor-pointer flex-shrink-0"
+                    >
+                      {t("detallePartido.verCancha")}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
-        {(partido.estado === "jugado" || partido.estado === "completo") && (
+        {muestraMarcadorcito && (
           <button
             onClick={() => router.push(`/partido/${partidoId}/marcador`)}
-            className="font-heading font-bold text-lg px-6 py-5 rounded-[8px] bg-accent text-accent-ink border border-ink/10 cursor-pointer self-center w-full flex flex-col items-center gap-1"
+            className="flex items-center justify-between gap-3 rounded-[6px] bg-accent text-accent-ink px-4 py-4 cursor-pointer text-left w-full"
           >
-            <IconoPelota width={26} height={26} />
-            {partido.estado === "jugado" ? t("detallePartido.verMarcadorcito") : t("detallePartido.irAlMarcadorcito")}
+            <span className="font-titulo font-black uppercase text-[1.75rem] leading-none flex items-center gap-2">
+              <IconoPelota width={26} height={26} aria-hidden />
+              {partido.estado === "jugado" ? t("detallePartido.verMarcadorcito") : t("detallePartido.irAlMarcadorcito")}
+            </span>
+            <IconoChevron width={24} height={24} style={{ transform: "rotate(-90deg)" }} aria-hidden />
           </button>
         )}
 
         {estoyEnEspera && (
-          <div className={tarjetaChica}>
+          <div className="flex flex-col gap-2 border-b border-ink/10 pb-3">
             <span className="text-sm">{t("detallePartido.enListaEspera")}</span>
             <div className="flex gap-2">
               <button
                 onClick={handleConfirmarLugarEspera}
                 disabled={!hayLugar}
-                className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60"
+                className={
+                  muestraMarcadorcito
+                    ? "font-semibold text-sm px-4 py-2 rounded-[6px] border border-ink/15 text-ink cursor-pointer disabled:opacity-60"
+                    : "font-titulo font-black uppercase text-lg px-4 py-2 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60"
+                }
               >
                 {hayLugar ? t("partidosAbiertos.confirmarMiLugar") : t("detallePartido.esperandoLugar")}
               </button>
-              <button onClick={handleSalirDeLaLista} className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-red-600 cursor-pointer">
+              <button onClick={handleSalirDeLaLista} className="font-semibold text-sm px-3 py-2 text-red-600 cursor-pointer">
                 {t("partidosAbiertos.salirDeLista")}
               </button>
             </div>
           </div>
         )}
 
-        <div className="flex flex-wrap gap-2">
+        {/* Compartir / repetir: fila con líneas, como "Crear / Abiertos" del Inicio. */}
+        <div className={`grid ${puedeRepetir ? "grid-cols-2" : "grid-cols-1"} border-y-2 border-ink`}>
           <button
             onClick={handleCompartir}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer flex items-center gap-2"
+            className="flex items-center justify-center gap-2 py-3 font-semibold text-sm cursor-pointer"
           >
-            <IconoCompartir width={16} height={16} /> {t("detallePartido.compartir")}
+            <IconoCompartir width={16} height={16} aria-hidden /> {t("detallePartido.compartir")}
           </button>
           {puedeRepetir && (
             <button
               onClick={handleRepetir}
-              className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer flex items-center gap-2"
+              className="flex items-center justify-center gap-2 py-3 font-semibold text-sm cursor-pointer border-l-2 border-ink"
             >
-              <IconoRepetir width={16} height={16} /> {t("detallePartido.repetirPartido")}
+              <IconoRepetir width={16} height={16} aria-hidden /> {t("detallePartido.repetirPartido")}
             </button>
           )}
         </div>
-        {mensajeCompartir && <span className="text-xs text-muted">{mensajeCompartir}</span>}
+        {mensajeCompartir && <span className="text-xs text-muted -mt-2">{mensajeCompartir}</span>}
 
-        <div className={tarjetaChica}>
-          <span className="font-heading text-sm font-semibold flex items-center gap-1.5">
-            <IconoBilletera width={16} height={16} /> {t("detallePartido.gastosDeLaCancha")}
+        {/* Gastos: etiqueta de sección + contenido, separado con línea. */}
+        <div className="flex flex-col gap-2 border-b border-ink/10 pb-3">
+          <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted flex items-center gap-1.5">
+            <IconoBilletera width={14} height={14} aria-hidden /> {t("detallePartido.gastosDeLaCancha")}
           </span>
 
           {soyOrganizador && editandoGastos ? (
@@ -440,7 +476,7 @@ export default function DetallePartidoForm({ partidoId }) {
                     value={g.monto}
                     onChange={(e) => actualizarFilaGasto(i, "monto", e.target.value)}
                     placeholder={t("detallePartido.gastoPlaceholder")}
-                    className="w-24 rounded-xl bg-surface px-2 py-1 text-sm"
+                    className="w-24 rounded-[6px] bg-surface border border-ink/15 px-2 py-1 text-sm"
                   />
                   <button
                     type="button"
@@ -454,7 +490,7 @@ export default function DetallePartidoForm({ partidoId }) {
               <button
                 type="button"
                 onClick={agregarFilaGasto}
-                className="font-heading font-semibold text-xs px-3 py-1 rounded-[6px] bg-surface text-ink self-start cursor-pointer"
+                className="text-xs font-semibold text-ink self-start cursor-pointer underline"
               >
                 + {t("detallePartido.agregarJugador")}
               </button>
@@ -462,14 +498,14 @@ export default function DetallePartidoForm({ partidoId }) {
                 <button
                   type="submit"
                   disabled={guardandoGastos}
-                  className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60"
+                  className="font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-ink text-surface cursor-pointer disabled:opacity-60"
                 >
                   {t("admin.guardar")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setEditandoGastos(false)}
-                  className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink cursor-pointer"
+                  className="font-semibold text-sm px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
                 >
                   {t("admin.cancelar")}
                 </button>
@@ -491,9 +527,9 @@ export default function DetallePartidoForm({ partidoId }) {
                   {pagos.length === 0 ? (
                     <span className="text-sm text-muted">{t("detallePartido.saldado")}</span>
                   ) : (
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col">
                       {pagos.map((p, i) => (
-                        <span key={i} className="text-sm">
+                        <span key={i} className="text-sm py-1.5 border-b border-ink/10 last:border-b-0">
                           <strong>{p.de}</strong>{" "}
                           {t("detallePartido.leDebeConector", {
                             monto: p.monto.toLocaleString(intl, { maximumFractionDigits: 0 }),
@@ -506,7 +542,7 @@ export default function DetallePartidoForm({ partidoId }) {
                   {soyOrganizador && (
                     <button
                       onClick={() => setEditandoGastos(true)}
-                      className="font-heading font-semibold text-xs px-3 py-1 rounded-[6px] bg-surface text-ink self-start cursor-pointer"
+                      className="text-xs font-semibold text-ink self-start cursor-pointer underline"
                     >
                       {t("verPerfil.editar")}
                     </button>
@@ -517,7 +553,7 @@ export default function DetallePartidoForm({ partidoId }) {
           ) : soyOrganizador ? (
             <button
               onClick={() => setEditandoGastos(true)}
-              className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink cursor-pointer self-start"
+              className="font-semibold text-sm px-4 py-2 rounded-[6px] border border-ink/15 text-ink cursor-pointer self-start"
             >
               {t("detallePartido.cargarGastos")}
             </button>
@@ -530,20 +566,20 @@ export default function DetallePartidoForm({ partidoId }) {
         {puedeCancelar && !confirmandoCancelacion && (
           <button
             onClick={() => setConfirmandoCancelacion(true)}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer text-red-600 self-start"
+            className="font-semibold text-sm text-red-600 cursor-pointer self-start"
           >
             {t("detallePartido.cancelarPartido")}
           </button>
         )}
 
         {confirmandoCancelacion && (
-          <div className={tarjetaChica}>
+          <div className="flex flex-col gap-2 border-y border-ink/10 py-3">
             <p className="text-sm">{t("detallePartido.confirmarCancelar")}</p>
             <div className="flex gap-2">
               <button
                 onClick={handleCancelar}
                 disabled={cancelando}
-                className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-red-600 text-white cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
+                className="font-semibold text-sm px-4 py-2 rounded-[6px] bg-red-600 text-white cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
               >
                 {cancelando && <PelotaLoader />}
                 {t("detallePartido.siCancelar")}
@@ -560,13 +596,14 @@ export default function DetallePartidoForm({ partidoId }) {
         )}
       </div>
 
-      <div className="flex flex-col gap-2">
-        <h2 className="font-heading font-semibold text-lg">{t("detallePartido.plantel")}</h2>
+      {/* Plantel: filas separadas con línea, no tarjetas (rediseño Cartel). */}
+      <div className="flex flex-col">
+        <h2 className="font-titulo font-extrabold uppercase text-2xl leading-none mb-2">{t("detallePartido.plantel")}</h2>
         {participantes.map((p, i) => (
-          <div key={p.jugador_id ?? `invitado-${i}`} className={`${tarjeta} flex flex-col gap-1`}>
-            <div className="flex items-center justify-between">
-              <span className="font-heading font-semibold">{p.nombre}</span>
-              <span className="text-xs text-muted uppercase">
+          <div key={p.jugador_id ?? `invitado-${i}`} className="flex flex-col gap-1 py-3 border-b border-ink/10">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-semibold">{p.nombre}</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
                 {p.estado}
                 {p.no_show && t("detallePartido.noShowSufijo")}
               </span>
@@ -574,7 +611,7 @@ export default function DetallePartidoForm({ partidoId }) {
             {soyOrganizador && partido.estado === "jugado" && p.estado === "confirmado" && p.jugador_id !== usuarioId && (
               <button
                 onClick={() => handleMarcarNoShow(p.jugador_id, p.no_show)}
-                className="font-heading font-semibold text-xs px-3 py-1 rounded-[6px] bg-bg text-ink self-start cursor-pointer"
+                className="font-semibold text-xs px-3 py-1 rounded-[6px] border border-ink/15 text-ink self-start cursor-pointer"
               >
                 {p.no_show ? t("detallePartido.desmarcarNoShow") : t("detallePartido.marcarNoShow")}
               </button>
@@ -583,16 +620,16 @@ export default function DetallePartidoForm({ partidoId }) {
               {t("directorio.nivelPrefijo")} {etiquetaNivel(p.nivel, t)} · {manoHabilLabel(p.mano_habil, t)} · {posicionLabel(p.posicion, t)}
             </span>
             {p.telefono && (
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-3 text-sm">
                 <span className="flex items-center gap-1.5">
-                  <IconoTelefono width={14} height={14} /> {p.telefono}
+                  <IconoTelefono width={14} height={14} aria-hidden /> {p.telefono}
                 </span>
                 {p.mostrar_whatsapp && (
                   <a
                     href={`https://wa.me/${p.telefono.replace(/[^0-9]/g, "")}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-heading font-semibold text-xs px-3 py-1 rounded-[6px] bg-accent text-accent-ink"
+                    className="font-semibold text-xs px-3 py-1 rounded-[6px] border border-ink/15 text-ink"
                   >
                     WhatsApp
                   </a>

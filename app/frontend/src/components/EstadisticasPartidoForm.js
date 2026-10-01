@@ -10,13 +10,13 @@ import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
 import { estadisticasDeLado, formatoSets, calcularPuntosRanking } from "@/lib/estadisticasMarcadorcito";
 
-const tarjeta = "bg-surface text-ink rounded-[8px] p-4 border border-ink/10";
-
-function Dato({ etiqueta, valor }) {
+// Rediseño Cartel (2026-10-01): cada dato es un número grande con la
+// etiqueta abajo, sin cajita; los divisores los pone quien lo usa.
+function Dato({ etiqueta, valor, className = "" }) {
   return (
-    <div className="bg-bg border border-ink/10 rounded-[6px] p-2.5 flex flex-col gap-0.5">
-      <span className="font-heading text-xs text-muted">{etiqueta}</span>
-      <span className="text-sm font-heading font-semibold">{valor}</span>
+    <div className={`flex flex-col gap-1 py-3 ${className}`}>
+      <span className="font-titulo font-black text-[2.2rem] leading-none tabular-nums">{valor}</span>
+      <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{etiqueta}</span>
     </div>
   );
 }
@@ -125,12 +125,12 @@ export default function EstadisticasPartidoForm({ partidoId }) {
           <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("detalleEstadisticas.titulo")}</h1>
           <button
             onClick={() => router.back()}
-            className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+            className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
           >
             {t("detalleEstadisticas.volver")}
           </button>
         </div>
-        <div className={`${tarjeta} text-sm text-muted`}>{t("detalleEstadisticas.noEncontrado")}</div>
+        <p className="text-sm text-muted border-y border-ink/10 py-3">{t("detalleEstadisticas.noEncontrado")}</p>
       </div>
     );
   }
@@ -143,44 +143,60 @@ export default function EstadisticasPartidoForm({ partidoId }) {
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("detalleEstadisticas.titulo")}</h1>
         <button
           onClick={() => router.back()}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
         >
           {t("detalleEstadisticas.volver")}
         </button>
       </div>
 
-      <div className={tarjeta}>
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex flex-col">
-            <span className="font-heading font-semibold">
+      {/* Rediseño Cartel (2026-10-01): la protagonista es el resultado,
+          en verde tablero con cada set como número grande; los puntos de
+          ranking van como acento amarillo. */}
+      <div className="rounded-[6px] bg-[#154139] text-[#eaf4f0] px-4 py-4 flex flex-col gap-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex flex-col gap-1 min-w-0">
+            <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#8fb6ae]">
               {new Date(datos.fechaHora).toLocaleDateString(INTL_LOCALE[locale] ?? "es-AR")} · {datos.cancha}
             </span>
-            <span className="text-sm text-muted">{datos.gane ? t("home.ganaste") : t("home.perdiste")}</span>
+            <span className="font-titulo font-black uppercase text-[2.2rem] leading-none">
+              {datos.gane ? t("home.ganaste") : t("home.perdiste")}
+            </span>
           </div>
-          <IconoTrofeo width={22} height={22} className={datos.gane ? "" : "opacity-30"} />
+          <IconoTrofeo width={26} height={26} className={datos.gane ? "flex-shrink-0" : "flex-shrink-0 opacity-30"} />
         </div>
         {datos.sets && (
-          <div className="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-bg">
-            <span className="text-xs text-muted">{t("estadisticas.resultadoPorSet")}</span>
-            <span className="font-heading font-semibold tabular-nums">{datos.sets}</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#8fb6ae]">{t("estadisticas.resultadoPorSet")}</span>
+            <div className="flex">
+              {datos.sets.split("  ·  ").map((set, i) => (
+                <span
+                  key={i}
+                  className={`font-titulo font-black text-[2.6rem] leading-none tabular-nums pr-4 ${i > 0 ? "pl-4 border-l border-[#8fb6ae]/40" : ""}`}
+                >
+                  {set}
+                </span>
+              ))}
+            </div>
           </div>
         )}
         {datos.puntosRankingGanados !== null && (
-          <div className="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-bg">
-            <span className="text-xs text-muted">{t("estadisticas.puntosRankingGanados")}</span>
-            <span className="font-heading font-semibold text-[#16a34a]">+{datos.puntosRankingGanados}</span>
+          <div className="flex items-center justify-between gap-2 pt-3 border-t border-[#8fb6ae]/30">
+            <span className="text-xs text-[#c4dad3]">{t("estadisticas.puntosRankingGanados")}</span>
+            <span className="bg-accent text-accent-ink rounded-[6px] px-2.5 py-1 font-titulo font-black text-xl leading-none">
+              +{datos.puntosRankingGanados}
+            </span>
           </div>
         )}
       </div>
 
       {datos.rivales.length > 0 && (
-        <div className={`${tarjeta} flex flex-col gap-2`}>
-          <span className="text-xs text-muted">
+        <div className="flex flex-col">
+          <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted mb-1">
             {datos.rivales.length > 1 ? t("estadisticas.rivales") : t("estadisticas.rival")}
           </span>
           {datos.rivales.map((r, i) => (
-            <div key={i} className="flex items-center justify-between gap-2">
-              <span className="text-sm font-heading font-semibold">{r.nombre}</span>
+            <div key={i} className="flex items-center justify-between gap-2 py-2.5 border-b border-ink/10">
+              <span className="text-sm font-semibold">{r.nombre}</span>
               {r.invitado ? (
                 <span className="text-xs text-muted">{t("estadisticas.invitado")}</span>
               ) : (
@@ -193,17 +209,19 @@ export default function EstadisticasPartidoForm({ partidoId }) {
         </div>
       )}
 
-      <div className={`${tarjeta} grid grid-cols-2 gap-2`}>
-        <Dato etiqueta={t("estadisticas.duracion")} valor={`${d.duracionMin} min`} />
+      {/* Números grandes en grilla de 2 con divisores (líneas, no cajas). */}
+      <div className="grid grid-cols-2 border-y border-ink/10">
+        <Dato etiqueta={t("estadisticas.duracion")} valor={`${d.duracionMin} min`} className="pr-3" />
         <Dato
           etiqueta={t("estadisticas.sacoPrimero")}
           valor={d.sacoPrimeroYo ? t("estadisticas.vos") : t("estadisticas.rival")}
+          className="pl-3 border-l border-ink/15 uppercase"
         />
-        <Dato etiqueta={t("estadisticas.rachaMaximaVosRival")} valor={`${d.racha} / ${d.rachaRival}`} />
-        <Dato etiqueta={t("estadisticas.juegosADeuceCorto")} valor={d.juegosADeuce} />
+        <Dato etiqueta={t("estadisticas.rachaMaximaVosRival")} valor={`${d.racha} / ${d.rachaRival}`} className="pr-3 border-t border-ink/10" />
+        <Dato etiqueta={t("estadisticas.juegosADeuceCorto")} valor={d.juegosADeuce} className="pl-3 border-l border-t border-ink/15" />
       </div>
 
-      <div className={`${tarjeta} flex flex-col gap-3`}>
+      <div className="flex flex-col [&>*]:py-3 [&>*]:border-b [&>*]:border-ink/10">
         <BarraEstadistica
           etiqueta={t("estadisticas.puntosTotales")}
           valor={d.puntosPropios}

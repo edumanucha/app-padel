@@ -9,8 +9,11 @@ import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
 
 import { IconoRayo } from "@/components/Icons";
+// Rediseño Cartel (2026-10-01): campos con contorno fino y esquinas casi
+// rectas; las etiquetas de sección van chicas, en mayúscula.
 const inputClass =
-  "rounded-xl bg-bg px-3 py-2 text-ink";
+  "rounded-[6px] bg-transparent border border-ink/15 px-3 py-2 text-ink";
+const etiquetaClass = "text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted";
 
 const NIVELES_VALORES = [1, 2, 3, 4, 5, 6, 7];
 
@@ -176,33 +179,42 @@ export default function CrearPartidoForm() {
 
   if (partidoCreado) {
     return (
-      <div className="w-full max-w-sm bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-3">
-        <div className="flex items-center justify-between">
+      // Rediseño Cartel (2026-10-01): resumen sin tarjeta, en filas con línea.
+      <div className="w-full max-w-sm text-ink flex flex-col gap-4">
+        <div className="flex items-start justify-between gap-3">
           <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">
             {t("crearPartido.creado")}
           </h1>
           <button
             onClick={() => router.push("/")}
-            className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
+            className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer flex-shrink-0"
           >
             {t("crearPartido.volverAlInicio")}
           </button>
         </div>
         <p className="text-muted text-sm">{t("crearPartido.quedasteAnotado")}</p>
-        <div className="flex flex-col gap-1 text-sm">
-          <span>
-            <strong>{t("crearPartido.cuando")}</strong>{" "}
-            {new Date(partidoCreado.fecha_hora).toLocaleString(INTL_LOCALE[locale] ?? "es-AR")}
+        <div className="flex flex-col border-t border-ink/10 text-sm">
+          <span className="flex items-baseline justify-between gap-3 border-b border-ink/10 py-2.5">
+            <span className={etiquetaClass}>{t("crearPartido.cuando")}</span>
+            <span className="text-right">
+              {new Date(partidoCreado.fecha_hora).toLocaleString(INTL_LOCALE[locale] ?? "es-AR")}
+            </span>
           </span>
-          <span>
-            <strong>{t("crearPartido.cancha")}</strong> {partidoCreado.cancha}
+          <span className="flex items-baseline justify-between gap-3 border-b border-ink/10 py-2.5">
+            <span className={etiquetaClass}>{t("crearPartido.cancha")}</span>
+            <span className="font-titulo font-extrabold uppercase text-xl leading-none text-right">
+              {partidoCreado.cancha}
+            </span>
           </span>
-          <span>
-            <strong>{t("crearPartido.jugadoresNecesariosConfirm")}</strong>{" "}
-            {partidoCreado.cantidad_jugadores}
+          <span className="flex items-baseline justify-between gap-3 border-b border-ink/10 py-2.5">
+            <span className={etiquetaClass}>{t("crearPartido.jugadoresNecesariosConfirm")}</span>
+            <span className="font-titulo font-black text-[2.2rem] leading-none">{partidoCreado.cantidad_jugadores}</span>
           </span>
-          <span>
-            <strong>{t("crearPartido.estado")}</strong> {partidoCreado.estado}
+          <span className="flex items-baseline justify-between gap-3 border-b border-ink/10 py-2.5">
+            <span className={etiquetaClass}>{t("crearPartido.estado")}</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] border border-ink/15 rounded-[4px] px-1.5 py-0.5">
+              {partidoCreado.estado}
+            </span>
           </span>
         </div>
       </div>
@@ -212,30 +224,32 @@ export default function CrearPartidoForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-sm bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-4"
+      className="w-full max-w-sm text-ink flex flex-col gap-5"
     >
-      <div className="flex items-center justify-between">
+      {/* Rediseño Cartel (2026-10-01): formulario sin tarjeta, etiquetas
+          chicas en mayúscula y un solo botón amarillo grande al final. */}
+      <div className="flex items-start justify-between gap-3">
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("home.crearPartido")}</h1>
         <button
           type="button"
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer flex-shrink-0"
         >
           {t("crearPartido.volver")}
         </button>
       </div>
-      <p className="text-muted text-sm">{t("crearPartido.subtitulo")}</p>
+      <p className="text-muted text-sm -mt-3">{t("crearPartido.subtitulo")}</p>
 
       <button
         type="button"
         onClick={generarPartidoRapido}
-        className="self-start font-heading font-semibold text-xs px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
+        className="self-start font-semibold text-xs px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer inline-flex items-center gap-1.5"
       >
         <IconoRayo className="ico" aria-hidden /> Generar partido rápido
       </button>
 
       <label className="flex flex-col gap-1">
-        <span className="font-heading text-sm">{t("crearPartido.fechaYHora")}</span>
+        <span className={etiquetaClass}>{t("crearPartido.fechaYHora")}</span>
         <input
           type="datetime-local"
           value={fechaHora}
@@ -248,7 +262,7 @@ export default function CrearPartidoForm() {
       <CampoCancha value={cancha} onChange={setCancha} onElegir={(c) => setCanchaId(c?.id ?? null)} />
 
       <label className="flex flex-col gap-1">
-        <span className="font-heading text-sm">{t("crearPartido.jugadoresNecesariosLabel")}</span>
+        <span className={etiquetaClass}>{t("crearPartido.jugadoresNecesariosLabel")}</span>
         <input
           type="number"
           min={2}
@@ -261,9 +275,9 @@ export default function CrearPartidoForm() {
       </label>
 
       <div className="flex flex-col gap-1">
-        <span className="font-heading text-sm">{t("crearPartido.rangoNivel")}</span>
+        <span className={etiquetaClass}>{t("crearPartido.rangoNivel")}</span>
         <span className="text-xs text-muted">{t("crearPartido.rangoNivelAviso")}</span>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 mt-1">
           <select value={nivelMin} onChange={(e) => setNivelMin(e.target.value)} className={inputClass}>
             <option value="">{t("crearPartido.sinMinimo")}</option>
             {NIVELES_VALORES.map((n) => (
@@ -283,8 +297,9 @@ export default function CrearPartidoForm() {
         </div>
       </div>
 
-      <label className="flex items-center gap-2">
+      <label className="flex items-start gap-2 border-y border-ink/10 py-3">
         <input
+          className="mt-0.5"
           type="checkbox"
           checked={puntoDeOro}
           onChange={(e) => setPuntoDeOro(e.target.checked)}
@@ -297,7 +312,7 @@ export default function CrearPartidoForm() {
       <button
         type="submit"
         disabled={cargando || !formularioCompleto}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+        className="w-full font-titulo font-black uppercase text-[1.75rem] leading-none px-4 py-4 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
       >
         {cargando && <PelotaLoader />}
         {cargando ? t("crearPartido.creando") : t("home.crearPartido")}

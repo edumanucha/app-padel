@@ -11,10 +11,10 @@ import ContadorNumero from "@/components/ContadorNumero";
 import InfoEstadistica from "@/components/InfoEstadistica";
 
 import { IconoLupa } from "@/components/Icons";
-const tarjeta = "bg-surface text-ink rounded-[8px] p-4 border border-ink/10";
-
+// Rediseño Cartel (2026-10-01): etiqueta de sección chica, sin tarjetas
+// (la lista va con líneas y el podio es la protagonista en verde tablero).
 function Subtitulo({ children }) {
-  return <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">{children}</span>;
+  return <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{children}</span>;
 }
 
 const NIVELES_VALORES = [1, 2, 3, 4, 5, 6, 7];
@@ -37,7 +37,7 @@ function sexoLabel(v, t) {
   return v;
 }
 
-const inputClass = "rounded-xl bg-bg px-3 py-2 text-ink text-sm";
+const inputClass = "rounded-[6px] bg-bg border border-ink/15 px-3 py-2 text-ink text-sm";
 
 // Podio visual para el top 3 (2026-09-13, a pedido del usuario: "quiero
 // que sea diferencial" -- una lista plana no transmite que hay un podio
@@ -58,17 +58,23 @@ function ColumnaPodio({ jugador, puesto, maxPuntos, animar, onClick, t }) {
   const medalla = MEDALLAS[puesto - 1];
   if (!jugador) return <div className="flex-1" />;
   const alturaPx = Math.round((jugador.puntos_ranking / maxPuntos) * ALTURA_MAX_PODIO_PX);
+  // Rediseño Cartel (2026-10-01): dentro del bloque verde tablero, los
+  // puntos van en número grande y la barra del 1° en amarillo; la medalla
+  // queda como un puntito de color al lado del puesto.
+  const esPrimero = puesto === 1;
   return (
     <button type="button" onClick={onClick} className="flex-1 min-w-0 flex flex-col items-center gap-1 cursor-pointer">
-      <span className="font-heading font-semibold text-xs truncate max-w-full px-1">{jugador.nombre}</span>
-      <span className="text-[11px] text-muted">
-        <ContadorNumero valor={jugador.puntos_ranking} /> {t("directorio.pts")}
+      <span className="text-xs font-semibold text-[#c4dad3] truncate max-w-full px-1">{jugador.nombre}</span>
+      <span className={`font-titulo font-black leading-none ${esPrimero ? "text-[2.6rem]" : "text-[2.2rem]"}`}>
+        <ContadorNumero valor={jugador.puntos_ranking} />
       </span>
+      <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#8fb6ae]">{t("directorio.pts")}</span>
       <div
-        className="w-full rounded-t-[14px] flex items-start justify-center pt-2 transition-all duration-700 ease-out"
-        style={{ background: medalla.color, height: animar ? `${alturaPx}px` : "0px" }}
+        className={`w-full rounded-t-[6px] flex items-start justify-center pt-2 transition-all duration-700 ease-out overflow-hidden ${ esPrimero ? "bg-accent text-accent-ink" : "bg-[#0f2e29] text-[#eaf4f0]" }`}
+        style={{ height: animar ? `${alturaPx}px` : "0px" }}
       >
-        <span className="font-heading font-bold text-xl" style={{ color: medalla.texto }}>
+        <span className="font-titulo font-black text-2xl leading-none flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full" style={{ background: medalla.color }} aria-hidden />
           {puesto}
         </span>
       </div>
@@ -208,14 +214,14 @@ export default function DirectorioJugadoresForm() {
         <div className="flex items-center gap-2">
         <button
           onClick={() => setMostrarFiltros(true)}
-          className={`font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] border border-ink/10 cursor-pointer ${ cantidadFiltros > 0 ? "bg-accent text-accent-ink" : "bg-surface text-ink" }`}
+          className={`text-sm font-semibold px-3 py-1.5 rounded-[6px] border cursor-pointer ${ cantidadFiltros > 0 ? "bg-ink text-bg border-ink" : "border-ink/15 text-ink" }`}
         >
           <IconoLupa className="ico" aria-hidden /> {t("directorio.filtros")}
           {cantidadFiltros > 0 ? ` (${cantidadFiltros})` : ""}
         </button>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
         >
           {t("directorio.volver")}
         </button>
@@ -254,7 +260,7 @@ export default function DirectorioJugadoresForm() {
               <button
                 type="button"
                 onClick={limpiarFiltros}
-                className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink cursor-pointer"
+                className="text-sm font-semibold px-4 py-2 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
               >
                 {t("directorio.limpiarFiltros")}
               </button>
@@ -262,7 +268,7 @@ export default function DirectorioJugadoresForm() {
             <button
               type="submit"
               disabled={cargando}
-              className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+              className="font-titulo font-black uppercase text-xl px-4 py-3 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
             >
               {cargando && <PelotaLoader />}
               {t("directorio.buscar")}
@@ -274,14 +280,16 @@ export default function DirectorioJugadoresForm() {
       {error && <p className="text-red-600 text-sm col-completa">{error}</p>}
 
       <div className="flex flex-col gap-3">
-        <span className="flex items-center gap-1 pl-1">
+        <span className="flex items-center gap-1">
           <Subtitulo>{t("directorio.ranking")}</Subtitulo>
           <InfoEstadistica
             texto={`${t("directorio.explicacionRanking")} El semanal y el mensual se reinician solos cada semana/mes; el histórico es la suma de toda la vida.`}
           />
         </span>
 
-        <div className="flex bg-bg rounded-full p-1 gap-1 self-start">
+        {/* Rediseño Cartel (2026-10-01): el período va como pestañas con
+            línea abajo, no como píldora. */}
+        <div className="flex border-b border-ink/10">
           {[
             ["semanal", "Semanal"],
             ["mensual", "Mensual"],
@@ -291,7 +299,7 @@ export default function DirectorioJugadoresForm() {
               key={valor}
               type="button"
               onClick={() => setPeriodo(valor)}
-              className={`font-heading font-semibold text-xs px-3 py-1.5 rounded-[6px] cursor-pointer ${ periodo === valor ? "bg-surface text-ink border border-ink/10" : "text-muted" }`}
+              className={`font-titulo font-extrabold uppercase text-lg leading-none px-3 pt-1 pb-2 -mb-px border-b-2 cursor-pointer ${ periodo === valor ? "border-ink text-ink" : "border-transparent text-muted" }`}
             >
               {etiqueta}
             </button>
@@ -299,11 +307,13 @@ export default function DirectorioJugadoresForm() {
         </div>
 
         {!cargando && jugadores.length === 0 && (
-          <div className={`${tarjeta} text-muted text-sm`}>{t("directorio.sinResultados")}</div>
+          <div className="text-muted text-sm py-2">{t("directorio.sinResultados")}</div>
         )}
 
+        {/* Rediseño Cartel (2026-10-01): el podio es la protagonista, en
+            verde tablero con los puntos en números grandes. */}
         {jugadores.length > 0 && (
-          <div className={`${tarjeta} flex items-end justify-center gap-3 pt-4`}>
+          <div className="rounded-[6px] bg-[#154139] text-[#eaf4f0] flex items-end justify-center gap-3 px-4 pt-4 overflow-hidden">
             <ColumnaPodio
               jugador={jugadores[1]}
               puesto={2}
@@ -331,7 +341,9 @@ export default function DirectorioJugadoresForm() {
           </div>
         )}
 
-        <div className="flex flex-col gap-2">
+        {/* Rediseño Cartel (2026-10-01): del 4° para abajo, filas con línea
+            (sin tarjetas), puesto y puntos en font-titulo. */}
+        <div className="flex flex-col">
           {jugadores.slice(3).map((j, i) => {
             const maxPuntos = jugadores[0]?.puntos_ranking || 1;
             const pct = Math.round((j.puntos_ranking / maxPuntos) * 100);
@@ -339,14 +351,14 @@ export default function DirectorioJugadoresForm() {
               <button
                 key={j.id}
                 onClick={() => router.push(`/jugadores/${j.id}`)}
-                className={`${tarjeta} lista-item-entra flex items-center gap-3 text-left cursor-pointer w-full`}
+                className="lista-item-entra flex items-center gap-3 text-left cursor-pointer w-full py-3 border-b border-ink/10"
                 style={{ animationDelay: `${Math.min(i, 12) * 35}ms` }}
               >
-                <span className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-heading font-semibold text-sm bg-bg text-muted">
+                <span className="w-9 flex-shrink-0 font-titulo font-black text-[1.75rem] leading-none text-muted">
                   {i + 4}
                 </span>
                 <div className="flex flex-col flex-1 min-w-0">
-                  <span className="font-heading font-semibold truncate">{j.nombre}</span>
+                  <span className="font-semibold truncate">{j.nombre}</span>
                   <span className="text-xs text-muted">
                     {t("directorio.nivelPrefijo")} {etiquetaNivel(j.nivel, t)} · {manoHabilLabel(j.mano_habil, t)} ·{" "}
                     {sexoLabel(j.sexo, t)}
@@ -358,12 +370,15 @@ export default function DirectorioJugadoresForm() {
                   </span>
                 </div>
                 <div className="flex flex-col items-end gap-1 flex-shrink-0 w-20">
-                  <span className="font-heading font-semibold text-sm text-accent-2-ink whitespace-nowrap">
-                    <ContadorNumero valor={j.puntos_ranking} /> {t("directorio.pts")}
+                  <span className="whitespace-nowrap flex items-baseline gap-1">
+                    <span className="font-titulo font-black text-[1.75rem] leading-none">
+                      <ContadorNumero valor={j.puntos_ranking} />
+                    </span>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{t("directorio.pts")}</span>
                   </span>
-                  <div className="w-full h-1.5 rounded-full bg-bg overflow-hidden">
+                  <div className="w-full h-1 bg-ink/10 overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-accent-2 transition-all duration-700 ease-out"
+                      className="h-full bg-ink transition-all duration-700 ease-out"
                       style={{ width: barrasListas ? `${pct}%` : "0%" }}
                     />
                   </div>

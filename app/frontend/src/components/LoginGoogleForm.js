@@ -42,7 +42,7 @@ export default function LoginGoogleForm() {
       <button
         onClick={handleLoginGoogle}
         disabled={cargando}
-        className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer disabled:opacity-60 flex items-center justify-center gap-2"
+        className="font-titulo font-black uppercase text-xl px-4 py-3 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60 flex items-center justify-center gap-2"
       >
         {cargando ? (
           <PelotaLoader />

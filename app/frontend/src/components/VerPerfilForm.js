@@ -52,8 +52,11 @@ function etiquetaDe(opciones, valor) {
   return opciones.find((o) => o.valor === valor)?.etiqueta ?? valor;
 }
 
+// Rediseño Cartel (2026-10-01): campos con esquina casi recta y línea fina,
+// etiqueta chica en mayúscula arriba de cada uno.
 const inputClass =
-  "rounded-xl bg-bg px-3 py-2 text-ink";
+  "rounded-[6px] bg-surface border border-ink/15 px-3 py-2.5 text-ink";
+const etiquetaCampo = "text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted";
 
 // Pantalla de "ver mi perfil" (US-1.3) con modo edición (US-1.4). Trae la
 // fila de `perfiles` del usuario logueado; por defecto se muestra en modo
@@ -396,34 +399,34 @@ export default function VerPerfilForm() {
 
   if (perfilInactivo) {
     return (
-      <div className="w-full max-w-md bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-4">
+      // Rediseño Cartel (2026-10-01): sin tarjeta; reactivar es el único
+      // botón amarillo y cancelar va liviano, con contorno fino.
+      <div className="w-full max-w-md text-ink flex flex-col gap-4">
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">
           {t("verPerfil.cuentaDadaDeBaja")}
         </h1>
-        <p className="text-muted text-sm">{t("verPerfil.preguntaReactivar")}</p>
+        <p className="text-muted text-[15px] leading-relaxed pb-4 border-b border-ink/10">{t("verPerfil.preguntaReactivar")}</p>
 
         {errorReactivacion && (
           <p className="text-red-600 text-sm">{errorReactivacion}</p>
         )}
 
-        <div className="flex gap-3">
-          <button
-            onClick={handleReactivar}
-            disabled={reactivando}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
-          >
-            {reactivando && <PelotaLoader />}
-            {reactivando ? t("verPerfil.reactivando") : t("verPerfil.reactivarCuenta")}
-          </button>
-          <button
-            type="button"
-            onClick={handleCancelarReactivacion}
-            disabled={reactivando}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer disabled:opacity-60"
-          >
-            {t("verPerfil.cancelar")}
-          </button>
-        </div>
+        <button
+          onClick={handleReactivar}
+          disabled={reactivando}
+          className="w-full font-titulo font-black uppercase text-[1.6rem] leading-none px-4 py-4 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+        >
+          {reactivando && <PelotaLoader />}
+          {reactivando ? t("verPerfil.reactivando") : t("verPerfil.reactivarCuenta")}
+        </button>
+        <button
+          type="button"
+          onClick={handleCancelarReactivacion}
+          disabled={reactivando}
+          className="w-full text-sm font-semibold px-4 py-3 rounded-[6px] border border-ink/15 text-ink cursor-pointer disabled:opacity-60"
+        >
+          {t("verPerfil.cancelar")}
+        </button>
       </div>
     );
   }
@@ -445,9 +448,11 @@ export default function VerPerfilForm() {
     return (
       <form
         onSubmit={handleGuardar}
-        className="w-full max-w-md bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-4"
+        className="w-full max-w-md text-ink flex flex-col gap-4"
       >
-        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("verPerfil.editarPerfil")}</h1>
+        {/* Rediseño Cartel (2026-10-01): sin tarjeta contenedora; título con
+            línea gruesa abajo, guardar es el único botón amarillo. */}
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95] pb-3 border-b-2 border-ink">{t("verPerfil.editarPerfil")}</h1>
 
         <AvatarUpload
           userId={perfil.id}
@@ -459,7 +464,7 @@ export default function VerPerfilForm() {
         />
 
         <label className="flex flex-col gap-1">
-          <span className="font-heading text-sm">{t("verPerfil.nombre")}</span>
+          <span className={etiquetaCampo}>{t("verPerfil.nombre")}</span>
           <input
             type="text"
             value={nombre}
@@ -470,7 +475,7 @@ export default function VerPerfilForm() {
         </label>
 
         <label className="flex flex-col gap-1">
-          <span className="font-heading text-sm">{t("verPerfil.telefono")}</span>
+          <span className={etiquetaCampo}>{t("verPerfil.telefono")}</span>
           <input
             type="tel"
             value={telefono}
@@ -481,7 +486,7 @@ export default function VerPerfilForm() {
         </label>
 
         <label className="flex flex-col gap-1">
-          <span className="font-heading text-sm">{t("verPerfil.sexo")}</span>
+          <span className={etiquetaCampo}>{t("verPerfil.sexo")}</span>
           <select
             value={sexo}
             onChange={(e) => setSexo(e.target.value)}
@@ -494,7 +499,7 @@ export default function VerPerfilForm() {
         </label>
 
         <label className="flex flex-col gap-1">
-          <span className="font-heading text-sm">{t("verPerfil.provincia")}</span>
+          <span className={etiquetaCampo}>{t("verPerfil.provincia")}</span>
           <select
             value={provincia}
             onChange={(e) => setProvincia(e.target.value)}
@@ -510,7 +515,7 @@ export default function VerPerfilForm() {
         </label>
 
         <label className="flex flex-col gap-1">
-          <span className="font-heading text-sm">{t("verPerfil.zona")}</span>
+          <span className={etiquetaCampo}>{t("verPerfil.zona")}</span>
           <select
             value={zona}
             onChange={(e) => setZona(e.target.value)}
@@ -527,7 +532,7 @@ export default function VerPerfilForm() {
         </label>
 
         <label className="flex flex-col gap-1">
-          <span className="font-heading text-sm">{t("verPerfil.nivelDeJuego")}</span>
+          <span className={etiquetaCampo}>{t("verPerfil.nivelDeJuego")}</span>
           <select
             value={nivel}
             onChange={(e) => setNivel(e.target.value)}
@@ -543,7 +548,7 @@ export default function VerPerfilForm() {
         </label>
 
         <label className="flex flex-col gap-1">
-          <span className="font-heading text-sm">{t("verPerfil.manoHabil")}</span>
+          <span className={etiquetaCampo}>{t("verPerfil.manoHabil")}</span>
           <select
             value={manoHabil}
             onChange={(e) => setManoHabil(e.target.value)}
@@ -556,7 +561,7 @@ export default function VerPerfilForm() {
         </label>
 
         <label className="flex flex-col gap-1">
-          <span className="font-heading text-sm">{t("verPerfil.posicion")}</span>
+          <span className={etiquetaCampo}>{t("verPerfil.posicion")}</span>
           <select
             value={posicion}
             onChange={(e) => setPosicion(e.target.value)}
@@ -572,11 +577,11 @@ export default function VerPerfilForm() {
           <p className="text-red-600 text-sm">{errorGuardado}</p>
         )}
 
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-2 pt-2">
           <button
             type="submit"
             disabled={guardando || !formularioEdicionCompleto}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+            className="w-full font-titulo font-black uppercase text-[1.6rem] leading-none px-4 py-4 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
           >
             {guardando && <PelotaLoader />}
             {guardando ? t("verPerfil.guardando") : t("verPerfil.guardarCambios")}
@@ -585,7 +590,7 @@ export default function VerPerfilForm() {
             type="button"
             onClick={cancelarEdicion}
             disabled={guardando}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer disabled:opacity-60"
+            className="w-full text-sm font-semibold px-4 py-3 rounded-[6px] border border-ink/15 text-ink cursor-pointer disabled:opacity-60"
           >
             {t("verPerfil.cancelar")}
           </button>
@@ -595,25 +600,26 @@ export default function VerPerfilForm() {
   }
 
   return (
-    <div className="w-full max-w-md flex flex-col gap-4 pantalla-mosaico">
-      <div className="flex items-center justify-between col-completa">
+    <div className="w-full max-w-md flex flex-col gap-6 pantalla-mosaico text-ink">
+      <div className="flex items-center justify-between gap-3 col-completa">
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("verPerfil.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
         >
           {t("verPerfil.volver")}
         </button>
       </div>
 
-      {/* Tarjeta "hero": identidad + nivel/ranking, mismo estilo de tarjeta
-          suelta sobre el fondo que ya usa el Home (2026-09-13, a pedido del
-          usuario: "el perfil parece de otro lugar, hacelo parecido al
-          estilo del Home") -- antes todo esto vivía adentro de una sola
-          tarjeta gigante, distinto al resto de la app. */}
-      <div className={tarjeta}>
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-16 h-16 rounded-full bg-bg overflow-hidden flex items-center justify-center flex-shrink-0">
+      {/* Tarjeta "hero": identidad + nivel/ranking, mismo estilo que el Home
+          (2026-09-13, a pedido del usuario: "el perfil parece de otro lugar,
+          hacelo parecido al estilo del Home").
+          Rediseño Cartel (2026-10-01): pasa a ser la protagonista en verde
+          tablero -- nombre grande y los dos números (ranking y nivel) con
+          divisor, como el cartel del próximo partido en el Inicio. */}
+      <div className="rounded-[6px] bg-[#154139] text-[#eaf4f0] px-4 py-4 flex flex-col gap-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-16 h-16 rounded-full bg-[#0f2e29] overflow-hidden flex items-center justify-center flex-shrink-0">
             {perfil.avatar_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={perfil.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
@@ -621,21 +627,40 @@ export default function VerPerfilForm() {
               <Logo size={32} />
             )}
           </div>
-          <span className="font-heading text-xl font-semibold">{perfil.nombre}</span>
+          <span className="font-titulo font-black uppercase text-[2.2rem] leading-[0.9] min-w-0 break-words">{perfil.nombre}</span>
         </div>
 
-        {/* Nivel (como estrellas -- 1ª es la categoría más alta, así que se
-            invierte para que "más estrellas" siga significando "mejor
-            nivel") + ranking, los dos datos que más le importan a un
-            jugador. */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-bg rounded-[8px] p-3 flex flex-col gap-1">
-            <span className="text-xs text-muted uppercase tracking-wide">
-              {t("perfilJugador.nivelTemplate", { etiqueta: etiquetaNivel(perfil.nivel, t) })}
+        <div className="grid grid-cols-2 border-t border-[#eaf4f0]/15 pt-3">
+          <button
+            type="button"
+            onClick={irAEstadisticas}
+            className="flex flex-col gap-1 text-left cursor-pointer"
+          >
+            <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#8fb6ae] flex items-center gap-1.5">
+              <IconoTrofeo width={13} height={13} aria-hidden />
+              {t("perfilJugador.ranking")}
+            </span>
+            <span className="font-titulo font-black text-[2.6rem] leading-none">{perfil.puntos_ranking ?? 0}</span>
+            <span className="text-xs text-[#c4dad3]">
+              {perfil.puntos_ranking > 0 ? t("verPerfil.puntosPts", { puntos: perfil.puntos_ranking }) : t("perfilJugador.sinPartidos")}
+            </span>
+          </button>
+
+          {/* Nivel (como estrellas -- 1ª es la categoría más alta, así que se
+              invierte para que "más estrellas" siga significando "mejor
+              nivel") + ranking, los dos datos que más le importan a un
+              jugador. */}
+          <div className="flex flex-col gap-1 pl-3 border-l border-[#eaf4f0]/15 min-w-0">
+            <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#8fb6ae]">
+              {t("verPerfil.nivelDeJuego")}
+            </span>
+            <span className="font-titulo font-black text-[2.6rem] leading-none">
+              {t("directorio.opcionNivelGenerica", { n: perfil.nivel })}
             </span>
             <span
-              className="flex flex-wrap gap-0.5 text-base leading-none overflow-hidden"
+              className="flex flex-wrap gap-0.5 text-sm leading-none overflow-hidden"
               aria-label={t("verPerfil.estrellasAriaLabel", { n: 8 - perfil.nivel })}
+              title={t("perfilJugador.nivelTemplate", { etiqueta: etiquetaNivel(perfil.nivel, t) })}
             >
               {Array.from({ length: 8 - perfil.nivel }).map((_, i) => (
                 <span key={`llena-${i}`} className="estrella-llena-entra text-accent" style={{ animationDelay: `${i * 130}ms` }}>
@@ -643,21 +668,10 @@ export default function VerPerfilForm() {
                 </span>
               ))}
               {Array.from({ length: perfil.nivel - 1 }).map((_, i) => (
-                <IconoEstrella key={`vacia-${i}`} className="ico text-muted" aria-hidden />
+                <IconoEstrella key={`vacia-${i}`} className="ico text-[#8fb6ae]" aria-hidden />
               ))}
             </span>
           </div>
-          <button
-            type="button"
-            onClick={irAEstadisticas}
-            className="bg-bg rounded-[8px] p-3 flex flex-col gap-1 text-left cursor-pointer"
-          >
-            <span className="text-xs text-muted uppercase tracking-wide">{t("perfilJugador.ranking")}</span>
-            <span className="font-heading text-lg font-semibold flex items-center gap-1.5">
-              <IconoTrofeo width={16} height={16} />
-              {perfil.puntos_ranking > 0 ? t("verPerfil.puntosPts", { puntos: perfil.puntos_ranking }) : t("perfilJugador.sinPartidos")}
-            </span>
-          </button>
         </div>
       </div>
 
@@ -665,33 +679,35 @@ export default function VerPerfilForm() {
           aparece si no está instalada. */}
       <InstalarApp variante="boton" />
 
-      <div ref={estadisticasRef} className="flex flex-col gap-3">
+      <div ref={estadisticasRef} className="flex flex-col">
         {/* Tarjeta acordeón, colapsada por defecto (2026-09-13, a pedido
             del usuario, sobre un mockup con 2 alternativas -- eligió esta:
-            todo el título es tocable, como los items del menú). */}
+            todo el título es tocable, como los items del menú).
+            Rediseño Cartel (2026-10-01): el acordeón es una fila con línea
+            gruesa arriba y abajo, y el contenido va suelto, sin tarjeta. */}
         <button
           type="button"
           onClick={() => setMostrarEstadisticas((v) => !v)}
-          className={`w-full text-left flex items-center justify-between gap-2 cursor-pointer ${tarjeta}`}
+          className="w-full text-left flex items-center justify-between gap-2 cursor-pointer py-3 border-y-2 border-ink"
         >
-          <span className="font-heading font-semibold text-sm">{t("estadisticas.titulo")}</span>
+          <span className="font-titulo font-extrabold uppercase text-2xl leading-none">{t("estadisticas.titulo")}</span>
           <IconoChevron
-            width={18}
-            height={18}
+            width={20}
+            height={20}
             className={`transition-transform flex-shrink-0 ${mostrarEstadisticas ? "rotate-180" : ""}`}
           />
         </button>
 
         {mostrarEstadisticas &&
           (cargandoEstadisticas ? (
-            <div className={`${tarjeta} flex items-center gap-2 text-muted text-sm`}>
+            <div className="flex items-center gap-2 text-muted text-sm py-4 border-b border-ink/10">
               <PelotaLoader />
               {t("estadisticas.cargando")}
             </div>
           ) : !partidosStats ? (
-            <div className={`${tarjeta} text-sm text-muted`}>{t("estadisticas.sinPartidos")}</div>
+            <div className="text-sm text-muted py-4 border-b border-ink/10">{t("estadisticas.sinPartidos")}</div>
           ) : (
-            <div className={tarjeta}>
+            <div className="flex flex-col pt-4">
               {/* Resumen general, en barras de progreso (2026-09-13, a pedido
                   del usuario, sobre 3 opciones de estilo que se le
                   ofrecieron) -- todo lo parametrizable que guarda
@@ -703,23 +719,24 @@ export default function VerPerfilForm() {
               {(() => {
                 const r = calcularResumenEstadisticas(partidosStats);
                 return (
-                  <div className="flex flex-col gap-3">
-                    <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="flex flex-col gap-4">
+                    {/* Rediseño Cartel: números grandes con divisores. */}
+                    <div className="grid grid-cols-3">
                       <div className="flex flex-col">
-                        <span className="font-heading text-lg font-semibold">{r.partidos}</span>
-                        <span className="text-xs text-muted">{t("estadisticas.partidosConDatos")}</span>
+                        <span className="font-titulo font-black text-[2.2rem] leading-none">{r.partidos}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{t("estadisticas.partidosConDatos")}</span>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="font-heading text-lg font-semibold">{r.duracionPromedioMin} min</span>
-                        <span className="text-xs text-muted">{t("estadisticas.duracionPromedio")}</span>
+                      <div className="flex flex-col pl-3 border-l border-ink/15">
+                        <span className="font-titulo font-black text-[2.2rem] leading-none">{r.duracionPromedioMin} min</span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{t("estadisticas.duracionPromedio")}</span>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="font-heading text-lg font-semibold">{r.rachaMaxima}</span>
-                        <span className="text-xs text-muted">{t("estadisticas.rachaMaxima")}</span>
+                      <div className="flex flex-col pl-3 border-l border-ink/15">
+                        <span className="font-titulo font-black text-[2.2rem] leading-none">{r.rachaMaxima}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{t("estadisticas.rachaMaxima")}</span>
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-2 pt-1">
+                    <div className="flex flex-col gap-2 pt-3 border-t border-ink/10">
                       <BarraEstadistica
                         etiqueta={t("estadisticas.partidosGanadosPct")}
                         valor={r.partidosGanados}
@@ -788,34 +805,34 @@ export default function VerPerfilForm() {
               <button
                 type="button"
                 onClick={() => setMostrarPartidosStats((v) => !v)}
-                className="font-heading font-semibold text-sm text-accent-2-ink underline cursor-pointer self-start mt-3"
+                className="text-sm font-semibold text-accent-2-ink underline cursor-pointer self-start mt-4"
               >
                 {mostrarPartidosStats ? t("estadisticas.verMenosPartidos") : t("estadisticas.verMasPartidos")}
               </button>
 
               {mostrarPartidosStats && (
-                <div className="flex flex-col mt-2 -mx-4 border-t border-bg">
+                <div className="flex flex-col mt-2 border-t border-ink/10">
                   {partidosStats.map((p, i) => (
                     <button
                       key={p.id}
                       type="button"
                       onClick={() => router.push(`/partido/${p.id}/estadisticas`)}
-                      className="lista-item-entra w-full text-left flex items-center justify-between gap-2 cursor-pointer px-4 py-3 border-b border-bg"
+                      className="lista-item-entra w-full text-left flex items-center justify-between gap-2 cursor-pointer py-3 border-b border-ink/10"
                       style={{ animationDelay: `${i * 35}ms` }}
                     >
                       <span className="flex flex-col">
-                        <span className="text-sm font-heading font-semibold">
+                        <span className="text-sm font-semibold">
                           {new Date(p.fechaHora).toLocaleDateString(INTL_LOCALE[locale] ?? "es-AR")} · {p.cancha}
                         </span>
                         {p.puntosRankingGanados !== null && (
-                          <span className="text-xs font-heading font-semibold text-[#16a34a]">
+                          <span className="text-xs font-semibold text-[#16a34a]">
                             +{p.puntosRankingGanados} pts de ranking
                           </span>
                         )}
                       </span>
                       <span className="flex items-center gap-2 flex-shrink-0">
                         <span
-                          className={`text-xs font-bold px-2 py-0.5 rounded-[6px] ${ p.gane ? "bg-[#22c55e]/20 text-[#16a34a]" : "bg-[#ef4444]/20 text-[#dc2626]" }`}
+                          className={`text-xs font-bold uppercase tracking-[0.06em] px-2 py-0.5 rounded-[6px] ${ p.gane ? "bg-[#22c55e]/20 text-[#16a34a]" : "bg-[#ef4444]/20 text-[#dc2626]" }`}
                         >
                           {p.gane ? t("home.ganaste") : t("home.perdiste")}
                         </span>
@@ -829,9 +846,11 @@ export default function VerPerfilForm() {
           ))}
       </div>
 
-      <div className="flex flex-col gap-3">
+      {/* Rediseño Cartel (2026-10-01): los datos son filas etiqueta/valor
+          con línea fina, en vez de mini-tarjetas en grilla. */}
+      <div className="flex flex-col">
         <Subtitulo>{t("verPerfil.datos")}</Subtitulo>
-        <div className={`${tarjeta} grid grid-cols-2 gap-2`}>
+        <div className="flex flex-col border-t-2 border-ink">
           <Campo icono={<IconoTelefono width={14} height={14} />} etiqueta={t("verPerfil.telefono")} valor={perfil.telefono} />
           <Campo icono={<IconoPersona width={14} height={14} />} etiqueta={t("verPerfil.sexo")} valor={perfil.sexo === "masculino" ? t("directorio.masculino") : perfil.sexo === "femenino" ? t("directorio.femenino") : perfil.sexo} />
           <Campo icono={<IconoMapa width={14} height={14} />} etiqueta={t("verPerfil.provincia")} valor={etiquetaDe(PROVINCIAS, perfil.provincia)} />
@@ -844,19 +863,19 @@ export default function VerPerfilForm() {
       {/* El perfil es solo identidad -- el resto de los accesos vive en el
           Home (US-5.3, "/"), para no acumular botones acá (queja real del
           usuario: "el perfil ya tiene muchos botones"). */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col">
         <Subtitulo>{t("verPerfil.privacidad")}</Subtitulo>
-        <div className={`${tarjeta} flex flex-col gap-3`}>
-          <div className="flex items-center justify-between gap-2">
-            <span className="font-heading font-semibold text-sm flex items-center gap-2">
+        <div className="flex flex-col border-t-2 border-ink">
+          <div className="flex items-center justify-between gap-2 py-3 border-b border-ink/10">
+            <span className="font-semibold text-sm flex items-center gap-2">
               <IconoCampana width={16} height={16} />
               {perfil.notificaciones_activas ? t("verPerfil.notifActivadas") : t("verPerfil.notifDesactivadas")}
             </span>
             <Toggle checked={perfil.notificaciones_activas} onChange={handleToggleNotificaciones} />
           </div>
 
-          <div className="flex items-center justify-between gap-2">
-            <span className="font-heading font-semibold text-sm flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2 py-3 border-b border-ink/10">
+            <span className="font-semibold text-sm flex items-center gap-2">
               {perfil.mostrar_telefono ? <IconoOjo width={16} height={16} /> : <IconoOjoTachado width={16} height={16} />}
               {perfil.mostrar_telefono ? t("verPerfil.telVisible") : t("verPerfil.telOculto")}
             </span>
@@ -864,8 +883,8 @@ export default function VerPerfilForm() {
           </div>
 
           {perfil.mostrar_telefono && (
-            <div className="flex items-center justify-between gap-2">
-              <span className="font-heading font-semibold text-sm flex items-center gap-2">
+            <div className="flex items-center justify-between gap-2 py-3 border-b border-ink/10">
+              <span className="font-semibold text-sm flex items-center gap-2">
                 {perfil.mostrar_whatsapp ? <IconoMensaje width={16} height={16} /> : <IconoOjoTachado width={16} height={16} />}
                 {perfil.mostrar_whatsapp ? t("verPerfil.wspVisible") : t("verPerfil.wspOculto")}
               </span>
@@ -875,18 +894,22 @@ export default function VerPerfilForm() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3">
+      {/* Rediseño Cartel (2026-10-01): las acciones de la cuenta son
+          livianas -- Editar y Cerrar sesión en una fila con líneas y
+          divisor (como "Crear / Abiertos" del Inicio), y Dar de baja como
+          botón de texto en rojo. Ninguna compite como botón principal. */}
+      <div className="flex flex-col">
         <Subtitulo>{t("home.cuenta")}</Subtitulo>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 border-y-2 border-ink">
           <button
             onClick={comenzarEdicion}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer"
+            className="flex items-center justify-center gap-2 py-3 font-semibold text-sm cursor-pointer"
           >
             {t("verPerfil.editar")}
           </button>
           <button
             onClick={handleCerrarSesion}
-            className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+            className="flex items-center justify-center gap-2 py-3 font-semibold text-sm cursor-pointer border-l-2 border-ink"
           >
             {t("verPerfil.cerrarSesion")}
           </button>
@@ -894,7 +917,7 @@ export default function VerPerfilForm() {
 
         <button
           onClick={() => setMostrarConfirmacionBaja(true)}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-red-600 border border-ink/10 cursor-pointer self-start"
+          className="text-sm font-semibold text-red-600 underline cursor-pointer self-start mt-4"
         >
           {t("verPerfil.darDeBajaCuenta")}
         </button>
@@ -914,7 +937,7 @@ export default function VerPerfilForm() {
           <button
             onClick={handleDarBaja}
             disabled={dandoBaja}
-            className="rounded-full font-heading font-bold text-sm py-3 bg-red-600 text-white cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+            className="rounded-[6px] font-titulo font-black uppercase text-xl leading-none py-3.5 bg-red-600 text-white cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
           >
             {dandoBaja && <PelotaLoader />}
             {dandoBaja ? t("verPerfil.dandoDeBaja") : t("verPerfil.siDarDeBaja")}
@@ -923,7 +946,7 @@ export default function VerPerfilForm() {
             type="button"
             onClick={() => setMostrarConfirmacionBaja(false)}
             disabled={dandoBaja}
-            className="rounded-full font-heading font-semibold text-sm py-2.5 bg-bg text-ink cursor-pointer disabled:opacity-60"
+            className="rounded-[6px] font-semibold text-sm py-3 border border-ink/15 text-ink cursor-pointer disabled:opacity-60"
           >
             {t("verPerfil.cancelar")}
           </button>
@@ -933,19 +956,19 @@ export default function VerPerfilForm() {
   );
 }
 
-const tarjeta = "bg-surface text-ink rounded-[8px] p-4 border border-ink/10";
-
+// Rediseño Cartel (2026-10-01): etiqueta de sección chica y fila
+// etiqueta/valor con línea fina (antes eran mini-tarjetas).
 function Subtitulo({ children }) {
-  return <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted pl-1">{children}</span>;
+  return <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted pb-2">{children}</span>;
 }
 
 function Campo({ icono, etiqueta, valor }) {
   return (
-    <div className="bg-bg border border-ink/10 rounded-[6px] p-2.5 flex flex-col gap-0.5">
-      <span className="font-heading text-xs text-muted flex items-center gap-1">
+    <div className="flex items-center justify-between gap-3 py-2.5 border-b border-ink/10">
+      <span className="text-sm text-muted flex items-center gap-1.5 flex-shrink-0">
         {icono && <span aria-hidden="true" className="flex items-center">{icono}</span>} {etiqueta}
       </span>
-      <span className="text-sm font-heading font-semibold">{valor}</span>
+      <span className="text-sm font-semibold text-right min-w-0 break-words">{valor}</span>
     </div>
   );
 }

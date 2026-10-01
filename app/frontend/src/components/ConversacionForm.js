@@ -139,19 +139,21 @@ export default function ConversacionForm({ otroId }) {
 
   return (
     <div className="w-full max-w-md flex flex-col gap-3 h-[85vh]">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      {/* Rediseño Cartel (2026-10-01): encabezado limpio con línea abajo;
+          "Reportar" pasa a ser un botón de texto liviano. */}
+      <div className="flex items-center justify-between gap-2 pb-3 border-b border-ink/10">
+        <div className="flex items-center gap-2 min-w-0">
           <button
             onClick={() => router.push("/mensajes")}
-            className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+            className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer flex-shrink-0"
           >
             ←
           </button>
-          <h1 className="font-titulo text-3xl font-black uppercase leading-[0.95]">{otroNombre}</h1>
+          <h1 className="font-titulo text-3xl font-black uppercase leading-[0.95] truncate">{otroNombre}</h1>
         </div>
         <button
           onClick={() => setMostrarReporte(true)}
-          className="font-heading font-semibold text-xs px-3 py-1.5 rounded-[6px] bg-surface text-red-600 border-2 border-outline cursor-pointer"
+          className="text-xs font-semibold px-2 py-1.5 text-red-600 underline underline-offset-2 cursor-pointer flex-shrink-0"
         >
           {t("conversacion.reportar")}
         </button>
@@ -170,18 +172,18 @@ export default function ConversacionForm({ otroId }) {
             onChange={(e) => setMotivoReporte(e.target.value)}
             placeholder={t("conversacion.motivoPlaceholder")}
             rows={3}
-            className="rounded-xl border-2 border-outline bg-bg px-3 py-2 text-ink text-sm resize-y"
+            className="rounded-[6px] border border-ink/15 bg-bg px-3 py-2 text-ink text-sm resize-y"
           />
           <button
             onClick={handleReportar}
             disabled={motivoReporte.trim() === ""}
-            className="rounded-full font-heading font-bold text-sm py-3 bg-red-600 text-white cursor-pointer disabled:opacity-50"
+            className="rounded-[6px] font-titulo font-black uppercase text-lg py-3 bg-red-600 text-white cursor-pointer disabled:opacity-50"
           >
             {t("conversacion.enviarReporte")}
           </button>
           <button
             onClick={() => setMostrarReporte(false)}
-            className="rounded-full font-heading font-semibold text-sm py-2.5 bg-bg text-ink cursor-pointer"
+            className="rounded-[6px] font-semibold text-sm py-2.5 border border-ink/15 text-ink cursor-pointer"
           >
             {t("conversacion.cancelar")}
           </button>
@@ -191,7 +193,9 @@ export default function ConversacionForm({ otroId }) {
 
       {error && <p className="text-red-600 text-sm">{error}</p>}
 
-      <div className="flex-1 overflow-y-auto flex flex-col gap-2 bg-bg rounded-[8px] p-3">
+      {/* Rediseño Cartel (2026-10-01): burbujas con esquinas de 8px; las mías
+          en amarillo sin contorno, las del otro con línea fina. */}
+      <div className="flex-1 overflow-y-auto flex flex-col gap-2 py-1">
         {mensajes.length === 0 && (
           <span className="text-sm text-muted text-center m-auto">{t("conversacion.sinMensajes")}</span>
         )}
@@ -200,7 +204,7 @@ export default function ConversacionForm({ otroId }) {
           return (
             <div
               key={m.id}
-              className={`max-w-[80%] rounded-[6px] px-3 py-2 text-sm flex flex-col gap-0.5 ${ esMio ? "self-end bg-accent text-accent-ink" : "self-start bg-surface text-ink" }`}
+              className={`max-w-[80%] rounded-[8px] px-3 py-2 text-sm flex flex-col gap-0.5 ${ esMio ? "self-end bg-accent text-accent-ink" : "self-start bg-surface text-ink border border-ink/10" }`}
             >
               <span>{m.contenido}</span>
               <span className={`text-[10px] self-end ${esMio ? "text-accent-ink/70" : "text-muted"}`}>
@@ -212,19 +216,19 @@ export default function ConversacionForm({ otroId }) {
         <div ref={finRef} />
       </div>
 
-      <form onSubmit={handleEnviar} className="flex gap-2">
+      <form onSubmit={handleEnviar} className="flex gap-2 pt-3 border-t border-ink/10">
         <input
           type="text"
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           maxLength={1000}
           placeholder={t("conversacion.mensajePlaceholder")}
-          className="flex-1 rounded-xl bg-bg px-3 py-2 text-ink text-sm"
+          className="flex-1 min-w-0 rounded-[6px] bg-surface border border-ink/15 px-3 py-2 text-ink text-sm"
         />
         <button
           type="submit"
           disabled={enviando || texto.trim() === ""}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60"
+          className="font-titulo font-black uppercase text-base px-4 py-2 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60"
         >
           {enviando ? <PelotaLoader /> : t("conversacion.enviar")}
         </button>

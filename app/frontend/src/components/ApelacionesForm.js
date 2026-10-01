@@ -111,7 +111,7 @@ export default function ApelacionesForm() {
         </h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
         >
           {t("apelaciones.volver")}
         </button>
@@ -120,25 +120,33 @@ export default function ApelacionesForm() {
       {error && <p className="text-red-600 text-sm">{error}</p>}
 
       {apelaciones.length === 0 && (
-        <div className="bg-surface text-muted border border-ink/10 rounded-[8px] p-6 text-sm">
+        <p className="text-sm text-muted border-y border-ink/10 py-4">
           {esSuperusuario ? t("apelaciones.sinApelacionesPendientes") : t("apelaciones.sinApelacionesTuyas")}
-        </div>
+        </p>
       )}
 
+      {/* Rediseño Cartel (2026-10-01): cada apelación es una fila con línea
+          abajo (sin tarjeta); fecha y cancha como etiqueta, el partido en
+          letra de cartel y el estado como etiqueta a la derecha. */}
+      <div className="flex flex-col border-t border-ink/10 -mt-1">
       {apelaciones.map((ap) => (
         <div
           key={ap.id}
-          className="bg-surface text-ink border border-ink/10 rounded-[8px] p-3 flex flex-col gap-2"
+          className="text-ink border-b border-ink/10 py-3 flex flex-col gap-1.5"
         >
-          <div className="flex items-center justify-between">
-            <span className="font-heading font-semibold text-sm">
-              {ap.pareja_a} vs. {ap.pareja_b}
-            </span>
-            <span className="text-xs text-muted uppercase">{ap.estado}</span>
-          </div>
-          <span className="text-xs text-muted">
+          <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">
             {new Date(ap.fecha_hora).toLocaleString(INTL_LOCALE[locale] ?? "es-AR")} · {ap.cancha}
           </span>
+          <div className="flex items-start justify-between gap-3">
+            <span className="font-titulo font-extrabold uppercase text-xl leading-none">
+              {ap.pareja_a} vs. {ap.pareja_b}
+            </span>
+            <span
+              className={`text-[10px] font-bold uppercase tracking-[0.1em] px-2 py-0.5 rounded-[6px] flex-shrink-0 ${ ap.estado === "pendiente" ? "bg-accent text-accent-ink" : "border border-ink/15 text-muted" }`}
+            >
+              {ap.estado}
+            </span>
+          </div>
           <span className="text-sm">
             {t("apelaciones.resultadoActual", {
               sets: formatearSets(ap.sets_a, ap.sets_b),
@@ -154,36 +162,36 @@ export default function ApelacionesForm() {
               {corrigiendoId !== ap.id ? (
                 <button
                   onClick={() => comenzarCorreccion(ap)}
-                  className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer self-start"
+                  className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer self-start mt-1"
                 >
                   {t("apelaciones.corregirResultado")}
                 </button>
               ) : (
-                <div className="bg-bg border-2 border-outline rounded-[6px] p-3 flex flex-col gap-2">
+                <div className="bg-surface border border-ink/10 rounded-[8px] p-3 flex flex-col gap-2 mt-1">
                   <label className="flex flex-col gap-1">
-                    <span className="text-xs">{t("apelaciones.gamesPorSetA", { pareja: ap.pareja_a })}</span>
+                    <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{t("apelaciones.gamesPorSetA", { pareja: ap.pareja_a })}</span>
                     <input
                       type="text"
                       value={setsATexto}
                       onChange={(e) => setSetsATexto(e.target.value)}
-                      className="rounded-xl bg-surface px-2 py-1 text-sm"
+                      className="rounded-[6px] bg-bg border border-ink/15 px-2 py-1.5 text-sm text-ink"
                     />
                   </label>
                   <label className="flex flex-col gap-1">
-                    <span className="text-xs">{t("apelaciones.gamesPorSetB", { pareja: ap.pareja_b })}</span>
+                    <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{t("apelaciones.gamesPorSetB", { pareja: ap.pareja_b })}</span>
                     <input
                       type="text"
                       value={setsBTexto}
                       onChange={(e) => setSetsBTexto(e.target.value)}
-                      className="rounded-xl bg-surface px-2 py-1 text-sm"
+                      className="rounded-[6px] bg-bg border border-ink/15 px-2 py-1.5 text-sm text-ink"
                     />
                   </label>
                   <label className="flex flex-col gap-1">
-                    <span className="text-xs">{t("apelaciones.ganador")}</span>
+                    <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{t("apelaciones.ganador")}</span>
                     <select
                       value={ganador}
                       onChange={(e) => setGanador(e.target.value)}
-                      className="rounded-xl bg-surface px-2 py-1 text-sm"
+                      className="rounded-[6px] bg-bg border border-ink/15 px-2 py-1.5 text-sm text-ink"
                     >
                       <option value="A">{ap.pareja_a}</option>
                       <option value="B">{ap.pareja_b}</option>
@@ -193,14 +201,14 @@ export default function ApelacionesForm() {
                     <button
                       onClick={() => handleResolver(ap.id)}
                       disabled={resolviendo}
-                      className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
+                      className="font-titulo font-black uppercase text-base px-4 py-2 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
                     >
                       {resolviendo && <PelotaLoader />}
                       {t("apelaciones.confirmarCorreccion")}
                     </button>
                     <button
                       onClick={() => setCorrigiendoId(null)}
-                      className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink border-2 border-outline cursor-pointer"
+                      className="text-sm font-semibold px-4 py-2 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
                     >
                       {t("apelaciones.cancelar")}
                     </button>
@@ -211,6 +219,7 @@ export default function ApelacionesForm() {
           )}
         </div>
       ))}
+      </div>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import Logo from "@/components/Logo";
-import { IconoMensaje, IconoTrofeo, IconoPersona, IconoMano, IconoPelota, IconoGrafico, IconoBandera, IconoDuo, IconoChevron, IconoPulgar, IconoEstrella } from "@/components/Icons";
+import { IconoMensaje, IconoTrofeo, IconoPersona, IconoMano, IconoPelota, IconoBandera, IconoDuo, IconoChevron, IconoPulgar, IconoEstrella } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
 
@@ -159,13 +159,16 @@ export default function PerfilJugadorForm({ jugadorId }) {
     );
   }
 
+  // Rediseño Cartel (2026-10-01): sin tarjeta de fondo. Nombre grande,
+  // números grandes con divisores, el "con / contra / compatibilidad" como
+  // protagonista en verde tablero y el botón de invitar como único amarillo.
   return (
-    <div className="w-full max-w-md bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-4">
+    <div className="w-full max-w-md flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("perfilJugador.titulo")}</h1>
         <button
           onClick={() => router.push("/jugadores")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
         >
           {t("perfilJugador.volver")}
         </button>
@@ -176,37 +179,54 @@ export default function PerfilJugadorForm({ jugadorId }) {
       {jugador && (
         <>
           <div className="flex items-center gap-3">
-            <div className="w-20 h-20 rounded-full border border-ink/10 bg-bg overflow-hidden flex items-center justify-center flex-shrink-0">
+            <div className="w-16 h-16 rounded-full border border-ink/10 bg-bg overflow-hidden flex items-center justify-center flex-shrink-0">
               {jugador.avatar_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={jugador.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <Logo size={40} />
+                <Logo size={32} />
               )}
             </div>
-            <span className="font-heading text-xl font-semibold flex-1">{jugador.nombre}</span>
-            <button
-              onClick={handleToggleFrecuente}
-              title={jugador.es_frecuente ? t("perfilJugador.desmarcarFrecuente") : t("perfilJugador.marcarFrecuente")}
-              className="text-2xl cursor-pointer"
-            >
-              <IconoEstrella llena={jugador.es_frecuente} className="ico text-accent" aria-hidden />
-            </button>
-            <button
-              onClick={() => router.push(`/mensajes/${jugadorId}`)}
-              title={t("perfilJugador.enviarMensaje")}
-              className="font-heading font-semibold text-xs px-3 py-1.5 rounded-[6px] bg-bg text-ink border border-ink/10 cursor-pointer"
-            >
-              <IconoMensaje width={16} height={16} />
-            </button>
+            <span className="font-titulo font-black uppercase text-[2.6rem] leading-[0.9] flex-1 min-w-0 break-words">
+              {jugador.nombre}
+            </span>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <button
+                onClick={handleToggleFrecuente}
+                title={jugador.es_frecuente ? t("perfilJugador.desmarcarFrecuente") : t("perfilJugador.marcarFrecuente")}
+                className="w-9 h-9 flex items-center justify-center text-xl cursor-pointer"
+              >
+                <IconoEstrella llena={jugador.es_frecuente} className="ico text-accent" aria-hidden />
+              </button>
+              <button
+                onClick={() => router.push(`/mensajes/${jugadorId}`)}
+                title={t("perfilJugador.enviarMensaje")}
+                className="w-9 h-9 flex items-center justify-center rounded-[6px] border border-ink/15 text-ink cursor-pointer"
+              >
+                <IconoMensaje width={16} height={16} />
+              </button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-bg border border-ink/10 rounded-[8px] p-3 flex flex-col gap-1">
-              <span className="text-xs text-muted uppercase tracking-wide">
+          {/* Números grandes con divisores, como en el Inicio. */}
+          <div className="grid grid-cols-3">
+            <div className="flex flex-col py-1 min-w-0">
+              <span className="font-titulo font-black text-[2.4rem] leading-none flex items-center gap-1">
+                <IconoTrofeo width={18} height={18} aria-hidden />
+                {jugador.puntos_ranking}
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
+                {t("perfilJugador.ranking")} · {t("directorio.pts")}
+              </span>
+            </div>
+            <div className="flex flex-col py-1 pl-3 border-l border-ink/15 min-w-0">
+              <span className="font-titulo font-black text-[2.4rem] leading-none">
+                {t("directorio.opcionNivelGenerica", { n: jugador.nivel })}
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
                 {t("perfilJugador.nivelTemplate", { etiqueta: etiquetaNivel(jugador.nivel, t) })}
               </span>
-              <span className="flex flex-wrap gap-0.5 text-base leading-none overflow-hidden">
+              <span className="flex flex-wrap gap-0.5 text-[11px] leading-none overflow-hidden mt-1">
                 {Array.from({ length: 8 - jugador.nivel }).map((_, i) => (
                   <IconoEstrella key={`llena-${i}`} llena className="ico text-accent" aria-hidden />
                 ))}
@@ -215,74 +235,67 @@ export default function PerfilJugadorForm({ jugadorId }) {
                 ))}
               </span>
             </div>
-            <div className="bg-bg border border-ink/10 rounded-[8px] p-3 flex flex-col gap-1">
-              <span className="text-xs text-muted uppercase tracking-wide">{t("perfilJugador.ranking")}</span>
-              <span className="font-heading text-lg font-semibold flex items-center gap-1.5">
-                <IconoTrofeo width={16} height={16} />
-                {jugador.puntos_ranking} {t("directorio.pts")}
-              </span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <div className="bg-bg border border-ink/10 rounded-[6px] p-2.5 flex flex-col gap-0.5">
-              <span className="font-heading text-xs text-muted flex items-center gap-1">
-                <IconoPersona width={13} height={13} /> {t("perfilJugador.sexo")}
-              </span>
-              <span className="text-sm font-heading font-semibold">{sexoLabel(jugador.sexo, t)}</span>
-            </div>
-            <div className="bg-bg border border-ink/10 rounded-[6px] p-2.5 flex flex-col gap-0.5">
-              <span className="font-heading text-xs text-muted flex items-center gap-1">
-                <IconoMano width={13} height={13} /> {t("perfilJugador.manoHabil")}
-              </span>
-              <span className="text-sm font-heading font-semibold">{manoHabilLabel(jugador.mano_habil, t)}</span>
-            </div>
-            <div className="bg-bg border border-ink/10 rounded-[6px] p-2.5 flex flex-col gap-0.5">
-              <span className="font-heading text-xs text-muted flex items-center gap-1">
-                <IconoPelota width={13} height={13} /> {t("perfilJugador.posicion")}
-              </span>
-              <span className="text-sm font-heading font-semibold">{jugador.posicion === "reves" ? t("companero.reves") : t("companero.drive")}</span>
-            </div>
-            <div className="bg-bg border border-ink/10 rounded-[6px] p-2.5 flex flex-col gap-0.5">
-              <span className="font-heading text-xs text-muted flex items-center gap-1">
-                <IconoGrafico width={13} height={13} /> {t("perfilJugador.partidos")}
-              </span>
-              <span className="text-sm font-heading font-semibold">
+            <div className="flex flex-col py-1 pl-3 border-l border-ink/15 min-w-0">
+              <span className="font-titulo font-black text-[2.4rem] leading-none">{jugador.partidos_jugados}</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
                 {jugador.partidos_jugados > 0
                   ? t("perfilJugador.partidosVictorias", { jugados: jugador.partidos_jugados, porcentaje: jugador.porcentaje_victorias })
                   : t("perfilJugador.sinPartidos")}
               </span>
             </div>
-            {jugador.no_shows > 0 && (
-              <div className="bg-bg border border-ink/10 rounded-[6px] p-2.5 flex flex-col gap-0.5">
-                <span className="font-heading text-xs text-muted flex items-center gap-1">
-                  <IconoBandera width={13} height={13} /> {t("perfilJugador.noShows")}
+          </div>
+
+          {/* La protagonista: cuánto jugaste con/contra esta persona. */}
+          {(jugador.veces_con > 0 || jugador.veces_contra > 0) && (
+            <div className="rounded-[6px] bg-[#154139] text-[#eaf4f0] px-4 py-4 flex flex-col gap-2">
+              {jugador.compatibilidad_pct != null && (
+                <span className="font-titulo font-extrabold uppercase text-[1.7rem] leading-none flex items-center gap-2">
+                  <IconoDuo width={22} height={22} aria-hidden /> {t("perfilJugador.compatibilidad", { pct: jugador.compatibilidad_pct })}
                 </span>
-                <span className="text-sm font-heading font-semibold">{jugador.no_shows}</span>
+              )}
+              {jugador.veces_con > 0 && <span className="text-sm text-[#c4dad3]">{t("perfilJugador.vecesCon", { n: jugador.veces_con })}</span>}
+              {jugador.veces_contra > 0 && <span className="text-sm text-[#c4dad3]">{t("perfilJugador.vecesContra", { n: jugador.veces_contra })}</span>}
+            </div>
+          )}
+
+          {/* Datos secundarios como filas con línea, no cajitas. */}
+          <div className="flex flex-col">
+            <div className="flex items-center justify-between gap-2 py-2 border-b border-ink/10 text-sm">
+              <span className="text-muted flex items-center gap-1.5">
+                <IconoPersona width={14} height={14} /> {t("perfilJugador.sexo")}
+              </span>
+              <span className="font-semibold">{sexoLabel(jugador.sexo, t)}</span>
+            </div>
+            <div className="flex items-center justify-between gap-2 py-2 border-b border-ink/10 text-sm">
+              <span className="text-muted flex items-center gap-1.5">
+                <IconoMano width={14} height={14} /> {t("perfilJugador.manoHabil")}
+              </span>
+              <span className="font-semibold">{manoHabilLabel(jugador.mano_habil, t)}</span>
+            </div>
+            <div className="flex items-center justify-between gap-2 py-2 border-b border-ink/10 text-sm">
+              <span className="text-muted flex items-center gap-1.5">
+                <IconoPelota width={14} height={14} /> {t("perfilJugador.posicion")}
+              </span>
+              <span className="font-semibold">{jugador.posicion === "reves" ? t("companero.reves") : t("companero.drive")}</span>
+            </div>
+            {jugador.no_shows > 0 && (
+              <div className="flex items-center justify-between gap-2 py-2 border-b border-ink/10 text-sm">
+                <span className="text-muted flex items-center gap-1.5">
+                  <IconoBandera width={14} height={14} /> {t("perfilJugador.noShows")}
+                </span>
+                <span className="font-semibold">{jugador.no_shows}</span>
               </div>
             )}
           </div>
 
-          {(jugador.veces_con > 0 || jugador.veces_contra > 0) && (
-            <div className="bg-bg border-2 border-outline rounded-[6px] p-3 flex flex-col gap-1 text-sm">
-              {jugador.veces_con > 0 && <span>{t("perfilJugador.vecesCon", { n: jugador.veces_con })}</span>}
-              {jugador.veces_contra > 0 && <span>{t("perfilJugador.vecesContra", { n: jugador.veces_contra })}</span>}
-              {jugador.compatibilidad_pct != null && (
-                <span className="font-heading font-semibold flex items-center gap-1.5">
-                  <IconoDuo width={14} height={14} /> {t("perfilJugador.compatibilidad", { pct: jugador.compatibilidad_pct })}
-                </span>
-              )}
-            </div>
-          )}
-
           {partidosRanking.length > 0 && (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col">
               <button
                 type="button"
                 onClick={() => setMostrarPartidosRanking((v) => !v)}
-                className="w-full text-left flex items-center justify-between gap-2 cursor-pointer bg-bg rounded-[6px] p-3"
+                className="w-full text-left flex items-center justify-between gap-2 cursor-pointer py-2 border-b border-ink/10"
               >
-                <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted">
+                <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">
                   Partidos y puntos de ranking
                 </span>
                 <IconoChevron
@@ -293,23 +306,23 @@ export default function PerfilJugadorForm({ jugadorId }) {
               </button>
 
               {mostrarPartidosRanking && (
-                <div className="bg-bg rounded-[6px] p-3 flex flex-col gap-2">
+                <div className="flex flex-col">
                   {partidosRanking.map((p, i) => (
                     <div
                       key={p.partido_id}
-                      className="lista-item-entra flex items-center justify-between gap-2 text-sm"
+                      className="lista-item-entra flex items-center justify-between gap-2 text-sm py-2 border-b border-ink/10"
                       style={{ animationDelay: `${i * 35}ms` }}
                     >
                       <span className="text-muted">
                         {new Date(p.fecha_hora).toLocaleDateString(INTL_LOCALE[locale] ?? "es-AR")} · {p.cancha}
                       </span>
                       <span className="flex items-center gap-2 flex-shrink-0">
-                        <span className="font-heading font-semibold text-[#16a34a]">+{p.puntos_ranking} pts</span>
+                        <span className="font-titulo font-black text-xl leading-none">+{p.puntos_ranking} pts</span>
                         <button
                           type="button"
                           onClick={() => handleToggleKudos(p.partido_id)}
                           title="Felicitar este partido"
-                          className={`flex items-center gap-1 text-xs font-heading font-semibold px-2 py-1 rounded-[6px] cursor-pointer ${ p.ya_di_kudos ? "bg-accent-2 text-accent-2-ink" : "bg-surface text-muted" }`}
+                          className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-[6px] cursor-pointer ${ p.ya_di_kudos ? "bg-accent-2 text-accent-2-ink" : "border border-ink/15 text-muted" }`}
                         >
                           <IconoPulgar width={13} height={13} />
                           {p.kudos_count > 0 ? p.kudos_count : ""}
@@ -322,15 +335,16 @@ export default function PerfilJugadorForm({ jugadorId }) {
             </div>
           )}
 
-          <p className="text-xs text-muted text-center">{t("perfilJugador.telefonoAviso")}</p>
+          <p className="text-xs text-muted">{t("perfilJugador.telefonoAviso")}</p>
 
+          {/* Invitar: el único botón amarillo de la pantalla. */}
           {misPartidosAbiertos.length > 0 && (
-            <div className="bg-bg border-2 border-outline rounded-[6px] p-3 flex flex-col gap-2">
-              <span className="font-heading text-sm font-semibold">{t("perfilJugador.invitarAUno")}</span>
+            <div className="flex flex-col gap-2 pt-3 border-t border-ink/10">
+              <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{t("perfilJugador.invitarAUno")}</span>
               <select
                 value={partidoElegido}
                 onChange={(e) => setPartidoElegido(e.target.value)}
-                className="rounded-xl bg-surface px-2 py-1 text-sm"
+                className="rounded-[6px] bg-bg border border-ink/15 px-3 py-2 text-sm text-ink"
               >
                 {misPartidosAbiertos.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -341,7 +355,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
               <button
                 onClick={handleInvitar}
                 disabled={invitando}
-                className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+                className="font-titulo font-black uppercase text-[1.4rem] leading-none px-4 py-4 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
               >
                 {invitando && <PelotaLoader />}
                 {t("perfilJugador.invitar")}

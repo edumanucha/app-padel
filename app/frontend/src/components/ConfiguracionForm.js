@@ -6,6 +6,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import InstalarApp from "@/components/InstalarApp";
 import { useLocale } from "@/i18n/LocaleContext";
 import { LOCALES } from "@/i18n/translations";
+import { IconoChevron } from "@/components/Icons";
 
 // Opciones de color de los botones "de acción" grandes (Marcadorcito,
 // Crear partido, Abiertos) -- ver --accent-cta en globals.css. Guardado en
@@ -18,7 +19,9 @@ const COLORES = [
   { valor: "turquesa", clave: "colorTurquesa", muestra: "#2fb5ad" },
 ];
 
-const tarjeta = "bg-surface text-ink rounded-[8px] p-4 border border-ink/10";
+// Rediseño Cartel (2026-10-01): etiqueta de sección + filas con línea.
+const etiqueta = "text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted pb-2";
+const fila = "flex items-center justify-between gap-3 py-3 border-b border-ink/10";
 
 export default function ConfiguracionForm() {
   const router = useRouter();
@@ -41,29 +44,31 @@ export default function ConfiguracionForm() {
     }
   }
 
+  // Rediseño Cartel (2026-10-01): sin tarjetas -- cada sección es una
+  // etiqueta chica y filas separadas por líneas finas, como el Inicio.
   return (
-    <div className="w-full max-w-md flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+    <div className="w-full max-w-md flex flex-col gap-6 text-ink">
+      <div className="flex items-center justify-between gap-3">
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("config.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
         >
           {t("config.volver")}
         </button>
       </div>
 
-      <div className={`${tarjeta} flex flex-col gap-3`}>
-        <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted">{t("config.apariencia")}</span>
+      <section className="flex flex-col">
+        <span className={etiqueta}>{t("config.apariencia")}</span>
 
-        <div className="flex items-center justify-between">
-          <span className="text-sm">{t("config.tema")}</span>
+        <div className={`${fila} border-t-2 border-t-ink`}>
+          <span className="text-sm font-semibold">{t("config.tema")}</span>
           <ThemeToggle />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <span className="text-sm">{t("config.colorBotones")}</span>
-          <div className="flex gap-3">
+        <div className="flex flex-col gap-3 py-3 border-b border-ink/10">
+          <span className="text-sm font-semibold">{t("config.colorBotones")}</span>
+          <div className="flex gap-4">
             {COLORES.map((c) => (
               <button
                 key={c.valor}
@@ -89,43 +94,48 @@ export default function ConfiguracionForm() {
                     <span style={{ color: c.valor === "amarillo" ? "#1a1305" : "#fff", fontSize: 16 }}>✓</span>
                   )}
                 </span>
-                <span className="text-xs text-muted">{t(`config.${c.clave}`)}</span>
+                <span className={`text-xs ${colorElegido === c.valor ? "text-ink font-semibold" : "text-muted"}`}>
+                  {t(`config.${c.clave}`)}
+                </span>
               </button>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
       <InstalarApp />
 
-      <div className={`${tarjeta} flex flex-col gap-3`}>
-        <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted">{t("config.idioma")}</span>
-        <div className="flex gap-2">
-          {LOCALES.map((l) => (
+      <section className="flex flex-col">
+        <span className={etiqueta}>{t("config.idioma")}</span>
+        {/* Selector de idioma como fila con líneas y divisores (no
+            botones amarillos): el elegido va en verde tablero. */}
+        <div className="flex border-y-2 border-ink">
+          {LOCALES.map((l, i) => (
             <button
               key={l.valor}
               onClick={() => setLocale(l.valor)}
-              className={`flex-1 text-sm font-heading font-semibold px-3 py-2 rounded-[6px] cursor-pointer ${ locale === l.valor ? "bg-accent text-accent-ink" : "bg-bg text-ink" }`}
+              className={`flex-1 text-sm font-semibold px-3 py-2.5 cursor-pointer ${i > 0 ? "border-l-2 border-ink" : ""} ${ locale === l.valor ? "bg-[#154139] text-[#eaf4f0]" : "text-ink" }`}
             >
               {l.nombre}
             </button>
           ))}
         </div>
-      </div>
+      </section>
 
-      <div className={`${tarjeta} flex flex-col gap-2`}>
-        <span className="font-heading text-xs font-bold uppercase tracking-wide text-muted">{t("config.acercaDe")}</span>
-        <div className="flex items-center justify-between">
-          <span className="text-sm">{t("config.version")}</span>
-          <span className="text-sm text-muted">0.1.0</span>
+      <section className="flex flex-col">
+        <span className={etiqueta}>{t("config.acercaDe")}</span>
+        <div className={`${fila} border-t-2 border-t-ink`}>
+          <span className="text-sm font-semibold">{t("config.version")}</span>
+          <span className="font-titulo font-extrabold text-lg leading-none text-muted">0.1.0</span>
         </div>
         <button
           onClick={() => router.push("/quienes-somos")}
-          className="text-left text-sm text-accent-2-ink underline cursor-pointer"
+          className={`${fila} text-left text-sm font-semibold cursor-pointer`}
         >
           {t("config.quienesSomos")}
+          <IconoChevron width={16} height={16} style={{ transform: "rotate(-90deg)" }} aria-hidden />
         </button>
-      </div>
+      </section>
     </div>
   );
 }

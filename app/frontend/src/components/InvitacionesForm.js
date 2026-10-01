@@ -124,7 +124,7 @@ export default function InvitacionesForm() {
         </h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
         >
           {t("invitaciones.volver")}
         </button>
@@ -134,40 +134,51 @@ export default function InvitacionesForm() {
       {errorAccion && <p className="text-red-600 text-sm col-completa">{errorAccion}</p>}
 
       {invitaciones.length === 0 && (
-        <div className="bg-surface text-muted border border-ink/10 rounded-[8px] p-6 text-sm col-completa">
+        <div className="text-muted border-y border-ink/10 py-4 text-sm col-completa">
           {t("invitaciones.sinPendientes")}
         </div>
       )}
 
-      {invitaciones.map((invitacion) => (
-        <div
-          key={invitacion.id}
-          className="bg-surface text-ink border border-ink/10 rounded-[8px] p-4 flex flex-col gap-2"
-        >
-          <span className="font-heading font-semibold">
-            {new Date(invitacion.partidos.fecha_hora).toLocaleString(INTL_LOCALE[locale] ?? "es-AR")}
-          </span>
-          <span className="text-muted text-sm">{invitacion.partidos.cancha}</span>
-
-          <div className="flex gap-3">
-            <button
-              onClick={() => handleAceptar(invitacion.id)}
-              disabled={accionEnCurso === invitacion.id}
-              className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
-            >
-              {accionEnCurso === invitacion.id && <PelotaLoader />}
-              {t("invitaciones.aceptar")}
-            </button>
-            <button
-              onClick={() => handleRechazar(invitacion.id)}
-              disabled={accionEnCurso === invitacion.id}
-              className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-bg text-red-600 border border-ink/10 cursor-pointer disabled:opacity-60"
-            >
-              {t("invitaciones.rechazar")}
-            </button>
+      {/* Rediseño Cartel (2026-10-01): cada invitación es una fila con línea
+          y la fecha grande a la izquierda (como el próximo partido del
+          Inicio); Aceptar amarillo y Rechazar como texto liviano. */}
+      {invitaciones.map((invitacion) => {
+        const fecha = new Date(invitacion.partidos.fecha_hora);
+        const intl = INTL_LOCALE[locale] ?? "es-AR";
+        const dia = fecha.toLocaleDateString(intl, { day: "2-digit" });
+        const mes = fecha.toLocaleDateString(intl, { month: "short" }).replace(".", "").toUpperCase();
+        return (
+          <div key={invitacion.id} className="flex gap-4 py-3 border-b border-ink/10">
+            <span className="flex flex-col items-center justify-center min-w-[56px] font-titulo font-extrabold uppercase leading-none pr-4 border-r border-ink/15">
+              <span className="text-[2.6rem] font-black leading-[0.9]">{dia}</span>
+              <span className="text-sm tracking-wide">{mes}</span>
+            </span>
+            <div className="flex flex-col gap-2 min-w-0 flex-1">
+              <div className="flex flex-col gap-0.5 min-w-0">
+                <span className="font-titulo font-extrabold uppercase text-2xl leading-none truncate">{invitacion.partidos.cancha}</span>
+                <span className="text-xs text-muted">{fecha.toLocaleString(intl)}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => handleAceptar(invitacion.id)}
+                  disabled={accionEnCurso === invitacion.id}
+                  className="font-titulo font-black uppercase text-lg leading-none px-4 py-2.5 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+                >
+                  {accionEnCurso === invitacion.id && <PelotaLoader />}
+                  {t("invitaciones.aceptar")}
+                </button>
+                <button
+                  onClick={() => handleRechazar(invitacion.id)}
+                  disabled={accionEnCurso === invitacion.id}
+                  className="font-semibold text-sm px-2 py-2 text-red-600 cursor-pointer disabled:opacity-60"
+                >
+                  {t("invitaciones.rechazar")}
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

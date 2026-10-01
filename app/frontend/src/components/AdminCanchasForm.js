@@ -120,7 +120,7 @@ export default function AdminCanchasForm() {
         <p className="text-red-600 text-sm">{t("admin.soloAdmins")}</p>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer self-start"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer self-start"
         >
           {t("admin.volver")}
         </button>
@@ -134,7 +134,7 @@ export default function AdminCanchasForm() {
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("admin.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
         >
           {t("admin.volver")}
         </button>
@@ -145,7 +145,7 @@ export default function AdminCanchasForm() {
           onSubmit={handleGuardar}
           className="bg-surface border border-ink/10 rounded-[8px] p-4 flex flex-col gap-2"
         >
-          <span className="font-heading font-semibold text-sm">
+          <span className="font-titulo font-extrabold uppercase text-2xl leading-none mb-1">
             {editandoId === "nueva" ? t("admin.nuevaCancha") : t("admin.editarCancha")}
           </span>
           <input
@@ -153,24 +153,24 @@ export default function AdminCanchasForm() {
             onChange={(e) => setForm((f) => ({ ...f, nombre: e.target.value }))}
             placeholder={t("admin.nombre")}
             required
-            className="rounded-xl bg-bg px-3 py-2 text-sm"
+            className="rounded-[6px] bg-bg border border-ink/15 px-3 py-2 text-sm text-ink"
           />
           <input
             value={form.direccion}
             onChange={(e) => setForm((f) => ({ ...f, direccion: e.target.value }))}
             placeholder={t("admin.direccion")}
-            className="rounded-xl bg-bg px-3 py-2 text-sm"
+            className="rounded-[6px] bg-bg border border-ink/15 px-3 py-2 text-sm text-ink"
           />
           <input
             value={form.zona}
             onChange={(e) => setForm((f) => ({ ...f, zona: e.target.value }))}
             placeholder={t("admin.zona")}
-            className="rounded-xl bg-bg px-3 py-2 text-sm"
+            className="rounded-[6px] bg-bg border border-ink/15 px-3 py-2 text-sm text-ink"
           />
           <select
             value={form.provincia}
             onChange={(e) => setForm((f) => ({ ...f, provincia: e.target.value }))}
-            className="rounded-xl bg-bg px-3 py-2 text-sm"
+            className="rounded-[6px] bg-bg border border-ink/15 px-3 py-2 text-sm text-ink"
           >
             {PROVINCIAS.map((p) => (
               <option key={p.valor} value={p.valor}>
@@ -182,27 +182,27 @@ export default function AdminCanchasForm() {
             value={form.telefono}
             onChange={(e) => setForm((f) => ({ ...f, telefono: e.target.value }))}
             placeholder={t("admin.telefono")}
-            className="rounded-xl bg-bg px-3 py-2 text-sm"
+            className="rounded-[6px] bg-bg border border-ink/15 px-3 py-2 text-sm text-ink"
           />
           <textarea
             value={form.descripcion}
             onChange={(e) => setForm((f) => ({ ...f, descripcion: e.target.value }))}
             placeholder={t("admin.descripcion")}
             rows={2}
-            className="rounded-xl bg-bg px-3 py-2 text-sm"
+            className="rounded-[6px] bg-bg border border-ink/15 px-3 py-2 text-sm text-ink"
           />
           <input
             value={form.valores}
             onChange={(e) => setForm((f) => ({ ...f, valores: e.target.value }))}
             placeholder={t("admin.valoresPlaceholder")}
-            className="rounded-xl bg-bg px-3 py-2 text-sm"
+            className="rounded-[6px] bg-bg border border-ink/15 px-3 py-2 text-sm text-ink"
           />
           {error && <p className="text-red-600 text-sm">{error}</p>}
           <div className="flex gap-2">
             <button
               type="submit"
               disabled={guardando}
-              className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
+              className="font-titulo font-black uppercase text-lg px-4 py-2 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60 inline-flex items-center gap-2"
             >
               {guardando && <PelotaLoader />}
               {t("admin.guardar")}
@@ -210,7 +210,7 @@ export default function AdminCanchasForm() {
             <button
               type="button"
               onClick={() => setEditandoId(null)}
-              className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-surface text-ink border-2 border-outline cursor-pointer"
+              className="text-sm font-semibold px-4 py-2 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
             >
               {t("admin.cancelar")}
             </button>
@@ -219,21 +219,23 @@ export default function AdminCanchasForm() {
       ) : (
         <button
           onClick={comenzarAlta}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer self-start"
+          className="font-titulo font-black uppercase text-xl px-4 py-3 rounded-[6px] bg-accent text-accent-ink cursor-pointer"
         >
           + {t("admin.nuevaCancha")}
         </button>
       )}
 
-      <div className="flex flex-col gap-2">
+      {/* Rediseño Cartel (2026-10-01): las canchas van como filas con línea
+          abajo, sin cajas; nombre en negrita y zona/provincia como etiqueta. */}
+      <div className="flex flex-col border-t border-ink/10">
         {canchas.map((c) => (
           <button
             key={c.id}
             onClick={() => comenzarEdicion(c)}
-            className="text-left bg-surface text-ink border-2 border-outline rounded-[6px] p-3 flex flex-col cursor-pointer"
+            className="text-left text-ink border-b border-ink/10 py-3 flex flex-col gap-0.5 cursor-pointer"
           >
-            <span className="font-heading font-semibold text-sm">{c.nombre}</span>
-            <span className="text-xs text-muted">{c.zona} · {c.provincia}</span>
+            <span className="font-bold text-[15px] leading-tight">{c.nombre}</span>
+            <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{c.zona} · {c.provincia}</span>
           </button>
         ))}
       </div>

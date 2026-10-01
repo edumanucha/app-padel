@@ -62,7 +62,7 @@ export default function MensajesForm() {
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("mensajes.titulo")}</h1>
         <button
           onClick={() => router.push("/")}
-          className="font-heading font-semibold text-sm px-3 py-1.5 rounded-[6px] bg-surface text-ink border border-ink/10 cursor-pointer"
+          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
         >
           {t("mensajes.volver")}
         </button>
@@ -71,36 +71,42 @@ export default function MensajesForm() {
       {error && <p className="text-red-600 text-sm">{error}</p>}
 
       {conversaciones.length === 0 && (
-        <div className="bg-surface text-muted border border-ink/10 rounded-[8px] p-6 text-sm">
+        <p className="text-sm text-muted border-y border-ink/10 py-4">
           {t("mensajes.sinConversaciones")}
-        </div>
+        </p>
       )}
 
-      {conversaciones.map((c) => (
-        <button
-          key={c.jugador_id}
-          onClick={() => router.push(`/mensajes/${c.jugador_id}`)}
-          className="text-left bg-surface text-ink border border-ink/10 rounded-[8px] p-3 flex items-center gap-3 cursor-pointer"
-        >
-          <div className="w-11 h-11 rounded-full border-2 border-outline bg-bg overflow-hidden flex items-center justify-center flex-shrink-0">
-            {c.avatar_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={c.avatar_url} alt="" className="w-full h-full object-cover" />
-            ) : (
-              <Logo size={22} />
-            )}
-          </div>
-          <div className="flex-1 min-w-0 flex flex-col">
-            <span className="font-heading font-semibold text-sm">{c.nombre}</span>
-            <span className="text-xs text-muted truncate">{c.ultimo_mensaje}</span>
-          </div>
-          {c.no_leidos > 0 && (
-            <span className="bg-red-600 text-white text-[10px] font-heading font-semibold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">
-              {c.no_leidos > 9 ? "9+" : c.no_leidos}
-            </span>
-          )}
-        </button>
-      ))}
+      {/* Rediseño Cartel (2026-10-01): la bandeja es una lista de filas con
+          línea abajo, sin tarjetas; los no leídos van como contador amarillo. */}
+      {conversaciones.length > 0 && (
+        <div className="flex flex-col border-t border-ink/10">
+          {conversaciones.map((c) => (
+            <button
+              key={c.jugador_id}
+              onClick={() => router.push(`/mensajes/${c.jugador_id}`)}
+              className="text-left text-ink border-b border-ink/10 py-3 flex items-center gap-3 cursor-pointer"
+            >
+              <div className="w-11 h-11 rounded-full bg-bg border border-ink/10 overflow-hidden flex items-center justify-center flex-shrink-0">
+                {c.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={c.avatar_url} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <Logo size={22} />
+                )}
+              </div>
+              <div className="flex-1 min-w-0 flex flex-col">
+                <span className="font-bold text-[15px] leading-tight truncate">{c.nombre}</span>
+                <span className={`text-xs truncate ${c.no_leidos > 0 ? "text-ink" : "text-muted"}`}>{c.ultimo_mensaje}</span>
+              </div>
+              {c.no_leidos > 0 && (
+                <span className="bg-accent text-accent-ink text-[11px] font-bold rounded-full min-w-[22px] h-[22px] px-1 flex items-center justify-center flex-shrink-0">
+                  {c.no_leidos > 9 ? "9+" : c.no_leidos}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

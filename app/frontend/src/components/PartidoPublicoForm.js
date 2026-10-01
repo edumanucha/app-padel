@@ -77,29 +77,50 @@ export default function PartidoPublicoForm({ partidoId }) {
   const estaCompleto = partido.lugares_ocupados >= partido.cantidad_jugadores;
   const cancelado = partido.estado === "cancelado";
 
+  // Rediseño Cartel (2026-10-01): sin tarjeta -- título, protagonista verde
+  // tablero (fecha amarilla, cancha y cupo, como el próximo partido del
+  // Inicio) y abajo un solo botón amarillo (Sumarme o Iniciá sesión).
   return (
-    <div className="w-full max-w-sm bg-surface text-ink border border-ink/10 rounded-[8px] p-6 flex flex-col gap-3">
+    <div className="w-full max-w-sm flex flex-col gap-4">
       <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("partidoPublico.titulo")}</h1>
-      <span className="font-heading font-semibold">
-        {new Date(partido.fecha_hora).toLocaleString(INTL_LOCALE[locale] ?? "es-AR")}
-      </span>
-      <span className="text-muted text-sm">{partido.cancha}</span>
-      <span className="text-sm">
-        {t("partidoPublico.jugadoresTemplate", { ocupados: partido.lugares_ocupados, cantidad: partido.cantidad_jugadores })}
-        {cancelado && ` ${t("partidoPublico.canceladoSufijo")}`}
-      </span>
+      {(() => {
+        const fecha = new Date(partido.fecha_hora);
+        const intl = INTL_LOCALE[locale] ?? "es-AR";
+        const diaSemana = fecha.toLocaleDateString(intl, { weekday: "short" }).replace(".", "");
+        const dia = fecha.toLocaleDateString(intl, { day: "2-digit" });
+        const mes = fecha.toLocaleDateString(intl, { month: "short" }).replace(".", "").toUpperCase();
+        const hora = fecha.toLocaleTimeString(intl, { hour: "2-digit", minute: "2-digit", hour12: false });
+        return (
+          <div className="flex rounded-[6px] overflow-hidden bg-[#154139] text-[#eaf4f0]">
+            <span className="bg-accent text-accent-ink flex flex-col items-center justify-center px-3 py-3 min-w-[72px] font-titulo font-extrabold uppercase tracking-wide leading-none">
+              <span className="text-sm">{diaSemana}</span>
+              <span className="text-5xl font-black leading-[0.9]">{dia}</span>
+              <span className="text-sm">{mes}</span>
+            </span>
+            <div className="flex flex-col justify-center gap-1 px-4 py-3 min-w-0">
+              <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#8fb6ae]">{hora}</span>
+              <span className="font-titulo font-extrabold uppercase text-[1.7rem] leading-none truncate">{partido.cancha}</span>
+              <span className="text-xs text-[#c4dad3]">{fecha.toLocaleString(intl)}</span>
+              <span className="text-sm font-semibold mt-1">
+                {t("partidoPublico.jugadoresTemplate", { ocupados: partido.lugares_ocupados, cantidad: partido.cantidad_jugadores })}
+                {cancelado && ` ${t("partidoPublico.canceladoSufijo")}`}
+              </span>
+            </div>
+          </div>
+        );
+      })()}
 
       {error && <p className="text-red-600 text-sm">{error}</p>}
 
       {!cancelado && estaCompleto && (
-        <span className="text-sm text-muted">{t("partidoPublico.completo")}</span>
+        <span className="text-sm text-muted border-y border-ink/10 py-3">{t("partidoPublico.completo")}</span>
       )}
 
       {!cancelado && !estaCompleto && usuarioId && (
         <button
           onClick={handleSumarme}
           disabled={sumando}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
+          className="font-titulo font-black uppercase text-[1.75rem] leading-none px-4 py-4 rounded-[6px] bg-accent text-accent-ink cursor-pointer disabled:opacity-60 inline-flex items-center justify-center gap-2"
         >
           {sumando && <PelotaLoader />}
           {t("partidoPublico.sumarme")}
@@ -109,7 +130,7 @@ export default function PartidoPublicoForm({ partidoId }) {
       {!cancelado && !estaCompleto && !usuarioId && (
         <button
           onClick={handleIrALogin}
-          className="font-heading font-semibold text-sm px-4 py-2 rounded-[6px] bg-accent text-accent-ink border border-ink/10 cursor-pointer"
+          className="font-titulo font-black uppercase text-[1.75rem] leading-none px-4 py-4 rounded-[6px] bg-accent text-accent-ink cursor-pointer"
         >
           {t("partidoPublico.iniciaSesion")}
         </button>

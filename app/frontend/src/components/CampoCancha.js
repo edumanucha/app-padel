@@ -4,7 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useLocale } from "@/i18n/LocaleContext";
 
-const inputClass = "rounded-xl border-2 border-outline bg-bg px-3 py-2 text-ink";
+const inputClass = "rounded-[6px] border border-ink/15 bg-surface px-3 py-2 text-ink";
 
 // Campo "Cancha" predictivo (adelanto chico de la Épica 4, a pedido del
 // usuario): a medida que se escribe, sugiere coincidencias contra la tabla
@@ -47,7 +47,7 @@ export default function CampoCancha({ value, onChange, onElegir }) {
 
   return (
     <label className="flex flex-col gap-1 relative">
-      <span className="font-heading text-sm">{t("campoCancha.cancha")}</span>
+      <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{t("campoCancha.cancha")}</span>
       <input
         type="text"
         value={value}
@@ -56,7 +56,7 @@ export default function CampoCancha({ value, onChange, onElegir }) {
         className={inputClass}
       />
       {resultados.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-surface border-2 border-outline rounded-[6px] z-10 overflow-hidden">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-ink/15 rounded-[6px] z-10 overflow-hidden divide-y divide-ink/10">
           {resultados.map((c) => (
             <button
               key={c.id}
