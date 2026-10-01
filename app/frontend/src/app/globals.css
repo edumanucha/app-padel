@@ -591,7 +591,9 @@ button:not(:disabled):active {
 @media (min-width: 1024px) {
   .pantalla-mosaico,
   .pantalla-grilla {
-    max-width: 64rem !important;
+    /* Todo el ancho (2026-09-30, pedido del usuario: "que ocupe todo el
+       ancho"), con un tope para monitores gigantes. */
+    max-width: 110rem !important;
   }
   .pantalla-mosaico {
     display: block !important;
@@ -616,6 +618,22 @@ button:not(:disabled):active {
   }
   .pantalla-grilla > .col-completa {
     grid-column: 1 / -1;
+  }
+}
+/* Monitores grandes: 3 columnas y todo un poco más grande (se veía chico).
+   La altura mínima deja afuera a los celus apaisados, así el Marcadorcito
+   apaisado no cambia. */
+@media (min-width: 1280px) and (min-height: 700px) {
+  html {
+    font-size: 112.5%;
+  }
+}
+@media (min-width: 1440px) {
+  .pantalla-mosaico {
+    column-count: 3;
+  }
+  .pantalla-grilla {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 /* Contenedor vacío (ej. InstalarApp sin nada que mostrar): que no sume
