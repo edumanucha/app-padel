@@ -2,6 +2,10 @@
   "name": "capturas-libro",
   "private": true,
   "description": "Capturas de todas las pantallas de Padelito con datos inventados, para el libro de diseño",
-  "scripts": { "capturar": "node capturar.js" },
-  "dependencies": { "puppeteer-core": "^23.11.1" }
+  "scripts": {
+    "capturar": "node capturar.js"
+  },
+  "dependencies": {
+    "puppeteer-core": "^25.12.0"
+  }
 }
