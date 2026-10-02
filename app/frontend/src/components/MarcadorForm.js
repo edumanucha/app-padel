@@ -1146,6 +1146,11 @@ export default function MarcadorForm({ partidoId }) {
   // deja notificar desde el service worker (sw.js ya está registrado).
   const relojActivoRef = useRef(false);
   const miEquipoRef = useRef(null);
+  // Cancha del partido para el aviso final del reloj (opción C, ver abajo).
+  const canchaRef = useRef("");
+  useEffect(() => {
+    canchaRef.current = partido?.cancha ?? "";
+  }, [partido]);
   const notificarReloj = useCallback((titulo, cuerpo) => {
     if (!relojActivoRef.current) return;
     if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
@@ -1173,6 +1178,14 @@ export default function MarcadorForm({ partidoId }) {
   // lee literal como "diagonal" ("eduardo diagonal jugador"). Acá se unen
   // con "y" en vez de "/" -- solo para lo que se anuncia por voz, la
   // pantalla sigue mostrando "/".
+  // Solo el primer nombre de cada uno (2026-10-01, pedido del usuario para
+  // el aviso final del reloj: "a los rivales ponele el primer nombre nada
+  // más, sin apellido") -> "Franco / Nacho".
+  const nombresCortos = useCallback(
+    (lado) => (lado === "A" ? equipoA : equipoB).map((n) => String(n).trim().split(/\s+/)[0]).join(" / ") || `Pareja ${lado}`,
+    [equipoA, equipoB]
+  );
+
   const nombreEquipoVoz = useCallback(
     (lado) => (lado === "A" ? equipoA.join(" y ") : equipoB.join(" y ")) || `Pareja ${lado}`,
     [equipoA, equipoB]
@@ -1258,12 +1271,20 @@ export default function MarcadorForm({ partidoId }) {
           const desde = resultadoRef.current?.created_at ? new Date(resultadoRef.current.created_at).getTime() : Date.now();
           const min = Math.max(0, Math.floor((Date.now() - desde) / 60000));
           const duracion = min >= 60 ? `${Math.floor(min / 60)}h ${String(min % 60).padStart(2, "0")}'` : `${min}'`;
-          const detalle = `${sets} · ${duracion}`;
+          // Formato "C · Con los rivales" (2026-10-01, elegido por el usuario
+          // en /pruebas-reloj-final, probado en su reloj): arriba "Partido
+          // ganado/perdido"; abajo sets, contra quién y minutos · cancha.
           const mio = miEquipoRef.current;
+          const rival = mio === "A" ? "B" : mio === "B" ? "A" : null;
+          const lineas = [
+            sets,
+            rival ? `vs. ${nombresCortos(rival)}` : `${nombresCortos("A")} vs. ${nombresCortos("B")}`,
+            [duracion, canchaRef.current].filter(Boolean).join(" · "),
+          ];
           const titulo = mio
-            ? mio === evPartido.ganador ? "¡Ganaste!" : "Perdiste"
+            ? mio === evPartido.ganador ? "Partido ganado" : "Partido perdido"
             : `Ganó ${nombreEquipoVoz(evPartido.ganador)}`;
-          notificarReloj(titulo, detalle);
+          notificarReloj(titulo, lineas.join("\n"));
         }
       }
 
@@ -1295,7 +1316,7 @@ export default function MarcadorForm({ partidoId }) {
         anunciar(`${nombreEquipoVoz("A")}, ${textoA}. ${nombreEquipoVoz("B")}, ${textoB}.`);
       }
     },
-    [anunciar, nombreEquipoVoz, notificarReloj]
+    [anunciar, nombresCortos, nombreEquipoVoz, notificarReloj]
   );
 
   // Pisa los games del set actual de una sola vez ("juegos 6 4"), en vez
@@ -1611,7 +1632,17 @@ export default function MarcadorForm({ partidoId }) {
       const mio = miEquipoRef.current;
       const ganador = resultado.ganador;
       titulo = mio ? (mio === ganador ? "Partido ganado" : "Partido perdido") : `Ganó ${ganador ?? ""}`.trim();
-      subtitulo = est.setsA.map((g, i) => `${g}-${est.setsB[i]}`).join("  ");
+      // Mismo formato C que el aviso final, en un renglón (la pantalla de
+      // música del reloj muestra un solo subtítulo).
+      const rival = mio === "A" ? "B" : mio === "B" ? "A" : null;
+      subtitulo = [
+        est.setsA.map((g, i) => `${g}-${est.setsB[i]}`).join(" "),
+        rival ? `vs. ${nombresCortos(rival)}` : null,
+        `${minutosReloj}'`,
+        canchaRef.current,
+      ]
+        .filter(Boolean)
+        .join(" · ");
     }
     const sale = relojSonandoRef.current;
     const entra = sale === relojAudioRef.current ? relojAudio2Ref.current : relojAudioRef.current;
@@ -1627,7 +1658,7 @@ export default function MarcadorForm({ partidoId }) {
         fijarPosicionReloj();
       })
       .catch(() => {});
-  }, [resultado, relojActivo, minutosReloj, formatoReloj]);
+  }, [resultado, relojActivo, minutosReloj, formatoReloj, nombresCortos]);
 
   // Al salir del marcador, soltar el control del reloj.
   useEffect(() => () => {
