@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 // Opciones del aviso final al reloj (2026-10-01, pedido del usuario: "al
 // finalizar el partido, desde el reloj debería decir arriba partido ganado y
@@ -79,9 +79,63 @@ function Reloj({ forma, aviso }) {
   );
 }
 
+// Prueba EN EL RELOJ (2026-10-01, pedido del usuario: "no me interesa una
+// maqueta quieta en una web, quiero verlo desde el reloj"). Dos caminos,
+// los mismos que usa el Marcadorcito real:
+//  - Aviso: notificación del celu (service worker); Mi Fitness / Garmin
+//    Connect la espejan al reloj y vibra.
+//  - Pantalla de música: título y subtítulo del "tema que suena" (Media
+//    Session), con el audio en silencio en loop, como en el modo Reloj.
+async function mandarAviso(aviso) {
+  if (typeof Notification === "undefined") return "Este navegador no permite avisos.";
+  if (Notification.permission === "default") await Notification.requestPermission();
+  if (Notification.permission !== "granted") return "Sin permiso para avisos: activalo en los ajustes del navegador.";
+  const reg = await navigator.serviceWorker?.ready;
+  if (!reg) return "No hay service worker: abrí la página desde Chrome.";
+  await reg.showNotification(aviso.titulo, {
+    body: aviso.lineas.join("\n"),
+    tag: "prueba-reloj-final",
+    renotify: true,
+    vibrate: [150, 80, 150],
+    icon: "/pwa-icon?size=192",
+  });
+  return "Aviso mandado: mirá el reloj.";
+}
+
 export default function PruebaRelojFinalForm() {
   const [resultado, setResultado] = useState("gano");
+  const [estado, setEstado] = useState("");
+  const audioRef = useRef(null);
   const r = PARTIDO[resultado];
+
+  async function aviso(op) {
+    try {
+      setEstado(`${op.id}: ${await mandarAviso(op.armar(r))}`);
+    } catch (e) {
+      setEstado(`No se pudo mandar el aviso: ${e.message}`);
+    }
+  }
+
+  async function pantallaMusica(op) {
+    if (!("mediaSession" in navigator)) return setEstado("Este navegador no maneja la pantalla de música.");
+    try {
+      const a = audioRef.current;
+      a.loop = true;
+      await a.play();
+      const av = op.armar(r);
+      navigator.mediaSession.metadata = new MediaMetadata({ title: av.titulo, artist: av.lineas.join(" · "), album: "Marcadorcito" });
+      navigator.mediaSession.playbackState = "playing";
+      setEstado(`${op.id}: mostrando en la pantalla de música del reloj (abrí "música" o "ahora suena").`);
+    } catch (e) {
+      setEstado(`No se pudo: ${e.message}`);
+    }
+  }
+
+  function parar() {
+    audioRef.current?.pause();
+    if ("mediaSession" in navigator) navigator.mediaSession.playbackState = "none";
+    setEstado("Pantalla de música apagada.");
+  }
   return (
     <div className="w-full flex flex-col gap-6" style={{ maxWidth: "92rem" }}>
       <div className="flex flex-col gap-2" style={{ maxWidth: "60rem" }}>
@@ -90,6 +144,12 @@ export default function PruebaRelojFinalForm() {
           Lo que vibra en la muñeca al terminar el partido. Cada opción en un reloj cuadrado (como el Redmi Watch) y uno redondo (como
           el Garmin). Probá también cómo se ve si perdés.
         </p>
+        <p className="text-sm">
+          <b>Probalo en tu reloj:</b> abrí esta página en el celu (Chrome) con el reloj conectado y tocá{" "}
+          <b>Mandar aviso</b> (vibra como al terminar el partido) o <b>Ver en pantalla de música</b> (como el marcador durante el
+          partido).
+        </p>
+        <audio ref={audioRef} src="/sonidos/silencio.wav" preload="auto" className="hidden" />
         <div className="flex gap-2">
           {[
             ["gano", "Si ganás"],
@@ -107,6 +167,14 @@ export default function PruebaRelojFinalForm() {
           ))}
         </div>
       </div>
+      {estado && (
+        <div className="sticky top-2 z-10 flex items-center justify-between gap-3 rounded-[6px] bg-[#154139] text-[#eaf4f0] px-4 py-3 text-sm">
+          <span>{estado}</span>
+          <button onClick={parar} className="text-xs font-semibold px-2 py-1 rounded-[6px] border border-white/30 cursor-pointer">
+            Apagar música
+          </button>
+        </div>
+      )}
       <div className="grid gap-x-8 gap-y-10" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 430px), 1fr))" }}>
         {OPCIONES.map((op) => {
           const aviso = op.armar(r);
@@ -118,6 +186,20 @@ export default function PruebaRelojFinalForm() {
                 <Reloj forma="redondo" aviso={aviso} />
               </div>
               <p className="text-sm text-muted">{op.nota}</p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => aviso(op)}
+                  className="font-titulo font-black uppercase text-lg px-4 py-2 rounded-[6px] bg-accent text-accent-ink cursor-pointer"
+                >
+                  Mandar aviso al reloj
+                </button>
+                <button
+                  onClick={() => pantallaMusica(op)}
+                  className="text-sm font-semibold px-3 py-2 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
+                >
+                  Ver en pantalla de música
+                </button>
+              </div>
             </section>
           );
         })}
