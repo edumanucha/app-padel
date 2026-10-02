@@ -1006,6 +1006,22 @@ export default function MarcadorForm({ partidoId }) {
       filas = refetch.data ?? [];
     }
 
+    // Nombres de los jugadores con cuenta (BUG-031, 2026-10-01, reportado
+    // por el usuario en su primer partido real: "mi compañero decía Jugador
+    // y mis rivales también"). El embed `perfiles(nombre)` vuelve vacío para
+    // todos menos para uno mismo, porque la RLS de `perfiles` solo deja leer
+    // el perfil propio. `ver_participantes_partido` (security definer, solo
+    // para quien juega u organiza el partido) sí devuelve los nombres.
+    if (filas.some((f) => f.jugador_id && !f.perfiles?.nombre)) {
+      const { data: participantes } = await supabase.rpc("ver_participantes_partido", { p_partido_id: partidoId });
+      const nombrePorId = Object.fromEntries((participantes ?? []).map((p) => [p.jugador_id, p.nombre]));
+      filas = filas.map((f) =>
+        f.jugador_id && !f.perfiles?.nombre && nombrePorId[f.jugador_id]
+          ? { ...f, perfiles: { nombre: nombrePorId[f.jugador_id] } }
+          : f
+      );
+    }
+
     aplicarPlantel(filas);
 
     let resultadoRes = resultadoResInicial;
