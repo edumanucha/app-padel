@@ -9,6 +9,8 @@ import PelotaLoader from "@/components/PelotaLoader";
 import AvatarUpload from "@/components/AvatarUpload";
 import Logo from "@/components/Logo";
 import InstalarApp from "@/components/InstalarApp";
+import DestacadosPerfil from "@/components/DestacadosPerfil";
+import { calcularDestacados } from "@/lib/destacadosPerfil";
 import BarraEstadistica from "@/components/BarraEstadistica";
 import Toggle from "@/components/Toggle";
 import { calcularResumenEstadisticas, calcularPuntosRanking } from "@/lib/estadisticasMarcadorcito";
@@ -91,6 +93,9 @@ export default function VerPerfilForm() {
   const [errorReactivacion, setErrorReactivacion] = useState("");
 
   const [partidosStats, setPartidosStats] = useState(null);
+  // Destacados "Cara a cara" (2026-10-02): null hasta que llegan, o si no
+  // hay partidos terminados (o la RPC 068 todavía no se corrió).
+  const [destacados, setDestacados] = useState(null);
   const [cargandoEstadisticas, setCargandoEstadisticas] = useState(true);
   const [mostrarPartidosStats, setMostrarPartidosStats] = useState(false);
   // Colapsado por defecto (2026-09-13, a pedido del usuario: "que
@@ -145,6 +150,7 @@ export default function VerPerfilForm() {
           setPartidosStats(copia.partidosStats);
           setCargandoEstadisticas(false);
         }
+        if (copia.destacados !== undefined) setDestacados(copia.destacados);
         setCargando(false);
       }
 
@@ -189,7 +195,19 @@ export default function VerPerfilForm() {
       cargarEstadisticas(user.id);
     }
 
+    // Destacados del perfil (2026-10-02): nombres de compañeros y rivales
+    // vía RPC (la RLS de perfiles no deja leerlos directo). Si la RPC no
+    // existe todavía, simplemente no se muestran.
+    async function cargarDestacados(jugadorId) {
+      const { data, error } = await supabase.rpc("mis_cruces_partidos");
+      if (error) return;
+      const d = calcularDestacados(data);
+      setDestacados(d);
+      guardarPantalla("perfil", jugadorId, { ...(leerPantalla("perfil", jugadorId) ?? {}), destacados: d });
+    }
+
     async function cargarEstadisticas(jugadorId) {
+      cargarDestacados(jugadorId);
       const { data: misFilas } = await supabase
         .from("partido_jugadores")
         .select("partido_id, equipo")
@@ -678,6 +696,8 @@ export default function VerPerfilForm() {
       {/* Instalar la app (2026-09-30, opción 2 elegida por el usuario): solo
           aparece si no está instalada. */}
       <InstalarApp variante="boton" />
+
+      <DestacadosPerfil destacados={destacados} />
 
       <div ref={estadisticasRef} className="flex flex-col">
         {/* Tarjeta acordeón, colapsada por defecto (2026-09-13, a pedido
