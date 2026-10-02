@@ -13,7 +13,7 @@ const PARTIDO = {
   perdio: { titulo: "Partido perdido", corto: "Perdiste", sets: ["4-6", "6-7"], setsGan: "0-2" },
   minutos: 72,
   cancha: "Complejo La Red",
-  rivales: "Armani / Fernández",
+  rivales: "Franco / Nacho",
 };
 
 const duracion = (m) => (m >= 60 ? `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, "0")}'` : `${m}'`);
