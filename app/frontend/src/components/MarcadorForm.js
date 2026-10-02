@@ -1462,6 +1462,23 @@ export default function MarcadorForm({ partidoId }) {
     };
   });
 
+  // Duración fija para el aviso de "reproduciendo" del celu (2026-10-01,
+  // pedido del usuario: "todo el tiempo sale el círculo de que se está
+  // reproduciendo algo"). El audio en silencio dura un segundo y se repite,
+  // así que Android lo mostraba como algo que nunca termina de cargar. Con
+  // una duración de 4 h y el tiempo de partido como posición, se ve como
+  // una barra quieta. No cambia nada de la pantalla del marcador.
+  function fijarPosicionReloj() {
+    try {
+      const desde = resultadoRef.current?.created_at ? new Date(resultadoRef.current.created_at).getTime() : Date.now();
+      const duracion = 4 * 60 * 60;
+      const posicion = Math.min(Math.max(0, (Date.now() - desde) / 1000), duracion - 1);
+      navigator.mediaSession.setPositionState({ duration: duracion, playbackRate: 1, position: posicion });
+    } catch {
+      // Navegador sin setPositionState: queda como antes.
+    }
+  }
+
   async function activarReloj() {
     setErrorReloj("");
     if (!("mediaSession" in navigator)) {
@@ -1522,6 +1539,7 @@ export default function MarcadorForm({ partidoId }) {
         try { navigator.mediaSession.setActionHandler(accion, fn); } catch {}
       }
       navigator.mediaSession.playbackState = "playing";
+      fijarPosicionReloj();
       relojActivoRef.current = true;
       setRelojActivo(true);
       // Permiso para los avisos de game/set/partido en la muñeca (se pide
@@ -1542,6 +1560,7 @@ export default function MarcadorForm({ partidoId }) {
         try { navigator.mediaSession.setActionHandler(accion, null); } catch {}
       }
       navigator.mediaSession.playbackState = "none";
+      try { navigator.mediaSession.setPositionState(); } catch {}
     }
     relojActivoRef.current = false;
     setRelojActivo(false);
@@ -1605,6 +1624,7 @@ export default function MarcadorForm({ partidoId }) {
         relojSonandoRef.current = entra;
         navigator.mediaSession.metadata = new MediaMetadata({ title: titulo, artist: subtitulo, album: "Marcadorcito" });
         navigator.mediaSession.playbackState = "playing";
+        fijarPosicionReloj();
       })
       .catch(() => {});
   }, [resultado, relojActivo, minutosReloj, formatoReloj]);
