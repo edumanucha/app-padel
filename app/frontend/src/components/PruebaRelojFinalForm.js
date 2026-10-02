@@ -125,6 +125,13 @@ export default function PruebaRelojFinalForm() {
       const av = op.armar(r);
       navigator.mediaSession.metadata = new MediaMetadata({ title: av.titulo, artist: av.lineas.join(" · "), album: "Marcadorcito" });
       navigator.mediaSession.playbackState = "playing";
+      // Misma duración fija de 4 h que el Marcadorcito real, para que el celu
+      // no lo muestre como algo que se repite cada segundo.
+      try {
+        navigator.mediaSession.setPositionState({ duration: 4 * 60 * 60, playbackRate: 1, position: 0 });
+      } catch {
+        // Navegador sin setPositionState.
+      }
       setEstado(`${op.id}: mostrando en la pantalla de música del reloj (abrí "música" o "ahora suena").`);
     } catch (e) {
       setEstado(`No se pudo: ${e.message}`);
