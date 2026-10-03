@@ -18,6 +18,11 @@ import { ImageResponse } from "next/og";
 // puesto directo en `app/` (ver ese archivo), no una carpeta con
 // `route.js` -- este archivo solo lo usa manifest.js para los tamaños de
 // PWA (192/512), que si necesitan el querystring `?size=`.
+// Ícono nuevo (2026-10-03, opción A elegida por el usuario sobre una maqueta):
+// pelota amarilla fuerte con costuras verdes sobre el verde del cartel. Reemplaza
+// la versión de colores claros, que se veía desvaída. Mismo dibujo en
+// icon.js, apple-icon.js y pwa-icon/route.js.
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const size = searchParams.get("size") === "192" ? 192 : 512;
@@ -31,12 +36,12 @@ export async function GET(request) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#dcefe4",
+          background: "#154139",
         }}
       >
-        <svg width={size * 0.62} height={size * 0.62} viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="42" fill="#f5dd90" />
-          <path d="M20 12c13 13 13 63 0 76M80 12c-13 13-13 63 0 76" fill="none" stroke="#6b9080" strokeWidth="6" strokeLinecap="round" />
+        <svg width={size} height={size} viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="33" fill="#f2c53d" />
+          <path d="M33 26c11 11 11 37 0 48M67 26c-11 11-11 37 0 48" fill="none" stroke="#154139" strokeWidth="5" strokeLinecap="round" />
         </svg>
       </div>
     ),

@@ -35,6 +35,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-05 | `diseno-05-fuentes-y-compu` | 2026-10-01 | Paso E: fuentes C + versión de compu | Publicado |
 | D-06 | `diseno-06-pantallas-restantes` | 2026-10-01 | Paso F: Completar perfil, controles del Marcadorcito y pantallas menores en Cartel | Publicado |
 | D-07 | `diseno-07-destacados-perfil` | 2026-10-02 | Perfil: destacados "Cara a cara" (cómo venís, mejor dupla, cuenta pendiente, tu cancha) | Publicado |
+| D-08 | `diseno-08-icono-pelota` | 2026-10-03 | Ícono de la app: pelota amarilla sobre verde del cartel (opción A) | Publicado |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -110,6 +111,14 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Elegida por el usuario:** C
 - **Datos:** RPC nueva `mis_cruces_partidos` (`app/backend/sql/068_destacados_perfil.sql`, hay que correrla en Supabase); sin ella el bloque no aparece y el resto del perfil sigue igual.
 - **Notas / qué mirar en la evaluación:** saques mantenidos, puntos de oro y tie-breaks de la maqueta no se guardan todavía, quedaron afuera.
+
+### D-08 · `diseno-08-icono-pelota` — ícono de la app (2026-10-03)
+
+- **Qué cambió:** el ícono (pantalla de inicio de Android, iPhone y pestaña del navegador) pasa de pelota amarilla clara sobre verde claro, que se veía desvaída, a **pelota amarilla fuerte con costuras verdes sobre verde oscuro del cartel**.
+- **Archivos:** `app/icon.js` (pestaña 32 px), `app/apple-icon.js` (iPhone 180 px) y `app/pwa-icon/route.js` (192 y 512 px, con margen para el recorte circular de Android).
+- **Por qué:** el usuario vio el ícono en pwabuilder.com y lo encontró feo; se hace antes de generar el APK porque lo usa.
+- **Opciones mostradas (maqueta):** artifact privado "Íconos de Padelito" — A pelota amarilla sobre verde / B verde sobre amarillo / C pelota en la cancha / D pelota gigante
+- **Elegida por el usuario:** A
 
 <!-- Plantilla para cada cambio nuevo:
 

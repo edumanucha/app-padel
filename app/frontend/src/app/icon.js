@@ -7,6 +7,11 @@ import { ImageResponse } from "next/og";
 // en la pestaña por más que se probara en modo incógnito/otro
 // navegador). Mismo dibujo y paleta clara que `pwa-icon/route.js` (que
 // sigue existiendo aparte, para los tamaños grandes del manifest de PWA).
+// Ícono nuevo (2026-10-03, opción A elegida por el usuario sobre una maqueta):
+// pelota amarilla fuerte con costuras verdes sobre el verde del cartel. Reemplaza
+// la versión de colores claros, que se veía desvaída. Mismo dibujo en
+// icon.js, apple-icon.js y pwa-icon/route.js.
+
 export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
@@ -20,12 +25,12 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#dcefe4",
+          background: "#154139",
         }}
       >
-        <svg width="22" height="22" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="42" fill="#f5dd90" />
-          <path d="M20 12c13 13 13 63 0 76M80 12c-13 13-13 63 0 76" fill="none" stroke="#6b9080" strokeWidth="8" strokeLinecap="round" />
+        <svg width="32" height="32" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="40" fill="#f2c53d" />
+          <path d="M31 22c12 12 12 44 0 56M69 22c-12 12-12 44 0 56" fill="none" stroke="#154139" strokeWidth="7" strokeLinecap="round" />
         </svg>
       </div>
     ),
