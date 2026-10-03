@@ -53,7 +53,7 @@ const pt = {
       rachaGanada: "Sequência de vitórias",
       deRanking: "de {total} no ranking",
       jugadosSufijo: "{n} jogadas",
-      tusPartidosJugados: "Suas partidas jogadas",
+      tusPartidosJugados: "Suas partidas jogadas",
       tipDePadel: "Dica de pádel",
       leerMas: "Ler mais",
       comunidad: "Comunidade",

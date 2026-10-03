@@ -53,7 +53,7 @@ const en = {
       rachaGanada: "Win streak",
       deRanking: "of {total} in the ranking",
       jugadosSufijo: "{n} played",
-      tusPartidosJugados: "Your matches played",
+      tusPartidosJugados: "Your matches played",
       tipDePadel: "Padel tip",
       leerMas: "Read more",
       comunidad: "Community",
