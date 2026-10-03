@@ -224,11 +224,10 @@ export default function HomeForm() {
       const user = await usuarioActual();
 
       if (!user) {
-        // A pedido del usuario (2026-09-06): la app ahora arranca por
-        // "Elegí tu deporte" (sin sesión), no directo al login -- ver
-        // ElegirDeporteForm.js.
+        // Sin sesión: directo al login (2026-10-03, a pedido del usuario: la app
+        // se enfoca solo en pádel, se sacó "Elegí tu deporte").
         if (sinConexion()) window.location.replace("/offline");
-        else router.replace("/elegir-deporte");
+        else router.replace("/login");
         return;
       }
 
@@ -717,7 +716,6 @@ export default function HomeForm() {
           {perfil.es_superusuario && (
             <FilaAcceso Icono={IconoLlave} titulo={t("home.adminCanchas")} onClick={() => router.push("/admin/canchas")} />
           )}
-          <FilaAcceso Icono={IconoPelota} titulo={t("home.cambiarDeporte")} onClick={() => router.push("/elegir-deporte")} />
         </div>
       </div>
 

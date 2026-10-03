@@ -75,7 +75,6 @@ const SECCIONES = [
     items: [
       { Icono: IconoPersona, claveTexto: "home.miPerfil", ruta: "/perfil" },
       { Icono: IconoBandera, claveTexto: "home.apelaciones", ruta: "/apelaciones" },
-      { Icono: IconoPelota, claveTexto: "home.cambiarDeporte", ruta: "/elegir-deporte" },
     ],
   },
   {

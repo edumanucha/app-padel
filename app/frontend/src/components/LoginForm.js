@@ -19,12 +19,6 @@ export default function LoginForm() {
 
   return (
     <div className="w-full max-w-sm flex flex-col gap-3">
-      <Link
-        href="/elegir-deporte"
-        className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink self-start"
-      >
-        ← {t("deporteMaqueta.elegirOtroDeporte")}
-      </Link>
       {/* Rediseño Cartel (2026-10-01): el título va en un bloque verde
           tablero como protagonista y las formas de entrar quedan abajo, sin
           tarjeta. Los botones viven en LoginGoogleForm/LoginEmailForm. */}

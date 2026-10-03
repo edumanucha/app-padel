@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/i18n/LocaleContext";
 
-import { IconoPersona, IconoCalendario, IconoPelota, IconoTrofeo, IconoMensaje, IconoDuo, IconoPin, IconoBilletera, IconoBandera, IconoBasquet } from "@/components/Icons";
+import { IconoPersona, IconoCalendario, IconoPelota, IconoTrofeo, IconoMensaje, IconoDuo, IconoPin, IconoBilletera, IconoBandera } from "@/components/Icons";
 // Recorrido honesto de funciones reales de la app (2026-09-10, a pedido
 // del usuario, con relevamiento completo de historias-usuario-mvp.md +
 // todas las rutas reales -- la primera versión se había quedado corta).
@@ -20,7 +20,6 @@ const BLOQUES = [
   { Icono: IconoPin, clave: "canchas" },
   { Icono: IconoBilletera, clave: "gastos" },
   { Icono: IconoBandera, clave: "apelaciones" },
-  { Icono: IconoBasquet, clave: "masAlla" },
 ];
 
 const PROXIMAMENTE_CLAVES = ["proximamente1", "proximamente2"];

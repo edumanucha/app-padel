@@ -46,7 +46,6 @@ const TABS_COMPU = [
 // inmersiva -- una barra fija abajo achicaría el tablero justo en la
 // cancha, que es donde más importa que se vea grande.
 function debeOcultarse(pathname) {
-  if (pathname.startsWith("/elegir-deporte")) return true;
   if (pathname.startsWith("/login")) return true;
   if (pathname.startsWith("/completar-perfil")) return true;
   if (/^\/partido\/[^/]+\/marcador$/.test(pathname)) return true;

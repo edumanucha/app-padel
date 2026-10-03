@@ -1,9 +1,7 @@
-import ElegirDeporteForm from "@/components/ElegirDeporteForm";
+import { redirect } from "next/navigation";
 
-export default function ElegirDeportePage() {
-  return (
-    <main className="min-h-screen flex justify-center items-center p-6">
-      <ElegirDeporteForm />
-    </main>
-  );
+// Elegí tu deporte (2026-10-03): se sacó, la app se enfoca solo en pádel. Si alguien tiene
+// el link guardado, va al inicio.
+export default function Pagina() {
+  redirect("/");
 }
