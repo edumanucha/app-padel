@@ -2,8 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { IconoCasa, IconoInstalar } from "@/components/Icons";
+import HojaAbajo from "@/components/HojaAbajo";
 
 const tarjeta = "bg-surface text-ink rounded-[8px] p-4 border border-ink/10";
+
+// APK de Android (2026-10-03): archivo en public/padelito.apk, generado con
+// PWABuilder (llave de firma guardada FUERA del repo). Si se saca el archivo,
+// poner esto en false y la opción deja de mostrarse.
+const APK_DISPONIBLE = true;
+const LINK_APK = "/padelito.apk";
 
 // La franja del inicio, si se cierra, vuelve a aparecer a los 3 días.
 const CLAVE_FRANJA_CERRADA = "instalarAppFranjaCerrada";
@@ -17,6 +24,11 @@ function estaInstalada() {
 function esIOS() {
   if (typeof navigator === "undefined") return false;
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
+function esAndroid() {
+  if (typeof navigator === "undefined") return false;
+  return /android/i.test(navigator.userAgent);
 }
 
 function franjaCerradaHace() {
@@ -46,6 +58,7 @@ export default function InstalarApp({ variante = "tarjeta" }) {
   const [instalada, setInstalada] = useState(true); // arranca en true para no parpadear antes de chequear
   const [cerrada, setCerrada] = useState(false);
   const [mostrarPasos, setMostrarPasos] = useState(false);
+  const [mostrarHoja, setMostrarHoja] = useState(false);
 
   useEffect(() => {
     setInstalada(estaInstalada());
@@ -68,10 +81,29 @@ export default function InstalarApp({ variante = "tarjeta" }) {
   }, [variante]);
 
   async function handleInstalar() {
+    // Android con APK, o iPhone: se abre la hojita con las opciones / los pasos.
+    if ((esAndroid() && APK_DISPONIBLE) || esIOS()) {
+      if (esIOS()) setMostrarPasos(true);
+      setMostrarHoja(true);
+      return;
+    }
     if (!promptEvent) {
       setMostrarPasos((v) => !v);
       return;
     }
+    promptEvent.prompt();
+    const { outcome } = await promptEvent.userChoice;
+    if (outcome === "accepted") setInstalada(true);
+    setPromptEvent(null);
+  }
+
+  // "Instalar desde el navegador" dentro de la hoja de Android.
+  async function instalarDesdeNavegador() {
+    if (!promptEvent) {
+      setMostrarPasos(true);
+      return;
+    }
+    setMostrarHoja(false);
     promptEvent.prompt();
     const { outcome } = await promptEvent.userChoice;
     if (outcome === "accepted") setInstalada(true);
@@ -107,6 +139,44 @@ export default function InstalarApp({ variante = "tarjeta" }) {
     </ol>
   );
 
+  // Hoja de instalación (2026-10-03, maqueta aprobada): Android ofrece el APK
+  // y la instalación desde el navegador; iPhone muestra los pasos de Safari.
+  const hoja = mostrarHoja && (
+    <HojaAbajo titulo="Instalar Padelito" onCerrar={() => { setMostrarHoja(false); setMostrarPasos(false); }} textoCerrar="Cerrar ✕">
+      {esIOS() ? (
+        <>
+          {pasos}
+        </>
+      ) : (
+        <>
+          <a
+            href={LINK_APK}
+            download="Padelito.apk"
+            className="flex flex-col gap-1 rounded-[8px] bg-[#154139] text-[#eaf4f0] p-3"
+          >
+            <span className="self-start text-[10px] font-bold uppercase tracking-[0.1em] bg-[#f2c53d] text-[#1a1305] px-1.5 py-0.5 rounded-[4px]">Recomendado</span>
+            <span className="font-bold text-[15px] flex items-center gap-2">
+              <IconoInstalar className="ico" aria-hidden /> Descargar la app (APK)
+            </span>
+            <span className="text-xs text-[#8fb6ae]">Se instala como una app más, con ícono propio. Pesa 1 MB.</span>
+          </a>
+          <button
+            type="button"
+            onClick={instalarDesdeNavegador}
+            className="flex flex-col gap-1 rounded-[8px] border border-ink/15 p-3 text-left cursor-pointer"
+          >
+            <span className="font-bold text-[15px]">Instalar desde el navegador</span>
+            <span className="text-xs text-muted">Más rápido, pero depende de Chrome.</span>
+          </button>
+          {mostrarPasos && pasos}
+          <p className="text-xs text-muted border-t border-ink/10 pt-3">
+            Al instalar el APK, Android puede pedirte permiso para <b className="text-ink">instalar apps de origen desconocido</b>. Es normal: aceptalo solo para Padelito.
+          </p>
+        </>
+      )}
+    </HojaAbajo>
+  );
+
   if (variante === "franja") {
     return (
       <div className="flex flex-col gap-2">
@@ -123,7 +193,8 @@ export default function InstalarApp({ variante = "tarjeta" }) {
             ✕
           </button>
         </div>
-        {pasos && <div className={tarjeta}>{pasos}</div>}
+        {pasos && !mostrarHoja && <div className={tarjeta}>{pasos}</div>}
+        {hoja}
       </div>
     );
   }
@@ -137,7 +208,8 @@ export default function InstalarApp({ variante = "tarjeta" }) {
         >
           <IconoInstalar className="ico" aria-hidden /> Instalar la app en este dispositivo
         </button>
-        {pasos && <div className={tarjeta}>{pasos}</div>}
+        {pasos && !mostrarHoja && <div className={tarjeta}>{pasos}</div>}
+        {hoja}
       </div>
     );
   }
@@ -158,8 +230,9 @@ export default function InstalarApp({ variante = "tarjeta" }) {
         >
           {promptEvent ? "Instalar" : "Ver cómo"}
         </button>
-        {pasos && <div className="mt-2">{pasos}</div>}
+        {pasos && !mostrarHoja && <div className="mt-2">{pasos}</div>}
       </div>
+      {hoja}
     </div>
   );
 }

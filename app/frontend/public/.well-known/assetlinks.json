@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.frontend_ten_theta_89.twa",
+        "sha256_cert_fingerprints": ["A7:4C:0A:ED:9E:C4:FD:CD:55:6A:84:E6:80:E8:01:C3:B9:15:0F:59:04:56:7C:68:C2:D9:BA:63:5C:D9:32:E2"]
+      }
+    }]

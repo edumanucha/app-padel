@@ -71,6 +71,9 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
   if (url.pathname.startsWith("/api/")) return;
+  // El APK (1 MB) y los archivos de verificación de Android van siempre
+  // directo a la red: no tiene sentido guardarlos en la copia sin conexión.
+  if (url.pathname.endsWith(".apk") || url.pathname.startsWith("/.well-known/")) return;
   // Audio pide por partes (Range): los sonidos se sirven enteros desde la
   // copia guardada (el navegador acepta la respuesta completa); el resto
   // va directo a la red.

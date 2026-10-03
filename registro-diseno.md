@@ -36,6 +36,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-06 | `diseno-06-pantallas-restantes` | 2026-10-01 | Paso F: Completar perfil, controles del Marcadorcito y pantallas menores en Cartel | Publicado |
 | D-07 | `diseno-07-destacados-perfil` | 2026-10-02 | Perfil: destacados "Cara a cara" (cómo venís, mejor dupla, cuenta pendiente, tu cancha) | Publicado |
 | D-08 | `diseno-08-icono-pelota` | 2026-10-03 | Ícono de la app: pelota amarilla sobre verde del cartel (opción A) | Publicado |
+| D-09 | `diseno-09-instalar-apk` | 2026-10-03 | Botón Instalar: hoja con APK de Android + pasos de iPhone | Publicado |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -119,6 +120,13 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Por qué:** el usuario vio el ícono en pwabuilder.com y lo encontró feo; se hace antes de generar el APK porque lo usa.
 - **Opciones mostradas (maqueta):** artifact privado "Íconos de Padelito" — A pelota amarilla sobre verde / B verde sobre amarillo / C pelota en la cancha / D pelota gigante
 - **Elegida por el usuario:** A
+
+### D-09 · `diseno-09-instalar-apk` — botón Instalar con APK (2026-10-03)
+
+- **Qué cambió:** el botón "Instalar la app" (Inicio, Mi perfil, Configuración) abre una hoja desde abajo. En **Android**: "Descargar la app (APK)" (recomendado) o "Instalar desde el navegador", con el aviso de origen desconocido. En **iPhone**: los pasos de Safari dentro de la hoja. En compu queda como antes.
+- **Archivos:** `components/InstalarApp.js`, `public/padelito.apk`, `public/.well-known/assetlinks.json`, `public/sw.js`, `next.config.mjs`. Además, "Política de privacidad" al final de Configuración.
+- **Opciones mostradas (maqueta):** artifact privado "Instalar Padelito" (botón, hoja Android, hoja iPhone).
+- **Notas:** el APK lo genera PWABuilder; la llave de firma vive fuera del repo (ver memoria `reference_apk_android_llave`).
 
 <!-- Plantilla para cada cambio nuevo:
 
