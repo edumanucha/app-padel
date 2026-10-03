@@ -43,6 +43,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-13 | `diseno-13-selector-grupo` | 2026-10-03 | Jugadores: selector Global / grupo; tarjeta con "Van 5 a 2"; Inicio en una sola consulta | Publicado |
 | D-14 | `diseno-14-quienes-somos-perfil` | 2026-10-03 | Quiénes somos: tarjeta "Invitame a jugar" que lleva al perfil de quien arma la app | Publicado |
 | D-15 | `diseno-15-torneos-preview` | 2026-10-03 | Vista previa de torneos (/pruebas-torneos): americano, mexicano y armable (liga o eliminación) | Vista previa |
+| D-16 | `diseno-16-torneos` | 2026-10-03 | Torneos reales: lista, crear (americano, mexicano, liga, eliminación), jugar y podio, guardados en la base | Publicado |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -176,6 +177,13 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Archivos:** `lib/torneos.js` (cruces y tablas, funciones puras, probadas), `components/PruebaTorneosForm.js`, `app/pruebas-torneos/page.js`.
 - **Opciones mostradas (maqueta):** artifact privado "Torneos entre amigos" (4 pantallas).
 - **Pendiente ("después hacemos todo"):** conectar a grupos y a la base de datos, invitados sin cuenta, tarjeta real para compartir, link público en vivo.
+
+### D-16 · `diseno-16-torneos` — torneos de verdad (2026-10-03)
+
+- **Qué es:** la vista previa (D-15) conectada a la base. `/torneos` (los que organizás o jugás, en juego y terminados), `/torneos/nuevo` (nombre, formato, jugadores con cuenta —se buscan o salen de tus frecuentes— o invitados por nombre, canchas, puntos y rondas) y `/torneos/<id>` (ronda en curso, tabla, podio; el organizador carga los resultados y cierra la ronda; los demás lo ven y se actualiza solo cada 20 s). Acceso "Torneos" en Comunidad del Inicio.
+- **Reglas:** torneo suelto (no necesita grupo); tiene su propia tabla y NO toca el ranking global; solo el organizador escribe (funciones de `071_torneos.sql` con auth.uid()); hasta 20 torneos en juego por organizador.
+- **Archivos:** `lib/torneosApp.js` (puente base ↔ cruces, probado simulando torneos completos de los 4 formatos), `components/TorneosForm.js`, `NuevoTorneoForm.js`, `TorneoForm.js`, rutas en `app/torneos`.
+- **Pendiente:** textos traducidos (hoy en español), tarjeta para compartir el podio, link público para seguir en vivo, avisar a los participantes con cuenta.
 
 <!-- Plantilla para cada cambio nuevo:
 

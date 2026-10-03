@@ -60,6 +60,8 @@ const en = {
       gruposDesc: "Ranking and head to head with your friends",
       consejosTitulo: "Padel tips",
       consejosDesc: "A new tip every day",
+      torneosTitulo: "Tournaments",
+      torneosDesc: "Americanos, mexicanos and more",
       jugadoresDesc: "Ranking and profiles",
       mensajesTitulo: "Messages",
       mensajesDesc: "Chat with your rivals",

@@ -191,6 +191,23 @@ const rpcs = {
     }),
   // Inicio en una sola consulta (070).
   home_inicial: () => ({ perfil: yo, resumen: rpcs.resumen_home(), notificaciones: rpcs.listar_notificaciones() }),
+  // Torneos (071): una liga de 4 parejas en juego y otro terminado.
+  mis_torneos: () => [
+    { id: id(970), nombre: "Liga del sábado", formato: "liga", estado: "en_juego", creado_en: dias(-1), participantes: 8, soy_organizador: true },
+    { id: id(971), nombre: "Americano de cumpleaños", formato: "americano", estado: "terminado", creado_en: dias(-12), participantes: 12, soy_organizador: false },
+  ],
+  torneo_completo: () => ({
+    torneo: { id: id(970), nombre: "Liga del sábado", formato: "liga", puntos_partido: 24, canchas: 2, total_rondas: null, puntos_victoria: 3, puntos_empate: 1, estado: "en_juego", codigo: "abc", creado_en: dias(-1), soy_organizador: true },
+    participantes: ["Eduardo", "Franco", "Nacho", "Enzo", "Matías", "Juanfer", "Lucas", "Pity"].map((n, i) => ({ id: id(980 + i), nombre: n, orden: i, pareja: Math.floor(i / 2), jugador_id: null })),
+    rondas: [
+      { id: id(990), numero: 1, titulo: null, descansan: [], pasan: [], partidos: [
+        { id: id(991), cancha: 1, a: ["e0"], b: ["e3"], ptsA: 15, ptsB: 9 },
+        { id: id(992), cancha: 2, a: ["e1"], b: ["e2"], ptsA: 11, ptsB: 13 } ] },
+      { id: id(993), numero: 2, titulo: null, descansan: [], pasan: [], partidos: [
+        { id: id(994), cancha: 1, a: ["e0"], b: ["e2"], ptsA: null, ptsB: null },
+        { id: id(995), cancha: 2, a: ["e3"], b: ["e1"], ptsA: null, ptsB: null } ] },
+    ],
+  }),
   // Grupos de amigos (069): lo mínimo para ver las pantallas.
   mis_grupos: () => [
     { grupo_id: id(950), nombre: "Los del jueves", es_admin: true, miembros: 6, partidos: 14, mi_posicion: 3, mis_puntos: 188 },

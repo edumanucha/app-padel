@@ -60,6 +60,8 @@ const es = {
       gruposDesc: "Ranking y cara a cara con tus amigos",
       consejosTitulo: "Consejos de pádel",
       consejosDesc: "Un consejo nuevo cada día",
+      torneosTitulo: "Torneos",
+      torneosDesc: "Americanos, mexicanos y más",
       jugadoresDesc: "Ranking y perfiles",
       mensajesTitulo: "Mensajes",
       mensajesDesc: "Chat con tus rivales",

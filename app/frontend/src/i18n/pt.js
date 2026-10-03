@@ -60,6 +60,8 @@ const pt = {
       gruposDesc: "Ranking e frente a frente com seus amigos",
       consejosTitulo: "Dicas de padel",
       consejosDesc: "Uma dica nova por dia",
+      torneosTitulo: "Torneios",
+      torneosDesc: "Americanos, mexicanos e mais",
       jugadoresDesc: "Ranking e perfis",
       mensajesTitulo: "Mensagens",
       mensajesDesc: "Converse com seus rivais",
