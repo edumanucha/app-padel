@@ -161,6 +161,7 @@ const pantallas = [
   { nombre: "cancha", ruta: `/canchas/${P(200)}` },
   { nombre: "apelaciones", ruta: "/apelaciones" },
   { nombre: "admin", ruta: "/admin/canchas" },
+  { nombre: "consejos", ruta: "/consejos" },
   { nombre: "grupos", ruta: "/grupos" },
   { nombre: "grupo-ranking", ruta: `/grupos/${P(950)}` },
   { nombre: "grupo-cara", ruta: `/grupos/${P(950)}`, antes: (pg) => clickTexto(pg, "Cara a cara") },

@@ -10,12 +10,13 @@ import DotDigit from "@/components/DotDigit";
 import IlustracionCancha from "@/components/IlustracionCancha";
 import ContadorNumero from "@/components/ContadorNumero";
 import InstalarApp from "@/components/InstalarApp";
+import ConsejoDelDia from "@/components/ConsejoDelDia";
 import HojaAbajo from "@/components/HojaAbajo";
 import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import GuiaPadelito from "@/components/GuiaPadelito";
 import { useEnPantalla } from "@/lib/useEnPantalla";
 import marcadorStyles from "@/components/Marcador.module.css";
-import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, IconoTrofeo, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion, IconoChevron, IconoCorazon, IconoGrupo } from "@/components/Icons";
+import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, IconoTrofeo, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion, IconoChevron, IconoCorazon, IconoGrupo, IconoLibro } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
 
@@ -159,7 +160,6 @@ export default function HomeForm() {
   const { locale, t } = useLocale();
   const [perfil, setPerfil] = useState(null);
   const [resumen, setResumen] = useState(null);
-  const [tipPadel, setTipPadel] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [historial, setHistorial] = useState(null);
   const [mostrarHistorial, setMostrarHistorial] = useState(false);
@@ -274,11 +274,6 @@ export default function HomeForm() {
       }
 
       setPerfil(perfilData);
-
-      fetch("/api/tip-padel")
-        .then((r) => (r.ok ? r.json() : null))
-        .then(setTipPadel)
-        .catch(() => setTipPadel(null));
 
       // En paralelo (2026-09-13, arreglo de performance): ninguna de las
       // dos depende de la otra, antes iban una atrás de la otra sumando
@@ -648,27 +643,10 @@ export default function HomeForm() {
         </div>
       )}
 
-      {/* 10. Tip de pádel real -- reemplaza el tip fijo que escribíamos
-          nosotros (2026-09-12, a pedido del usuario: "quiero que
-          empecemos a poner algo real"). Es el título real del último
-          artículo de un blog de pádel + link "Leer más" -- no copiamos
-          el cuerpo del artículo (derechos de autor ajenos), ver
-          /api/tip-padel/route.js. Si el sitio externo no responde, la
-          tarjeta simplemente no aparece. */}
-      {tipPadel && (
-        <div ref={refTip} className={`${tarjeta} tarjeta-entra ${visibleTip ? "visible" : ""}`}>
-          <span className="font-heading font-semibold text-sm block mb-1">{t("home.tipDePadel")}</span>
-          <span className="text-sm text-muted block mb-2">{tipPadel.titulo}</span>
-          <a
-            href={tipPadel.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-heading font-semibold text-accent-2-ink underline"
-          >
-            {t("home.leerMas")} ({tipPadel.fuente}) ↗
-          </a>
-        </div>
-      )}
+      {/* 10. Consejo del día (2026-10-03): reemplaza al tip externo; ver lib/consejos.js */}
+      <div ref={refTip} className={`tarjeta-entra ${visibleTip ? "visible" : ""}`}>
+        <ConsejoDelDia />
+      </div>
       </div>
 
       <div className="home-lateral flex flex-col gap-4">
@@ -705,6 +683,7 @@ export default function HomeForm() {
         <Subtitulo>{t("home.recursos")}</Subtitulo>
         <div className="flex flex-col border-t-2 border-ink mt-2">
           <FilaAcceso Icono={IconoPin} titulo={t("home.canchas")} onClick={() => router.push("/canchas")} />
+          <FilaAcceso Icono={IconoLibro} titulo={t("home.consejosTitulo")} desc={t("home.consejosDesc")} onClick={() => router.push("/consejos")} />
           <FilaAcceso Icono={IconoLista} titulo={t("home.misPartidos")} onClick={() => router.push("/mis-partidos")} />
         </div>
       </div>

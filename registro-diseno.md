@@ -39,6 +39,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-09 | `diseno-09-instalar-apk` | 2026-10-03 | Botón Instalar: hoja con APK de Android + pasos de iPhone | Publicado |
 | D-10 | `diseno-10-tarjeta-partido` | 2026-10-03 | Tarjeta cuadrada para compartir el resultado (B si ganás, C si perdés) | Publicado |
 | D-11 | `diseno-11-grupos` | 2026-10-03 | Grupos de amigos: lista, ranking, cara a cara, miembros/invitar y link para unirse | Publicado |
+| D-12 | `diseno-12-consejos` | 2026-10-03 | Consejo del día en el Inicio + pantalla Consejos (164, por categoría, con fuentes); se saca el espacio de publicidad de ejemplo y Elegí tu deporte | Publicado |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -144,6 +145,14 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Reglas:** cuentan los partidos terminados con 3 o más miembros del grupo; mismos puntos que el ranking global; el creador es admin; solo los miembros ven las estadísticas (RLS en `069_grupos_de_amigos.sql`).
 - **Opciones mostradas (maqueta):** artifact privado "Grupos de amigos" (6 pantallas).
 - **Pendiente:** selector Global/Grupo dentro de Jugadores (pantallas 5 y 6 de la maqueta) y la línea "Van 5 a 2" en la tarjeta para compartir.
+
+### D-12 · `diseno-12-consejos` — consejos de pádel (2026-10-03)
+
+- **Qué cambió:** el "Tip de pádel" del Inicio (título de un blog externo) pasa a ser **Consejo del día**: uno por día (hora de Argentina), escrito con palabras propias, con su fuente; al tocarlo abre **/consejos** (164 consejos, filtro por 11 categorías, fuentes con link). Acceso nuevo "Consejos de pádel" en Recursos.
+- **Cómo se armaron:** lectura de 4 guías de PadelStar y del libro "Pádel: Enseñanza y Aprendizaje"; reescritos con palabras propias; se descartaron automáticamente los que repetían 6 o más palabras seguidas del original, los duplicados y las reglas del libro (2018). Los PDF quedan FUERA del repo (`Descargas/guias-padelstar`).
+- **Archivos:** `lib/consejos.js`, `components/ConsejosForm.js`, `components/ConsejoDelDia.js`, `app/consejos/page.js`; se borra `api/tip-padel`.
+- **También ese día:** se sacó el espacio de publicidad de ejemplo y "Elegí tu deporte" / Futbolito / Basquelito (la app se enfoca solo en pádel).
+- **Opciones mostradas (maqueta):** artifact privado "Consejos de pádel" (3 pantallas).
 
 <!-- Plantilla para cada cambio nuevo:
 
