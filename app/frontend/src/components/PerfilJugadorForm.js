@@ -7,7 +7,7 @@ import PelotaLoader from "@/components/PelotaLoader";
 import Logo from "@/components/Logo";
 import { IconoMensaje, IconoTrofeo, IconoPersona, IconoMano, IconoPelota, IconoBandera, IconoDuo, IconoChevron, IconoPulgar, IconoEstrella } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
-import { INTL_LOCALE } from "@/i18n/translations";
+import { INTL_LOCALE } from "@/i18n/config";
 
 function etiquetaNivel(n, t) {
   if (n === 1) return t("directorio.opcionNivelMaxima");

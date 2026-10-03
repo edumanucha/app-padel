@@ -6,7 +6,7 @@ import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import CampoCancha from "@/components/CampoCancha";
 import { useLocale } from "@/i18n/LocaleContext";
-import { INTL_LOCALE } from "@/i18n/translations";
+import { INTL_LOCALE } from "@/i18n/config";
 
 import { IconoRayo } from "@/components/Icons";
 // Rediseño Cartel (2026-10-01): campos con contorno fino y esquinas casi

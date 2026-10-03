@@ -17,7 +17,7 @@ import { useEnPantalla } from "@/lib/useEnPantalla";
 import marcadorStyles from "@/components/Marcador.module.css";
 import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, IconoTrofeo, IconoCarrito, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion, IconoChevron, IconoCorazon } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
-import { INTL_LOCALE } from "@/i18n/translations";
+import { INTL_LOCALE } from "@/i18n/config";
 
 function formatearFecha(fechaIso, locale) {
   return new Date(fechaIso).toLocaleString(INTL_LOCALE[locale] ?? "es-AR", {

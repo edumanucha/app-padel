@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale } from "@/i18n/LocaleContext";
-import { INTL_LOCALE } from "@/i18n/translations";
+import { INTL_LOCALE } from "@/i18n/config";
 
 // Destacados del perfil, opción C "Cara a cara" (2026-10-02, elegida por el
 // usuario entre 3 maquetas): una frase de cómo venís en el cartel verde,

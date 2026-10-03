@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import { useLocale } from "@/i18n/LocaleContext";
-import { INTL_LOCALE } from "@/i18n/translations";
+import { INTL_LOCALE } from "@/i18n/config";
 
 function formatearSets(setsA, setsB) {
   if (!setsA || !setsB) return "";

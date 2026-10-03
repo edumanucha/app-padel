@@ -6,7 +6,7 @@ import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import HojaAbajo from "@/components/HojaAbajo";
 import { useLocale } from "@/i18n/LocaleContext";
-import { INTL_LOCALE } from "@/i18n/translations";
+import { INTL_LOCALE } from "@/i18n/config";
 
 // A pedido del usuario (2026-09-06): cada mensaje muestra día y hora en
 // que se mandó, siempre los dos (no solo la hora aunque sea de hoy).

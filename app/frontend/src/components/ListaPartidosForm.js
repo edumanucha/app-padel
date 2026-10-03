@@ -6,7 +6,7 @@ import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import InvitarJugadorForm from "@/components/InvitarJugadorForm";
 import { useLocale } from "@/i18n/LocaleContext";
-import { INTL_LOCALE } from "@/i18n/translations";
+import { INTL_LOCALE } from "@/i18n/config";
 
 // Pantalla "Partidos abiertos" (US-2.2/US-2.3/US-2.4): lista los partidos
 // en estado "abierto" -- más los partidos propios (donde participo,

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 import InstalarApp from "@/components/InstalarApp";
 import { useLocale } from "@/i18n/LocaleContext";
-import { LOCALES } from "@/i18n/translations";
+import { LOCALES } from "@/i18n/config";
 import { IconoChevron } from "@/components/Icons";
 
 // Opciones de color de los botones "de acción" grandes (Marcadorcito,

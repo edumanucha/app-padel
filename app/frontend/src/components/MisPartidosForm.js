@@ -6,7 +6,7 @@ import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import PelotaLoader from "@/components/PelotaLoader";
 import { useLocale } from "@/i18n/LocaleContext";
-import { INTL_LOCALE } from "@/i18n/translations";
+import { INTL_LOCALE } from "@/i18n/config";
 
 const ESTADO_CLAVE = {
   abierto: "estadoAbierto",

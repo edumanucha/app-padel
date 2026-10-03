@@ -6,7 +6,7 @@ import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import { IconoPelota, IconoCompartir, IconoRepetir, IconoBilletera, IconoTelefono, IconoChevron } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
-import { INTL_LOCALE } from "@/i18n/translations";
+import { INTL_LOCALE } from "@/i18n/config";
 
 // Rediseño Cartel (2026-10-01): sin tarjetas -- el botón suave es el
 // "Volver" de la guía (contorno fino, sin fondo).
