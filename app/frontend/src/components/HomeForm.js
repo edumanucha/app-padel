@@ -251,16 +251,34 @@ export default function HomeForm() {
         setCargando(false);
       }
 
-      const { data: perfilData, error: perfilError } = await supabase
-        .from("perfiles")
-        .select("*")
-        .eq("id", user.id)
-        .maybeSingle();
+      // Una sola vuelta de red (2026-10-03, velocidad 4): home_inicial
+      // (SQL 070) trae perfil + resumen + notificaciones juntos. Si todavía
+      // no existe en la base, o falla (por ejemplo, una cuenta nueva sin
+      // perfil), se usa el camino de siempre con 3 pedidos.
+      let perfilData = null;
+      let resumenData = null;
+      let resumenError = null;
+      let notifData = null;
+      let usoJunto = false;
+      const junto = await supabase.rpc("home_inicial");
+      if (!junto.error && junto.data?.perfil) {
+        perfilData = junto.data.perfil;
+        resumenData = junto.data.resumen;
+        notifData = junto.data.notificaciones;
+        usoJunto = true;
+      } else {
+        const { data: perfilFila, error: perfilError } = await supabase
+          .from("perfiles")
+          .select("*")
+          .eq("id", user.id)
+          .maybeSingle();
 
-      if (perfilError) {
-        setError(`No se pudo cargar tu perfil: ${perfilError.message}`);
-        setCargando(false);
-        return;
+        if (perfilError) {
+          setError(`No se pudo cargar tu perfil: ${perfilError.message}`);
+          setCargando(false);
+          return;
+        }
+        perfilData = perfilFila;
       }
 
       if (!perfilData) {
@@ -278,10 +296,12 @@ export default function HomeForm() {
       // En paralelo (2026-09-13, arreglo de performance): ninguna de las
       // dos depende de la otra, antes iban una atrás de la otra sumando
       // una vuelta de red extra a cada carga del Home.
-      const [{ data: resumenData, error: resumenError }, { data: notifData }] = await Promise.all([
-        supabase.rpc("resumen_home"),
-        supabase.rpc("listar_notificaciones"),
-      ]);
+      if (!usoJunto) {
+        const [resumenRes, notifRes] = await Promise.all([supabase.rpc("resumen_home"), supabase.rpc("listar_notificaciones")]);
+        resumenData = resumenRes.data;
+        resumenError = resumenRes.error;
+        notifData = notifRes.data;
+      }
 
       if (resumenError) {
         setError(`No se pudo cargar el resumen: ${resumenError.message}`);

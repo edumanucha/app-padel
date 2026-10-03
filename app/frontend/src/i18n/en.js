@@ -473,6 +473,7 @@ const en = {
       ganamos: "We won",
       vs: "vs.",
       leGanaronA: "beat",
+      van: "Head to head: {g}-{p}",
     },
     grupos: {
       titulo: "My groups",
@@ -503,6 +504,7 @@ const en = {
       esteMes: "This month",
       siempre: "All time",
       reglaPartidos: "Only matches with 3 or more players from the group count.",
+      ganadosPerdidos: "{g} won · {p} lost",
       sinPartidos: "There are no group matches yet. Play one with at least 3 group members and it shows up here.",
       vos: "{nombre} (you)",
       rivalTitulo: "Your rival in the group",

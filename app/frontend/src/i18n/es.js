@@ -473,6 +473,7 @@ const es = {
       ganamos: "Ganamos",
       vs: "vs.",
       leGanaronA: "le ganaron a",
+      van: "Van {g} a {p}",
     },
     grupos: {
       titulo: "Mis grupos",
@@ -503,6 +504,7 @@ const es = {
       esteMes: "Este mes",
       siempre: "Siempre",
       reglaPartidos: "Solo cuentan los partidos con 3 o más jugadores del grupo.",
+      ganadosPerdidos: "{g} ganados · {p} perdidos",
       sinPartidos: "Todavía no hay partidos del grupo. Jueguen uno con al menos 3 del grupo y aparece acá.",
       vos: "{nombre} (vos)",
       rivalTitulo: "Tu rival del grupo",

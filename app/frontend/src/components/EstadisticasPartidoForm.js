@@ -7,6 +7,7 @@ import PelotaLoader from "@/components/PelotaLoader";
 import BarraEstadistica from "@/components/BarraEstadistica";
 import { IconoTrofeo } from "@/components/Icons";
 import BotonCompartirTarjeta from "@/components/BotonCompartirTarjeta";
+import { vanContraRivales } from "@/lib/destacadosPerfil";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
 import { estadisticasDeLado, formatoSets, calcularPuntosRanking } from "@/lib/estadisticasMarcadorcito";
@@ -104,6 +105,10 @@ export default function EstadisticasPartidoForm({ partidoId }) {
         String((f.jugador_id ? nombrePorId[f.jugador_id] : null) ?? f.invitado_nombre ?? "").trim().split(/\s+/)[0] || "?";
       const nombresDe = (equipo) => (todosLosJugadores ?? []).filter((f) => f.equipo === equipo).map(primerNombre);
 
+      // "Van 5 a 2" contra esta misma pareja (para la tarjeta de compartir).
+      const { data: cruces } = await supabase.rpc("mis_cruces_partidos");
+      const van = vanContraRivales(cruces, partidoId);
+
       const gane = partido.resultados_partido?.ganador === miEquipo;
       setDatos({
         fechaHora: partido.fecha_hora,
@@ -115,6 +120,7 @@ export default function EstadisticasPartidoForm({ partidoId }) {
         rivales,
         nombresMios: nombresDe(miEquipo),
         nombresRivales: nombresDe(miEquipo === "A" ? "B" : "A"),
+        van,
       });
       setCargando(false);
     }
@@ -210,6 +216,7 @@ export default function EstadisticasPartidoForm({ partidoId }) {
           fechaHora={datos.fechaHora}
           duracionMin={d.duracionMin}
           cancha={datos.cancha}
+          van={datos.van}
         />
       )}
 

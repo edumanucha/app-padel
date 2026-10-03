@@ -103,6 +103,10 @@ export default function DirectorioJugadoresForm() {
   // Ranking mensual (se reinicia solo, es el mes calendario actual) vs.
   // histórico (acumulado de por vida) -- 2026-09-13, a pedido del usuario.
   const [periodo, setPeriodo] = useState("mensual");
+  // Selector Global / grupo (2026-10-03): con un grupo elegido, el ranking pasa a ser
+  // solo entre sus miembros (ranking_grupo, 069_grupos_de_amigos.sql).
+  const [grupos, setGrupos] = useState([]);
+  const [grupoSel, setGrupoSel] = useState("global");
   // Barras de puntos proporcionales al máximo de la lista, animadas desde
   // 0 (2026-09-13, a pedido del usuario) -- arrancan en 0% y un instante
   // después pasan a su ancho real, para que la transición CSS se vea.
@@ -145,7 +149,18 @@ export default function DirectorioJugadoresForm() {
     if (verificandoSesion) return;
     buscar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [verificandoSesion, periodo]);
+  }, [verificandoSesion, periodo, grupoSel]);
+
+  // Mis grupos, para el selector (si la persona no está en ninguno, no se muestra).
+  useEffect(() => {
+    if (verificandoSesion) return;
+    supabase.rpc("mis_grupos").then(({ data }) => setGrupos(data ?? []));
+  }, [verificandoSesion]);
+
+  function elegirGrupo(id) {
+    setGrupoSel(id);
+    if (id !== "global" && periodo === "semanal") setPeriodo("mensual");
+  }
 
   // `filtros`: opcional, para buscar con valores que todavía no llegaron
   // al estado (por ejemplo, recién limpiados).
@@ -156,8 +171,9 @@ export default function DirectorioJugadoresForm() {
     setError("");
     // Copia de la última vez (2026-09-30, optimización): solo para la
     // lista sin filtros, que es la que se ve al entrar.
-    const sinFiltros = nombre === "" && nivel === "" && sexo === "";
-    const claveCopia = `jugadores_${periodo}`;
+    const enGrupo = grupoSel !== "global";
+    const sinFiltros = enGrupo || (nombre === "" && nivel === "" && sexo === "");
+    const claveCopia = enGrupo ? `jugadores_grupo_${grupoSel}_${periodo}` : `jugadores_${periodo}`;
     const copia = sinFiltros ? leerPantalla(claveCopia, userId) : null;
     if (copia) {
       setJugadores(copia);
@@ -166,12 +182,29 @@ export default function DirectorioJugadoresForm() {
       setCargando(true);
     }
 
-    const { data, error: buscarError } = await supabase.rpc("listar_directorio_jugadores", {
-      p_nombre: nombre === "" ? null : nombre,
-      p_nivel: nivel === "" ? null : Number(nivel),
-      p_sexo: sexo === "" ? null : sexo,
-      p_periodo: periodo,
-    });
+    let data;
+    let buscarError;
+    if (enGrupo) {
+      const r = await supabase.rpc("ranking_grupo", { p_grupo: grupoSel, p_periodo: periodo === "mensual" ? "mes" : "siempre" });
+      buscarError = r.error;
+      data = (r.data ?? []).map((x) => ({
+        id: x.jugador_id,
+        nombre: x.nombre,
+        puntos_ranking: x.puntos,
+        partidos_jugados: x.pj,
+        porcentaje_victorias: x.pj > 0 ? Math.round((100 * x.pg) / x.pj) : 0,
+        pg: x.pg,
+        pp: x.pp,
+        esGrupo: true,
+      }));
+    } else {
+      ({ data, error: buscarError } = await supabase.rpc("listar_directorio_jugadores", {
+        p_nombre: nombre === "" ? null : nombre,
+        p_nivel: nivel === "" ? null : Number(nivel),
+        p_sexo: sexo === "" ? null : sexo,
+        p_periodo: periodo,
+      }));
+    }
 
     setCargando(false);
 
@@ -212,6 +245,7 @@ export default function DirectorioJugadoresForm() {
       <div className="flex items-center justify-between col-completa">
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("directorio.titulo")}</h1>
         <div className="flex items-center gap-2">
+        {grupoSel === "global" && (
         <button
           onClick={() => setMostrarFiltros(true)}
           className={`text-sm font-semibold px-3 py-1.5 rounded-[6px] border cursor-pointer ${ cantidadFiltros > 0 ? "bg-ink text-bg border-ink" : "border-ink/15 text-ink" }`}
@@ -219,6 +253,7 @@ export default function DirectorioJugadoresForm() {
           <IconoLupa className="ico" aria-hidden /> {t("directorio.filtros")}
           {cantidadFiltros > 0 ? ` (${cantidadFiltros})` : ""}
         </button>
+        )}
         <button
           onClick={() => router.push("/")}
           className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
@@ -280,6 +315,23 @@ export default function DirectorioJugadoresForm() {
       {error && <p className="text-red-600 text-sm col-completa">{error}</p>}
 
       <div className="flex flex-col gap-3">
+        {grupos.length > 0 && (
+          <div className="flex flex-wrap gap-1.5" role="tablist" aria-label={t("directorio.ranking")}>
+            {[{ id: "global", nombre: "Global" }, ...grupos.map((g) => ({ id: g.grupo_id, nombre: g.nombre }))].map((o) => (
+              <button
+                key={o.id}
+                role="tab"
+                aria-selected={grupoSel === o.id}
+                onClick={() => elegirGrupo(o.id)}
+                className={`text-xs font-semibold px-3 py-1.5 rounded-[6px] border cursor-pointer ${
+                  grupoSel === o.id ? "bg-ink text-bg border-ink" : "border-ink/15"
+                }`}
+              >
+                {o.nombre}
+              </button>
+            ))}
+          </div>
+        )}
         <span className="flex items-center gap-1">
           <Subtitulo>{t("directorio.ranking")}</Subtitulo>
           <InfoEstadistica
@@ -290,11 +342,17 @@ export default function DirectorioJugadoresForm() {
         {/* Rediseño Cartel (2026-10-01): el período va como pestañas con
             línea abajo, no como píldora. */}
         <div className="flex border-b border-ink/10">
-          {[
-            ["semanal", "Semanal"],
-            ["mensual", "Mensual"],
-            ["historico", "Histórico"],
-          ].map(([valor, etiqueta]) => (
+          {(grupoSel === "global"
+            ? [
+                ["semanal", "Semanal"],
+                ["mensual", "Mensual"],
+                ["historico", "Histórico"],
+              ]
+            : [
+                ["mensual", t("grupos.esteMes")],
+                ["historico", t("grupos.siempre")],
+              ]
+          ).map(([valor, etiqueta]) => (
             <button
               key={valor}
               type="button"
@@ -305,6 +363,10 @@ export default function DirectorioJugadoresForm() {
             </button>
           ))}
         </div>
+
+        {grupoSel !== "global" && (
+          <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{t("grupos.reglaPartidos")}</span>
+        )}
 
         {!cargando && jugadores.length === 0 && (
           <div className="text-muted text-sm py-2">{t("directorio.sinResultados")}</div>
@@ -359,15 +421,23 @@ export default function DirectorioJugadoresForm() {
                 </span>
                 <div className="flex flex-col flex-1 min-w-0">
                   <span className="font-semibold truncate">{j.nombre}</span>
-                  <span className="text-xs text-muted">
-                    {t("directorio.nivelPrefijo")} {etiquetaNivel(j.nivel, t)} · {manoHabilLabel(j.mano_habil, t)} ·{" "}
-                    {sexoLabel(j.sexo, t)}
-                  </span>
-                  <span className="text-xs text-muted">
-                    {j.partidos_jugados > 0
-                      ? t("directorio.jugadosVictorias", { jugados: j.partidos_jugados, porcentaje: j.porcentaje_victorias })
-                      : t("directorio.sinPartidosJugados")}
-                  </span>
+                  {j.esGrupo ? (
+                    <span className="text-xs text-muted">
+                      {j.partidos_jugados > 0 ? t("grupos.ganadosPerdidos", { g: j.pg, p: j.pp }) : t("directorio.sinPartidosJugados")}
+                    </span>
+                  ) : (
+                    <>
+                      <span className="text-xs text-muted">
+                        {t("directorio.nivelPrefijo")} {etiquetaNivel(j.nivel, t)} · {manoHabilLabel(j.mano_habil, t)} ·{" "}
+                        {sexoLabel(j.sexo, t)}
+                      </span>
+                      <span className="text-xs text-muted">
+                        {j.partidos_jugados > 0
+                          ? t("directorio.jugadosVictorias", { jugados: j.partidos_jugados, porcentaje: j.porcentaje_victorias })
+                          : t("directorio.sinPartidosJugados")}
+                      </span>
+                    </>
+                  )}
                 </div>
                 <div className="flex flex-col items-end gap-1 flex-shrink-0 w-20">
                   <span className="whitespace-nowrap flex items-baseline gap-1">

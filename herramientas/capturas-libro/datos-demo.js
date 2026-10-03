@@ -189,6 +189,8 @@ const rpcs = {
         { ...base, otro_id: id(r2), otro_nombre: nombreDe(id(r2)), otro_equipo: "B" },
       ];
     }),
+  // Inicio en una sola consulta (070).
+  home_inicial: () => ({ perfil: yo, resumen: rpcs.resumen_home(), notificaciones: rpcs.listar_notificaciones() }),
   // Grupos de amigos (069): lo mínimo para ver las pantallas.
   mis_grupos: () => [
     { grupo_id: id(950), nombre: "Los del jueves", es_admin: true, miembros: 6, partidos: 14, mi_posicion: 3, mis_puntos: 188 },

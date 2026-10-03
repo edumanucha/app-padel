@@ -15,7 +15,7 @@ function duracionTexto(min) {
 // resultado (diseño B si ganaste, C si perdiste -- ver lib/tarjetaPartido.js)
 // y abre el menú de compartir del celu. Si el navegador no puede compartir
 // archivos (compu), la descarga.
-export default function BotonCompartirTarjeta({ gane, mios, rivales, sets, fechaHora, duracionMin, cancha }) {
+export default function BotonCompartirTarjeta({ gane, mios, rivales, sets, fechaHora, duracionMin, cancha, van }) {
   const { t, locale } = useLocale();
   const [estado, setEstado] = useState("listo"); // listo | armando | descargada | error
 
@@ -30,6 +30,7 @@ export default function BotonCompartirTarjeta({ gane, mios, rivales, sets, fecha
         fecha: new Date(fechaHora).toLocaleDateString(INTL_LOCALE[locale] ?? "es-AR", { weekday: "short", day: "numeric", month: "short" }),
         duracion: duracionTexto(duracionMin),
         cancha,
+        van: van ? t("tarjeta.van", { g: van.g, p: van.p }) : null,
         textos: { ganamos: t("tarjeta.ganamos"), vs: t("tarjeta.vs"), leGanaronA: t("tarjeta.leGanaronA") },
       });
       const archivo = new File([blob], "padelito-partido.png", { type: "image/png" });

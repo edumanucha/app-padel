@@ -135,6 +135,7 @@ const pantallas = [
   { nombre: "configuracion", ruta: "/configuracion" },
   { nombre: "quienes-somos", ruta: "/quienes-somos" },
   { nombre: "jugadores", ruta: "/jugadores" },
+  { nombre: "jugadores-grupo", ruta: "/jugadores", antes: (pg) => clickTexto(pg, "Los del jueves") },
   { nombre: "jugadores-filtros", ruta: "/jugadores", antes: (pg) => clickTexto(pg, "Filtros"), full: false },
   { nombre: "jugador", ruta: `/jugadores/${P(103)}` },
   { nombre: "perfil", ruta: "/perfil" },

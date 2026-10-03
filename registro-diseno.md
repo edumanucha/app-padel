@@ -40,6 +40,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-10 | `diseno-10-tarjeta-partido` | 2026-10-03 | Tarjeta cuadrada para compartir el resultado (B si ganás, C si perdés) | Publicado |
 | D-11 | `diseno-11-grupos` | 2026-10-03 | Grupos de amigos: lista, ranking, cara a cara, miembros/invitar y link para unirse | Publicado |
 | D-12 | `diseno-12-consejos` | 2026-10-03 | Consejo del día en el Inicio + pantalla Consejos (164, por categoría, con fuentes); se saca el espacio de publicidad de ejemplo y Elegí tu deporte | Publicado |
+| D-13 | `diseno-13-selector-grupo` | 2026-10-03 | Jugadores: selector Global / grupo; tarjeta con "Van 5 a 2"; Inicio en una sola consulta | Publicado |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -153,6 +154,13 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Archivos:** `lib/consejos.js`, `components/ConsejosForm.js`, `components/ConsejoDelDia.js`, `app/consejos/page.js`; se borra `api/tip-padel`.
 - **También ese día:** se sacó el espacio de publicidad de ejemplo y "Elegí tu deporte" / Futbolito / Basquelito (la app se enfoca solo en pádel).
 - **Opciones mostradas (maqueta):** artifact privado "Consejos de pádel" (3 pantallas).
+
+### D-13 · `diseno-13-selector-grupo` — selector de grupo, "Van X a Y" y Inicio rápido (2026-10-03)
+
+- **Selector Global / grupo en Jugadores:** si estás en algún grupo aparecen chips arriba del ranking; con un grupo elegido el podio y la lista son solo entre sus miembros (este mes / siempre, "X ganados · Y perdidos"), con la regla de 3 miembros y sin el botón de filtros. Usa `ranking_grupo` (SQL 069).
+- **"Van 5 a 2" en la tarjeta de compartir:** cuántos partidos le ganaste / perdiste contra ESTA MISMA pareja rival (mínimo 2 jugados), calculado con `mis_cruces_partidos` (SQL 068). No depende de los grupos.
+- **Velocidad 4:** el Inicio pide perfil + resumen + notificaciones en una sola consulta (`home_inicial`, SQL 070); si la función no existe o falla, vuelve al camino de 3 pedidos.
+- **Opciones mostradas (maqueta):** pantallas 5 y 6 del artifact privado "Grupos de amigos".
 
 <!-- Plantilla para cada cambio nuevo:
 

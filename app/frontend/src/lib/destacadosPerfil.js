@@ -107,3 +107,18 @@ export function calcularDestacados(filas) {
     otraCancha,
   };
 }
+
+// "Van 5 a 2" de la tarjeta para compartir (2026-10-03): cuántos partidos le
+// ganaste (g) y cuántos perdiste (p) contra ESTA MISMA pareja rival, contando
+// el partido de la tarjeta. Devuelve null si jugaron menos de 2 veces.
+export function vanContraRivales(filas, partidoId) {
+  const partidos = agruparPartidos(filas);
+  const actual = partidos.find((p) => p.id === partidoId);
+  if (!actual || actual.rivales.length === 0) return null;
+  const clave = (p) => p.rivales.map((r) => r.clave).sort().join("|");
+  const objetivo = clave(actual);
+  const iguales = partidos.filter((p) => clave(p) === objetivo);
+  if (iguales.length < 2) return null;
+  const g = iguales.filter((p) => p.gane).length;
+  return { g, p: iguales.length - g };
+}

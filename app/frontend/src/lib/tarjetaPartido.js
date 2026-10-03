@@ -73,6 +73,19 @@ function dibujarGanamos(ctx, d, f) {
   const anchoYo = ctx.measureText(yo).width;
   texto(ctx, yo, MARGEN, baseSets + 92, { fuente: f.texto(700, 48), color: AMARILLO_TINTA });
   texto(ctx, vs, MARGEN + anchoYo, baseSets + 92, { fuente: f.texto(500, 48), color: AMARILLO_TINTA, alfa: 0.75 });
+
+  // "Van 5 a 2" contra esta misma pareja rival (solo si ya jugaron 2 o más veces).
+  if (d.van) {
+    const van = d.van.toUpperCase();
+    ctx.font = f.titulo(900, 64);
+    const ancho = ctx.measureText(van).width + 56;
+    const y = baseSets + 92 + 36;
+    ctx.fillStyle = VERDE;
+    ctx.beginPath();
+    ctx.roundRect(MARGEN, y, ancho, 92, 14);
+    ctx.fill();
+    texto(ctx, van, MARGEN + 28, y + 68, { fuente: f.titulo(900, 64), color: AMARILLO });
+  }
 }
 
 // C · cuando perdiste: verde con la pelota gigante; primero quienes ganaron.
@@ -123,6 +136,10 @@ function dibujarPelota(ctx, d, f) {
     ctx.font = f.numero(700, 150);
     texto(ctx, set, x, y, { fuente: f.numero(700, 150), color: CLARO });
     x += ctx.measureText(set).width + 52;
+  }
+
+  if (d.van) {
+    texto(ctx, d.van.toUpperCase(), MARGEN, y + 120, { fuente: f.titulo(900, 72), color: AMARILLO });
   }
 }
 

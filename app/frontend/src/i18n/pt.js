@@ -473,6 +473,7 @@ const pt = {
       ganamos: "Ganhamos",
       vs: "vs.",
       leGanaronA: "ganharam de",
+      van: "Estão {g} a {p}",
     },
     grupos: {
       titulo: "Meus grupos",
@@ -503,6 +504,7 @@ const pt = {
       esteMes: "Este mês",
       siempre: "Sempre",
       reglaPartidos: "Só contam as partidas com 3 ou mais jogadores do grupo.",
+      ganadosPerdidos: "{g} ganhas · {p} perdidas",
       sinPartidos: "Ainda não há partidas do grupo. Joguem uma com pelo menos 3 do grupo e ela aparece aqui.",
       vos: "{nombre} (você)",
       rivalTitulo: "Seu rival no grupo",
