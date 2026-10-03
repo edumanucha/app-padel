@@ -135,6 +135,13 @@ export default function ConfiguracionForm() {
           {t("config.quienesSomos")}
           <IconoChevron width={16} height={16} style={{ transform: "rotate(-90deg)" }} aria-hidden />
         </button>
+        <button
+          onClick={() => router.push("/privacidad")}
+          className={`${fila} text-left text-sm font-semibold cursor-pointer`}
+        >
+          {t("config.privacidad")}
+          <IconoChevron width={16} height={16} style={{ transform: "rotate(-90deg)" }} aria-hidden />
+        </button>
       </section>
     </div>
   );
