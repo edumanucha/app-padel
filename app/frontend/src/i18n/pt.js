@@ -398,6 +398,8 @@ const pt = {
       p3Negrita: "Queremos que fique cada vez melhor, e para isso precisamos de você.",
       p3: "Se algo não funciona, parece estranho ou você tem uma ideia, conte pra gente na caixa de sugestões aqui embaixo. Todo comentário é bem-vindo e a gente lê.",
       p4: "E se faltar alguém para completar uma partida, me convida, que eu topo.",
+      creadorRol: "Quem faz o Padelito",
+      invitameBoton: "Me convide para jogar",
       donacionAntes: "Manter o app online tem seus custos. Se o Padelito te ajuda e você quer dar uma força, pode ",
       donacionLink: "me pagar um cafezinho",
       donacionDespues: ". Não é obrigatório: o app continua gratuito para todos.",

@@ -398,6 +398,8 @@ const en = {
       p3Negrita: "We want it to keep getting better, and we need you for that.",
       p3: "If something doesn't work, feels off, or you have an idea, tell us in the suggestion box below. Every comment is welcome and we read them all.",
       p4: "And if you're one player short for a match, invite me — I'm in.",
+      creadorRol: "Builds Padelito",
+      invitameBoton: "Invite me to play",
       donacionAntes: "Keeping the app online has its costs. If Padelito is useful to you and you'd like to help, you can ",
       donacionLink: "buy me a coffee",
       donacionDespues: ". It's not required: the app stays free for everyone.",

@@ -2,7 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import FormularioFeedback from "@/components/FormularioFeedback";
+import Logo from "@/components/Logo";
 import { useLocale } from "@/i18n/LocaleContext";
+
+// Perfil de quien arma Padelito dentro de la app (2026-10-03, a pedido del usuario:
+// "invitame a jugar" tiene que llevar a mi perfil de Padelito). Es el id de su cuenta;
+// ver el perfil exige tener sesión, igual que el resto de los jugadores.
+const ID_CREADOR = "484872ad-02d9-4bc5-9754-6817160c9423";
 
 // Link público de donación (por ejemplo, cafecito.app/usuario). Mientras esté
 // vacío, la oración del cafecito no se muestra.
@@ -37,6 +43,22 @@ export default function QuienesSomosForm() {
           <b>{t("quienesSomos.p3Negrita")}</b> {t("quienesSomos.p3")}
         </p>
         <p className="py-4 border-b border-ink/10">{t("quienesSomos.p4")}</p>
+        <button
+          type="button"
+          onClick={() => router.push(`/jugadores/${ID_CREADOR}`)}
+          className="flex items-center gap-3 py-4 border-b border-ink/10 text-left cursor-pointer"
+        >
+          <span className="w-11 h-11 rounded-full bg-[#154139] flex items-center justify-center flex-shrink-0">
+            <Logo size={26} />
+          </span>
+          <span className="flex-1 min-w-0 flex flex-col">
+            <span className="font-semibold">Eduardo</span>
+            <span className="text-xs text-muted">{t("quienesSomos.creadorRol")}</span>
+          </span>
+          <span className="text-sm font-bold px-3 py-1.5 rounded-[6px] bg-accent text-accent-ink flex-shrink-0">
+            {t("quienesSomos.invitameBoton")}
+          </span>
+        </button>
         {LINK_DONACION && (
           <p className="py-4 border-b border-ink/10">
             {t("quienesSomos.donacionAntes")}
