@@ -189,6 +189,32 @@ const rpcs = {
         { ...base, otro_id: id(r2), otro_nombre: nombreDe(id(r2)), otro_equipo: "B" },
       ];
     }),
+  // Grupos de amigos (069): lo mínimo para ver las pantallas.
+  mis_grupos: () => [
+    { grupo_id: id(950), nombre: "Los del jueves", es_admin: true, miembros: 6, partidos: 14, mi_posicion: 3, mis_puntos: 188 },
+    { grupo_id: id(951), nombre: "Pádel de la oficina", es_admin: false, miembros: 5, partidos: 6, mi_posicion: 1, mis_puntos: 96 },
+  ],
+  mis_invitaciones_grupo: () => [{ id: id(960), grupo_id: id(952), grupo_nombre: "Club Maipú", invitado_por_nombre: "Franco Armani", created_at: dias(-1) }],
+  datos_grupo: () => [{ id: id(950), nombre: "Los del jueves", es_admin: true, codigo: "jueves-4kx9", miembros: 6 }],
+  ranking_grupo: () => [
+    { jugador_id: id(100), nombre: "Franco Armani", pj: 11, pg: 9, pp: 2, puntos: 241, es_admin: false },
+    { jugador_id: id(105), nombre: "Nacho Fernández", pj: 11, pg: 7, pp: 4, puntos: 205, es_admin: false },
+    { jugador_id: YO, nombre: "Eduardo", pj: 13, pg: 8, pp: 5, puntos: 188, es_admin: true },
+    { jugador_id: id(104), nombre: "Enzo Pérez", pj: 11, pg: 5, pp: 6, puntos: 150, es_admin: false },
+    { jugador_id: id(108), nombre: "Miguel Borja", pj: 11, pg: 4, pp: 7, puntos: 121, es_admin: false },
+  ],
+  cara_a_cara_grupo: () => [
+    { jugador_id: id(100), nombre: "Franco Armani", pj_juntos: 6, pg_juntos: 5, pj_contra: 0, pg_contra: 0 },
+    { jugador_id: id(105), nombre: "Nacho Fernández", pj_juntos: 0, pg_juntos: 0, pj_contra: 7, pg_contra: 2 },
+    { jugador_id: id(104), nombre: "Enzo Pérez", pj_juntos: 2, pg_juntos: 1, pj_contra: 5, pg_contra: 3 },
+  ],
+  miembros_grupo: () => [
+    { jugador_id: YO, nombre: "Eduardo", es_admin: true, desde: dias(-40) },
+    { jugador_id: id(100), nombre: "Franco Armani", es_admin: false, desde: dias(-30) },
+    { jugador_id: id(105), nombre: "Nacho Fernández", es_admin: false, desde: dias(-30) },
+    { jugador_id: id(104), nombre: "Enzo Pérez", es_admin: false, desde: dias(-20) },
+  ],
+  ver_grupo_por_codigo: () => [{ id: id(950), nombre: "Los del jueves", miembros: 6, ya_soy_miembro: false }],
   buscar_candidatos_dupla: () => jugadores.slice(4, 8).map((p) => ({ id: p.id, nombre: p.nombre, nivel: p.nivel, posicion: p.posicion, zona: p.zona })),
 };
 

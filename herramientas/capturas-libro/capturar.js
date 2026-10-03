@@ -161,6 +161,11 @@ const pantallas = [
   { nombre: "cancha", ruta: `/canchas/${P(200)}` },
   { nombre: "apelaciones", ruta: "/apelaciones" },
   { nombre: "admin", ruta: "/admin/canchas" },
+  { nombre: "grupos", ruta: "/grupos" },
+  { nombre: "grupo-ranking", ruta: `/grupos/${P(950)}` },
+  { nombre: "grupo-cara", ruta: `/grupos/${P(950)}`, antes: (pg) => clickTexto(pg, "Cara a cara") },
+  { nombre: "grupo-miembros", ruta: `/grupos/${P(950)}`, antes: (pg) => clickTexto(pg, "Miembros") },
+  { nombre: "grupo-unirse", ruta: "/g/jueves-4kx9" },
 ];
 
 (async () => {

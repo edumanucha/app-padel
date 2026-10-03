@@ -24,6 +24,17 @@ export function IconoCorazon(props) {
   );
 }
 
+export function IconoGrupo(props) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="9" cy="8" r="3" />
+      <path d="M3.5 19c.4-3 2.6-5 5.5-5s5.1 2 5.5 5" />
+      <circle cx="17" cy="9" r="2.4" />
+      <path d="M16 14.2c2.4-.3 4.2 1.3 4.6 4.3" />
+    </svg>
+  );
+}
+
 export function IconoCasa(props) {
   return (
     <svg {...base} {...props}>

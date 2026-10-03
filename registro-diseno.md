@@ -38,6 +38,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-08 | `diseno-08-icono-pelota` | 2026-10-03 | Ícono de la app: pelota amarilla sobre verde del cartel (opción A) | Publicado |
 | D-09 | `diseno-09-instalar-apk` | 2026-10-03 | Botón Instalar: hoja con APK de Android + pasos de iPhone | Publicado |
 | D-10 | `diseno-10-tarjeta-partido` | 2026-10-03 | Tarjeta cuadrada para compartir el resultado (B si ganás, C si perdés) | Publicado |
+| D-11 | `diseno-11-grupos` | 2026-10-03 | Grupos de amigos: lista, ranking, cara a cara, miembros/invitar y link para unirse | Publicado |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -136,6 +137,13 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** artifact privado "Tarjetas de partido" — A Tablero / B Cartel amarillo / C Pelota
 - **Elegida por el usuario:** B y C, que "vayan cambiando según la situación".
 - **Pendiente:** la línea del acumulado ("Van 5 a 2") queda para cuando existan los grupos; el botón por ahora solo está en Estadísticas del partido.
+
+### D-11 · `diseno-11-grupos` — grupos de amigos (2026-10-03)
+
+- **Qué cambió:** pantallas nuevas `/grupos` (mis grupos + invitaciones + crear, hasta 5), `/grupos/<id>` (pestañas Ranking este mes/siempre, Cara a cara y Miembros con invitar por WhatsApp o buscando jugadores, salir, sacar y eliminar) y `/g/<código>` (link de invitación: sin sesión manda a /login y vuelve con `volverA`; sin perfil manda a /completar-perfil). Acceso nuevo "Mis grupos" en la sección Comunidad del Inicio.
+- **Reglas:** cuentan los partidos terminados con 3 o más miembros del grupo; mismos puntos que el ranking global; el creador es admin; solo los miembros ven las estadísticas (RLS en `069_grupos_de_amigos.sql`).
+- **Opciones mostradas (maqueta):** artifact privado "Grupos de amigos" (6 pantallas).
+- **Pendiente:** selector Global/Grupo dentro de Jugadores (pantallas 5 y 6 de la maqueta) y la línea "Van 5 a 2" en la tarjeta para compartir.
 
 <!-- Plantilla para cada cambio nuevo:
 

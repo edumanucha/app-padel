@@ -15,7 +15,7 @@ import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import GuiaPadelito from "@/components/GuiaPadelito";
 import { useEnPantalla } from "@/lib/useEnPantalla";
 import marcadorStyles from "@/components/Marcador.module.css";
-import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, IconoTrofeo, IconoCarrito, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion, IconoChevron, IconoCorazon } from "@/components/Icons";
+import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, IconoTrofeo, IconoCarrito, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion, IconoChevron, IconoCorazon, IconoGrupo } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
 
@@ -694,6 +694,7 @@ export default function HomeForm() {
         <Subtitulo>{t("home.comunidad")}</Subtitulo>
         <div className="flex flex-col border-t-2 border-ink mt-2">
           <FilaAcceso Icono={IconoTrofeo} titulo={t("home.jugadoresTitulo")} desc={t("home.jugadoresDesc")} onClick={() => router.push("/jugadores")} />
+          <FilaAcceso Icono={IconoGrupo} titulo={t("home.gruposTitulo")} desc={t("home.gruposDesc")} onClick={() => router.push("/grupos")} />
           <FilaAcceso Icono={IconoMensaje} titulo={t("home.mensajesTitulo")} desc={t("home.mensajesDesc")} onClick={() => router.push("/mensajes")} />
           <FilaAcceso
             Icono={IconoSobre}
