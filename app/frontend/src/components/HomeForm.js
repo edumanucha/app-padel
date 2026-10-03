@@ -15,7 +15,7 @@ import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import GuiaPadelito from "@/components/GuiaPadelito";
 import { useEnPantalla } from "@/lib/useEnPantalla";
 import marcadorStyles from "@/components/Marcador.module.css";
-import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, IconoTrofeo, IconoCarrito, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion, IconoChevron } from "@/components/Icons";
+import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, IconoTrofeo, IconoCarrito, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion, IconoChevron, IconoCorazon } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/translations";
 
@@ -751,7 +751,11 @@ export default function HomeForm() {
       </div>
 
       {/* 12. Pie de página */}
-      <p className="text-center text-xs text-muted pt-4 col-completa">{t("home.footer")}</p>
+      <p className="flex items-center justify-center gap-1.5 text-xs text-muted pt-4 col-completa">
+        {t("home.footerAntes")}
+        <IconoCorazon width={13} height={13} aria-hidden />
+        {t("home.footerDespues")}
+      </p>
     </div>
   );
 }

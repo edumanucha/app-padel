@@ -100,7 +100,8 @@ export const dict = {
       modoSinConexion: "Modo sin conexión",
       proximamente: "Próximamente",
       enDesarrollo: '"{texto}" todavía está en desarrollo — pronto vas a poder usarlo.',
-      footer: "© 2026 Eduardo Manucha. Todos los derechos reservados.",
+      footerAntes: "Hecho con",
+      footerDespues: "en Mendoza",
     },
     directorio: {
       cargando: "Cargando...",
@@ -730,7 +731,8 @@ export const dict = {
       modoSinConexion: "Offline mode",
       proximamente: "Coming soon",
       enDesarrollo: '"{texto}" is still in development — you\'ll be able to use it soon.',
-      footer: "© 2026 Eduardo Manucha. All rights reserved.",
+      footerAntes: "Made with",
+      footerDespues: "in Mendoza",
     },
     directorio: {
       cargando: "Loading...",
@@ -1360,7 +1362,8 @@ export const dict = {
       modoSinConexion: "Modo offline",
       proximamente: "Em breve",
       enDesarrollo: '"{texto}" ainda está em desenvolvimento — logo você vai poder usar.',
-      footer: "© 2026 Eduardo Manucha. Todos os direitos reservados.",
+      footerAntes: "Feito com",
+      footerDespues: "em Mendoza",
     },
     directorio: {
       cargando: "Carregando...",
