@@ -167,6 +167,28 @@ const rpcs = {
     id: id(800), partido_id: id(305), cancha: canchas[2].nombre, fecha_hora: dias(-5), motivo: "El último punto del tie-break se anotó para la pareja equivocada.",
     estado: "pendiente", apelante_nombre: "Paulo Díaz", creado_en: dias(-4), ganador_actual: "B", sets_a: [4, 6], sets_b: [6, 7], pareja_a: "Eduardo / Paulo Díaz", pareja_b: "Franco Armani / Franco Mastantuono",
   }],
+  // Destacados del perfil (068): historial más largo que `definiciones`
+  // para que haya dupla, rival y cancha repetidos.
+  // [díasDesdeHoy, cancha, ganó, compañero, rival1, rival2, setsMíos, setsSuyos]
+  mis_cruces_partidos: () =>
+    [
+      [-1, 0, true, 100, 105, 106, [6, 6], [3, 4]],
+      [-4, 1, true, 100, 104, 108, [7, 3, 10], [6, 6, 8]],
+      [-7, 0, true, 104, 105, 106, [6, 6], [4, 4]],
+      [-11, 1, false, 108, 106, 105, [4, 2], [6, 6]],
+      [-15, 0, true, 100, 109, 110, [6, 6], [2, 1]],
+      [-19, 1, false, 100, 105, 106, [3, 6, 5], [6, 4, 10]],
+      [-24, 0, true, 100, 109, 110, [6, 7], [4, 5]],
+      [-28, 1, false, 104, 106, 105, [2, 3], [6, 6]],
+      [-33, 0, true, 100, 111, 101, [6, 6], [1, 3]],
+    ].flatMap(([d, c, gano, comp, r1, r2, mios, suyos], i) => {
+      const base = { partido_id: id(900 + i), fecha_hora: dias(d), cancha: canchas[c].nombre, mi_equipo: "A", ganador: gano ? "A" : "B", sets_a: mios, sets_b: suyos };
+      return [
+        { ...base, otro_id: id(comp), otro_nombre: nombreDe(id(comp)), otro_equipo: "A" },
+        { ...base, otro_id: id(r1), otro_nombre: nombreDe(id(r1)), otro_equipo: "B" },
+        { ...base, otro_id: id(r2), otro_nombre: nombreDe(id(r2)), otro_equipo: "B" },
+      ];
+    }),
   buscar_candidatos_dupla: () => jugadores.slice(4, 8).map((p) => ({ id: p.id, nombre: p.nombre, nivel: p.nivel, posicion: p.posicion, zona: p.zona })),
 };
 

@@ -34,6 +34,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-04 | `diseno-04-pantallas-cartel` | 2026-10-01 | Paso D: todas las pantallas en estilo Cartel | Publicado |
 | D-05 | `diseno-05-fuentes-y-compu` | 2026-10-01 | Paso E: fuentes C + versión de compu | Publicado |
 | D-06 | `diseno-06-pantallas-restantes` | 2026-10-01 | Paso F: Completar perfil, controles del Marcadorcito y pantallas menores en Cartel | Publicado |
+| D-07 | `diseno-07-destacados-perfil` | 2026-10-02 | Perfil: destacados "Cara a cara" (cómo venís, mejor dupla, cuenta pendiente, tu cancha) | Publicado |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -99,6 +100,16 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 
 - **Qué cambió:** las partes que no habían pasado al Cartel (revisión del código buscando clases viejas): Completar perfil (primer pantalla de una cuenta nueva), controles y hojas alrededor del tablero del Marcadorcito y su demo (sin sumar alto en apaisado), Invitar jugador, caja de sugerencias, subir foto, aviso de girar, Futbolito/Basquelito, pantalla sin señal y globos de la guía.
 - **Se queda igual a propósito:** el tablero del Marcadorcito y sus botones de punto (`Marcador.module.css`), que son la identidad original.
+
+### D-07 · `diseno-07-destacados-perfil` — destacados del perfil (2026-10-02)
+
+- **Qué cambió:** en Mi perfil, entre el cartel de ranking y el acordeón de estadísticas, aparece siempre (sin tocar nada) el bloque "Cara a cara": cartel verde con una frase de cómo venís ("Ganaste 3 seguidos"), % de ganados y los últimos 5 (G/P); después **Tu mejor dupla**, **Tu cuenta pendiente** (el rival que más te cuesta, con el último resultado) y **Tu cancha**. Mínimo 2 partidos para que una dupla, rival o cancha cuente. El acordeón de estadísticas de siempre queda abajo.
+- **Pantallas afectadas:** Mi perfil (`VerPerfilForm.js` + `DestacadosPerfil.js`, cálculo en `lib/destacadosPerfil.js`).
+- **Por qué:** las estadísticas estaban escondidas en un acordeón y no había destacados.
+- **Opciones mostradas (maqueta):** artifact privado "Estadísticas del perfil" — A Tablero / B Planilla con pestañas / C Cara a cara
+- **Elegida por el usuario:** C
+- **Datos:** RPC nueva `mis_cruces_partidos` (`app/backend/sql/068_destacados_perfil.sql`, hay que correrla en Supabase); sin ella el bloque no aparece y el resto del perfil sigue igual.
+- **Notas / qué mirar en la evaluación:** saques mantenidos, puntos de oro y tie-breaks de la maqueta no se guardan todavía, quedaron afuera.
 
 <!-- Plantilla para cada cambio nuevo:
 
