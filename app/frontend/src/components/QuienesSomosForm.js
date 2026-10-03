@@ -6,7 +6,7 @@ import { useLocale } from "@/i18n/LocaleContext";
 
 // Link público de donación (por ejemplo, cafecito.app/usuario). Mientras esté
 // vacío, la oración del cafecito no se muestra.
-const LINK_DONACION = "";
+const LINK_DONACION = "https://cafecito.app/edumanucha";
 
 export default function QuienesSomosForm() {
   const router = useRouter();
