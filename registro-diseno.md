@@ -41,6 +41,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-11 | `diseno-11-grupos` | 2026-10-03 | Grupos de amigos: lista, ranking, cara a cara, miembros/invitar y link para unirse | Publicado |
 | D-12 | `diseno-12-consejos` | 2026-10-03 | Consejo del día en el Inicio + pantalla Consejos (164, por categoría, con fuentes); se saca el espacio de publicidad de ejemplo y Elegí tu deporte | Publicado |
 | D-13 | `diseno-13-selector-grupo` | 2026-10-03 | Jugadores: selector Global / grupo; tarjeta con "Van 5 a 2"; Inicio en una sola consulta | Publicado |
+| D-14 | `diseno-14-quienes-somos-perfil` | 2026-10-03 | Quiénes somos: tarjeta "Invitame a jugar" que lleva al perfil de quien arma la app | Publicado |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -161,6 +162,12 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **"Van 5 a 2" en la tarjeta de compartir:** cuántos partidos le ganaste / perdiste contra ESTA MISMA pareja rival (mínimo 2 jugados), calculado con `mis_cruces_partidos` (SQL 068). No depende de los grupos.
 - **Velocidad 4:** el Inicio pide perfil + resumen + notificaciones en una sola consulta (`home_inicial`, SQL 070); si la función no existe o falla, vuelve al camino de 3 pedidos.
 - **Opciones mostradas (maqueta):** pantallas 5 y 6 del artifact privado "Grupos de amigos".
+
+### D-14 · `diseno-14-quienes-somos-perfil` — tarjeta "Invitame a jugar" (2026-10-03)
+
+- **Qué cambió:** en Quiénes somos, debajo de la frase "invitame, que me prendo", una fila con la pelota, el nombre y el botón amarillo "Invitame a jugar", que abre el perfil de Padelito de quien arma la app (desde ahí se puede mandar un mensaje o invitarlo a un partido).
+- **Archivos:** `components/QuienesSomosForm.js` (constante `ID_CREADOR`), textos `quienesSomos.creadorRol` e `invitameBoton` en es/en/pt.
+- **Elegida por el usuario:** solo el botón al perfil de Padelito, sin Instagram.
 
 <!-- Plantilla para cada cambio nuevo:
 
