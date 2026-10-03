@@ -15,7 +15,7 @@ import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import GuiaPadelito from "@/components/GuiaPadelito";
 import { useEnPantalla } from "@/lib/useEnPantalla";
 import marcadorStyles from "@/components/Marcador.module.css";
-import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, IconoTrofeo, IconoCarrito, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion, IconoChevron, IconoCorazon, IconoGrupo } from "@/components/Icons";
+import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, IconoTrofeo, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion, IconoChevron, IconoCorazon, IconoGrupo } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
 
@@ -154,7 +154,6 @@ export default function HomeForm() {
   const [refJugadores, visibleJugadores] = useEnPantalla();
   const [refMensajes, visibleMensajes] = useEnPantalla();
   const [refInvitaciones, visibleInvitaciones] = useEnPantalla();
-  const [refPadelShop, visiblePadelShop] = useEnPantalla();
   const [refTip, visibleTip] = useEnPantalla();
 
   const { locale, t } = useLocale();
@@ -674,20 +673,9 @@ export default function HomeForm() {
       </div>
 
       <div className="home-lateral flex flex-col gap-4">
-      {/* 9. Espacio de publicidad + cancha recomendada */}
-      <div className="border border-ink/15 rounded-[8px] p-4 flex items-center gap-3 relative overflow-hidden">
-        <span className="absolute top-1.5 right-2 text-[10px] uppercase tracking-wide text-muted font-heading font-semibold">
-          {t("home.auspiciadoEjemplo")}
-        </span>
-        <span ref={refPadelShop} className={`icono-pop ${visiblePadelShop ? "visible" : ""}`}>
-          <IconoCarrito width={26} height={26} />
-        </span>
-        <div className="flex flex-col text-ink">
-          <span className="font-heading font-semibold text-sm">Padel Pro Shop Mendoza</span>
-          <span className="text-sm text-muted">20% OFF en paletas esta semana con el código PADELAPP</span>
-        </div>
-      </div>
-
+      {/* El espacio de publicidad de ejemplo ("Padel Pro Shop Mendoza") se sacó el
+         2026-10-03, a pedido del usuario, hasta decidir qué poner (promos de canchas,
+         consejos propios, etc.). Mercado Libre quedó descartado: no es monotributista. */}
       {/* 11. Resto de accesos (rediseño Cartel, 2026-10-01): filas con
           línea, como el Menú, en vez de cajas de colores. */}
       <div data-guia="comunidad" className="flex flex-col">
