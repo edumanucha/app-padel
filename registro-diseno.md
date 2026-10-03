@@ -42,6 +42,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-12 | `diseno-12-consejos` | 2026-10-03 | Consejo del día en el Inicio + pantalla Consejos (164, por categoría, con fuentes); se saca el espacio de publicidad de ejemplo y Elegí tu deporte | Publicado |
 | D-13 | `diseno-13-selector-grupo` | 2026-10-03 | Jugadores: selector Global / grupo; tarjeta con "Van 5 a 2"; Inicio en una sola consulta | Publicado |
 | D-14 | `diseno-14-quienes-somos-perfil` | 2026-10-03 | Quiénes somos: tarjeta "Invitame a jugar" que lleva al perfil de quien arma la app | Publicado |
+| D-15 | `diseno-15-torneos-preview` | 2026-10-03 | Vista previa de torneos (/pruebas-torneos): americano, mexicano y armable (liga o eliminación) | Vista previa |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -168,6 +169,13 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Qué cambió:** en Quiénes somos, debajo de la frase "invitame, que me prendo", una fila con la pelota, el nombre y el botón amarillo "Invitame a jugar", que abre el perfil de Padelito de quien arma la app (desde ahí se puede mandar un mensaje o invitarlo a un partido).
 - **Archivos:** `components/QuienesSomosForm.js` (constante `ID_CREADOR`), textos `quienesSomos.creadorRol` e `invitameBoton` en es/en/pt.
 - **Elegida por el usuario:** solo el botón al perfil de Padelito, sin Instagram.
+
+### D-15 · `diseno-15-torneos-preview` — torneos entre amigos, vista previa (2026-10-03)
+
+- **Qué es:** página `/pruebas-torneos` con datos de ejemplo (no guarda nada) que funciona de verdad: **Americano** (parejas que rotan sin repetir compañeros), **Mexicano** (parejas según la tabla) y **Armable** (parejas fijas, con liga todos contra todos o eliminación directa, con puntos por victoria/empate a elección). Crear, ronda en curso con carga de puntos, tabla en vivo y podio final con tarjeta (maqueta).
+- **Archivos:** `lib/torneos.js` (cruces y tablas, funciones puras, probadas), `components/PruebaTorneosForm.js`, `app/pruebas-torneos/page.js`.
+- **Opciones mostradas (maqueta):** artifact privado "Torneos entre amigos" (4 pantallas).
+- **Pendiente ("después hacemos todo"):** conectar a grupos y a la base de datos, invitados sin cuenta, tarjeta real para compartir, link público en vivo.
 
 <!-- Plantilla para cada cambio nuevo:
 
