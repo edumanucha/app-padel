@@ -472,6 +472,17 @@ const en = {
       ultimoPerdiste: "Last: you lost {sets} on {fecha} · rematch anytime",
       enOtra: "At {cancha}: {g} of {n}",
     },
+    tarjeta: {
+      compartir: "Share card",
+      armando: "Building the card…",
+      descargada: "Card saved to your downloads.",
+      error: "Could not build the card. Try again.",
+      ayuda: "An image with the result to send to your friends.",
+      titulo: "Result on Padelito",
+      ganamos: "We won",
+      vs: "vs.",
+      leGanaronA: "beat",
+    },
     estadisticas: {
       titulo: "Marcadorcito stats",
       cargando: "Loading stats...",

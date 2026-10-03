@@ -472,6 +472,17 @@ const es = {
       ultimoPerdiste: "Último: perdiste {sets} el {fecha} · revancha cuando quieras",
       enOtra: "En {cancha}: {g} de {n}",
     },
+    tarjeta: {
+      compartir: "Compartir tarjeta",
+      armando: "Armando la tarjeta…",
+      descargada: "Tarjeta guardada en tus descargas.",
+      error: "No se pudo armar la tarjeta. Probá de nuevo.",
+      ayuda: "Una imagen con el resultado para mandar a tus amigos.",
+      titulo: "Resultado en Padelito",
+      ganamos: "Ganamos",
+      vs: "vs.",
+      leGanaronA: "le ganaron a",
+    },
     estadisticas: {
       titulo: "Estadísticas de Marcadorcito",
       cargando: "Cargando estadísticas...",

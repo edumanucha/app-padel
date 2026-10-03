@@ -37,6 +37,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-07 | `diseno-07-destacados-perfil` | 2026-10-02 | Perfil: destacados "Cara a cara" (cómo venís, mejor dupla, cuenta pendiente, tu cancha) | Publicado |
 | D-08 | `diseno-08-icono-pelota` | 2026-10-03 | Ícono de la app: pelota amarilla sobre verde del cartel (opción A) | Publicado |
 | D-09 | `diseno-09-instalar-apk` | 2026-10-03 | Botón Instalar: hoja con APK de Android + pasos de iPhone | Publicado |
+| D-10 | `diseno-10-tarjeta-partido` | 2026-10-03 | Tarjeta cuadrada para compartir el resultado (B si ganás, C si perdés) | Publicado |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -127,6 +128,14 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Archivos:** `components/InstalarApp.js`, `public/padelito.apk`, `public/.well-known/assetlinks.json`, `public/sw.js`, `next.config.mjs`. Además, "Política de privacidad" al final de Configuración.
 - **Opciones mostradas (maqueta):** artifact privado "Instalar Padelito" (botón, hoja Android, hoja iPhone).
 - **Notas:** el APK lo genera PWABuilder; la llave de firma vive fuera del repo (ver memoria `reference_apk_android_llave`).
+
+### D-10 · `diseno-10-tarjeta-partido` — tarjeta para compartir (2026-10-03)
+
+- **Qué cambió:** en Estadísticas del partido, botón amarillo "Compartir tarjeta" que arma una imagen cuadrada de 1080 px con el resultado y abre el menú de compartir del celu (en compu la descarga). **B "Cartel amarillo"** ("Ganamos" gigante) cuando ganaste y **C "Pelota"** ("X / Y le ganaron a ...") cuando perdiste. Lleva primer nombre de cada jugador, sets, fecha, duración y cancha.
+- **Archivos:** `lib/tarjetaPartido.js` (dibujo en canvas, todo en el celu), `components/BotonCompartirTarjeta.js`, `components/EstadisticasPartidoForm.js`, textos `tarjeta.*` en es/en/pt.
+- **Opciones mostradas (maqueta):** artifact privado "Tarjetas de partido" — A Tablero / B Cartel amarillo / C Pelota
+- **Elegida por el usuario:** B y C, que "vayan cambiando según la situación".
+- **Pendiente:** la línea del acumulado ("Van 5 a 2") queda para cuando existan los grupos; el botón por ahora solo está en Estadísticas del partido.
 
 <!-- Plantilla para cada cambio nuevo:
 

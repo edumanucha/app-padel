@@ -472,6 +472,17 @@ const pt = {
       ultimoPerdiste: "Última: você perdeu {sets} em {fecha} · revanche quando quiser",
       enOtra: "Em {cancha}: {g} de {n}",
     },
+    tarjeta: {
+      compartir: "Compartilhar cartão",
+      armando: "Montando o cartão…",
+      descargada: "Cartão salvo nos seus downloads.",
+      error: "Não foi possível montar o cartão. Tente de novo.",
+      ayuda: "Uma imagem com o resultado para mandar aos seus amigos.",
+      titulo: "Resultado no Padelito",
+      ganamos: "Ganhamos",
+      vs: "vs.",
+      leGanaronA: "ganharam de",
+    },
     estadisticas: {
       titulo: "Estatísticas do Marcadorcito",
       cargando: "Carregando estatísticas...",

@@ -6,6 +6,7 @@ import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import BarraEstadistica from "@/components/BarraEstadistica";
 import { IconoTrofeo } from "@/components/Icons";
+import BotonCompartirTarjeta from "@/components/BotonCompartirTarjeta";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
 import { estadisticasDeLado, formatoSets, calcularPuntosRanking } from "@/lib/estadisticasMarcadorcito";
@@ -94,6 +95,15 @@ export default function EstadisticasPartidoForm({ partidoId }) {
         })
       );
 
+      // Nombres (solo el primero) de mi pareja y de los rivales para la tarjeta
+      // de compartir. perfiles solo deja leer la propia fila, así que los
+      // nombres salen de ver_participantes_partido (como en el Marcadorcito).
+      const { data: participantes } = await supabase.rpc("ver_participantes_partido", { p_partido_id: partidoId });
+      const nombrePorId = Object.fromEntries((participantes ?? []).map((p) => [p.jugador_id, p.nombre]));
+      const primerNombre = (f) =>
+        String((f.jugador_id ? nombrePorId[f.jugador_id] : null) ?? f.invitado_nombre ?? "").trim().split(/\s+/)[0] || "?";
+      const nombresDe = (equipo) => (todosLosJugadores ?? []).filter((f) => f.equipo === equipo).map(primerNombre);
+
       const gane = partido.resultados_partido?.ganador === miEquipo;
       setDatos({
         fechaHora: partido.fecha_hora,
@@ -103,6 +113,8 @@ export default function EstadisticasPartidoForm({ partidoId }) {
         d: estadisticasDeLado(partido.estadisticas_partido, miEquipo),
         puntosRankingGanados: calcularPuntosRanking(partido.resultados_partido?.estado, miEquipo, gane),
         rivales,
+        nombresMios: nombresDe(miEquipo),
+        nombresRivales: nombresDe(miEquipo === "A" ? "B" : "A"),
       });
       setCargando(false);
     }
@@ -188,6 +200,18 @@ export default function EstadisticasPartidoForm({ partidoId }) {
           </div>
         )}
       </div>
+
+      {datos.nombresMios.length > 0 && datos.nombresRivales.length > 0 && (
+        <BotonCompartirTarjeta
+          gane={datos.gane}
+          mios={datos.nombresMios}
+          rivales={datos.nombresRivales}
+          sets={datos.sets}
+          fechaHora={datos.fechaHora}
+          duracionMin={d.duracionMin}
+          cancha={datos.cancha}
+        />
+      )}
 
       {datos.rivales.length > 0 && (
         <div className="flex flex-col">
