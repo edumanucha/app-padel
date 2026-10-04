@@ -11,6 +11,7 @@ import { IconoGirarTelefono, IconoReloj, IconoDedo, IconoMicrofono, IconoMano, I
 import { sumarPunto, setsGanados, formatearPuntos } from "@/lib/marcadorEngine";
 import styles from "@/components/Marcador.module.css";
 import { compartirTarjetaResultado } from "@/lib/tarjetaResultado";
+import { entradaDePunto, estadisticasDeLog } from "@/lib/estadisticasEnVivo";
 import {
   usuarioActual,
   sinConexion,
@@ -414,6 +415,14 @@ export default function MarcadorForm({ partidoId }) {
   }, [modoApaisado]);
   const [ultimoGesto, setUltimoGesto] = useState("");
   const [sonidoActivo, setSonidoActivo] = useState(true);
+  // Último punto del partido: antes de cerrarlo hay 3 s para deshacer
+  // (2026-10-04). `cierreRef` guarda el aviso de cierre en espera.
+  const [cierrePendiente, setCierrePendiente] = useState(null); // { lado } | null
+  const cierreRef = useRef(null);
+  // Anti punto doble: mismo lado dos veces en menos de 1 s (ej. voz y reloj a
+  // la vez) cuenta una vez, salvo justo después de deshacer.
+  const ultimoPuntoRef = useRef({ lado: null, t: 0 });
+  const estadisticasGuardadasRef = useRef(false);
 
   // Paso explícito antes de mostrar el tablero (2026-09-11, a pedido del
   // usuario): "quiero que los puntos se lleven por la cámara, que esa
@@ -1250,9 +1259,17 @@ export default function MarcadorForm({ partidoId }) {
   }
 
   const handleSumarPunto = useCallback(
-    async (lado) => {
+    async (lado, confirmado = false) => {
       const actual = resultadoRef.current;
       if (!actual || actual.finalizado || actual.estado.pausado) return;
+      // Con el cierre del partido en espera (3 s) no se suman más puntos.
+      if (cierreRef.current && !confirmado) return;
+      const ahoraPunto = Date.now();
+      if (!confirmado) {
+        const u = ultimoPuntoRef.current;
+        if (u.lado === lado && ahoraPunto - u.t < 1000) return;
+        ultimoPuntoRef.current = { lado, t: ahoraPunto };
+      }
       const core = {
         setsA: actual.estado.setsA,
         setsB: actual.estado.setsB,
@@ -1267,8 +1284,25 @@ export default function MarcadorForm({ partidoId }) {
         puntoDeOro: actual.estado.puntoDeOro ?? false,
         superTiebreak3erSet: actual.estado.superTiebreak3erSet ?? false,
       });
+      // Último punto del partido: se muestra y se espera 3 s antes de cerrar,
+      // para poder deshacer si fue un toque equivocado.
+      if (nuevoCore.finalizado && !confirmado) {
+        efectoPunto(lado);
+        sonarPunto(lado);
+        setCierrePendiente({ lado });
+        cierreRef.current = setTimeout(() => {
+          cierreRef.current = null;
+          setCierrePendiente(null);
+          handleSumarPuntoRef.current?.(lado, true);
+        }, 3000);
+        return;
+      }
       const historial = [...(actual.estado.historial ?? []), core].slice(-30);
       const nuevoEstado = {
+        log: [
+          ...(actual.estado.log ?? []),
+          entradaDePunto(core, lado, { puntoDeOro: actual.estado.puntoDeOro ?? false, superTiebreak3erSet: actual.estado.superTiebreak3erSet ?? false }, eventos),
+        ],
         setsA: nuevoCore.setsA,
         setsB: nuevoCore.setsB,
         puntosA: nuevoCore.puntosA,
@@ -1292,8 +1326,10 @@ export default function MarcadorForm({ partidoId }) {
       // guardado real sigue viajando en paralelo, sin bloquear nada.
       persistir(nuevoEstado, nuevoCore.finalizado, nuevoCore.ganador);
 
-      efectoPunto(lado);
-      sonarPunto(lado);
+      if (!confirmado) {
+        efectoPunto(lado);
+        sonarPunto(lado);
+      }
 
       // Al reloj: un único aviso, al final del partido (2026-09-30, pedido
       // del usuario -- el tanteador ya se ve en vivo en el título, los avisos
@@ -1352,6 +1388,29 @@ export default function MarcadorForm({ partidoId }) {
     },
     [anunciar, nombresCortos, nombreEquipoVoz, notificarReloj]
   );
+  const handleSumarPuntoRef = useRef(null);
+  useEffect(() => {
+    handleSumarPuntoRef.current = handleSumarPunto;
+  }, [handleSumarPunto]);
+  useEffect(() => () => clearTimeout(cierreRef.current), []);
+
+  // Estadísticas del partido real (2026-10-04): al terminar se guardan en
+  // estadisticas_partido, y las ven todos los jugadores con perfil. Si falla
+  // (sin señal), se reintenta la próxima vez que se abra el partido.
+  useEffect(() => {
+    if (!resultado?.finalizado || estadisticasGuardadasRef.current) return;
+    const log = resultado.estado?.log;
+    if (!log?.length || !resultado.created_at) return;
+    estadisticasGuardadasRef.current = true;
+    const fin = resultado.updated_at ? new Date(resultado.updated_at).getTime() : Date.now();
+    const duracion = fin - new Date(resultado.created_at).getTime();
+    supabase
+      .from("estadisticas_partido")
+      .upsert({ partido_id: partidoId, ...estadisticasDeLog(log, duracion) }, { onConflict: "partido_id", ignoreDuplicates: true })
+      .then(({ error: statsError }) => {
+        if (statsError) estadisticasGuardadasRef.current = false;
+      });
+  }, [resultado, partidoId]);
 
   // Pisa los games del set actual de una sola vez ("juegos 6 4"), en vez
   // de tener que deshacer y repuntuar juego por juego. Si el nuevo
@@ -1447,6 +1506,18 @@ export default function MarcadorForm({ partidoId }) {
   async function handleDeshacer() {
     const actual = resultadoRef.current;
     if (!actual) return;
+    // Corregir: si el partido estaba por cerrarse, se cancela el cierre y
+    // el último punto queda sin sumar.
+    ultimoPuntoRef.current = { lado: null, t: 0 };
+    if (cierreRef.current) {
+      clearTimeout(cierreRef.current);
+      cierreRef.current = null;
+      setCierrePendiente(null);
+      sonarError();
+      efectoDeshacer();
+      anunciar("Corregido.");
+      return;
+    }
     const historial = [...(actual.estado.historial ?? [])];
     const previo = historial.pop();
     if (!previo) return;
@@ -1457,6 +1528,7 @@ export default function MarcadorForm({ partidoId }) {
     // configuración no relacionado.
     const nuevoEstado = {
       ...previo,
+      log: (actual.estado.log ?? []).slice(0, -1),
       puntoDeOro: actual.estado.puntoDeOro,
       superTiebreak3erSet: actual.estado.superTiebreak3erSet,
       historial,
@@ -2751,6 +2823,14 @@ export default function MarcadorForm({ partidoId }) {
           </div>
         )}
 
+        {cierrePendiente && (
+          <div className={styles.finalBanner}>
+            Último punto para {nombreEquipo(cierrePendiente.lado)}: el partido termina en 3 s
+            <button className={styles.ctrlBtn} onClick={handleDeshacer}>
+              Deshacer
+            </button>
+          </div>
+        )}
         {!resultado.finalizado && pausado && (
           <div className={styles.finalBanner}>⏸ Partido en pausa</div>
         )}
