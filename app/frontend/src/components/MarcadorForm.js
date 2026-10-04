@@ -2978,6 +2978,13 @@ export default function MarcadorForm({ partidoId }) {
         {!resultado.finalizado && !soyAnotador && (
           <div className={styles.finalBanner}>
             Estás mirando · lleva los puntos {nombreAnotador}
+            {relojActivo ? (
+              <span style={{ fontSize: "0.7em", opacity: 0.8 }}>Tu reloj muestra el marcador en vivo</span>
+            ) : (
+              <button className={styles.ctrlBtn} onClick={activarReloj}>
+                <IconoReloj className="ico" aria-hidden /> Ver en mi reloj
+              </button>
+            )}
           </div>
         )}
 
