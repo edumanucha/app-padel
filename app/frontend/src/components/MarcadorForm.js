@@ -1,5 +1,6 @@
 "use client";
 
+import PongPunto from "@/components/PongPunto";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
@@ -1401,6 +1402,20 @@ export default function MarcadorForm({ partidoId }) {
     [anunciar, nombresCortos, nombreEquipoVoz, notificarReloj]
   );
   const soyAnotador = !resultado?.anota_id || resultado.anota_id === usuarioId;
+  // Franja tipo Pong (2026-10-04): se anima cuando el registro de puntos
+  // crece en uno o más (también para quien solo mira). Al deshacer no.
+  const [pongEvento, setPongEvento] = useState(null);
+  const logLargoPrevioRef = useRef(null);
+  const logLargo = resultado?.estado?.log?.length ?? 0;
+  useEffect(() => {
+    if (!resultado) return;
+    const previo = logLargoPrevioRef.current;
+    logLargoPrevioRef.current = logLargo;
+    if (previo === null || logLargo <= previo) return;
+    const lado = String(resultado.estado.log[logLargo - 1] ?? "")[0];
+    if (lado === "A" || lado === "B") setPongEvento({ lado, n: Date.now() });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [logLargo, !!resultado]);
   const nombreAnotador = participantes.find((j) => j.id === resultado?.anota_id)?.nombre ?? "otro jugador";
   useEffect(() => {
     soyAnotadorRef.current = soyAnotador;
@@ -2954,6 +2969,12 @@ export default function MarcadorForm({ partidoId }) {
                 <span className={styles.ctrlBtnPuntoNombre}>↶ Deshacer</span>
               </button>
             </div>
+          </div>
+        )}
+
+        {!modoApaisado && (
+          <div className="px-4">
+            <PongPunto evento={pongEvento} />
           </div>
         )}
 
