@@ -2850,7 +2850,7 @@ export default function MarcadorForm({ partidoId }) {
               <div className={styles.players}>
                 <span className={styles.name}>
                   {saque === "A" && <span className={styles.serveBall}>●</span>}
-                  {equipoA.length > 0 ? equipoA.join(" / ") : "Pareja A"}
+                  <span className={styles.nameText}>{equipoA.length > 0 ? equipoA.join(" / ") : "Pareja A"}</span>
                 </span>
               </div>
               <div
@@ -2886,7 +2886,7 @@ export default function MarcadorForm({ partidoId }) {
               <div className={styles.players}>
                 <span className={styles.name}>
                   {saque === "B" && <span className={styles.serveBall}>●</span>}
-                  {equipoB.length > 0 ? equipoB.join(" / ") : "Pareja B"}
+                  <span className={styles.nameText}>{equipoB.length > 0 ? equipoB.join(" / ") : "Pareja B"}</span>
                 </span>
               </div>
               <div
@@ -2991,29 +2991,29 @@ export default function MarcadorForm({ partidoId }) {
 
         {!resultado.finalizado && soyAnotador && (
           <div className={styles.controls} style={{ justifyContent: "center" }}>
-            <div className={styles.controlGroup}>
+            <div className={styles.filaControles}>
               <button
-                className={`${styles.ctrlBtn} ${styles.ctrlBtnBig} ${styles.ctrlBtnPunto}`}
+                className={`${styles.ctrlBtn} ${styles.ctrlBtnPunto} ${styles.ctrlPuntoA}`}
                 onClick={() => handleSumarPunto("A")}
                 disabled={pausado}
               >
-                <span className={styles.ctrlBtnPuntoLabel}>Sumar punto</span>
+                <span className={styles.ctrlBtnPuntoLabel}>Punto</span>
                 <span className={styles.ctrlBtnPuntoNombre}>{nombreEquipo("A")}</span>
               </button>
               <button
-                className={`${styles.ctrlBtn} ${styles.ctrlBtnBig} ${styles.ctrlBtnPunto}`}
+                className={`${styles.ctrlBtn} ${styles.ctrlBtnPunto} ${styles.ctrlDeshacer}`}
+                onClick={handleDeshacer}
+              >
+                <span className={styles.ctrlBtnPuntoLabel}>Deshacer</span>
+                <span className={styles.ctrlDeshacerIcono} aria-hidden="true">↶</span>
+              </button>
+              <button
+                className={`${styles.ctrlBtn} ${styles.ctrlBtnPunto} ${styles.ctrlPuntoB}`}
                 onClick={() => handleSumarPunto("B")}
                 disabled={pausado}
               >
-                <span className={styles.ctrlBtnPuntoLabel}>Sumar punto</span>
+                <span className={styles.ctrlBtnPuntoLabel}>Punto</span>
                 <span className={styles.ctrlBtnPuntoNombre}>{nombreEquipo("B")}</span>
-              </button>
-              <button
-                className={`${styles.ctrlBtn} ${styles.ctrlBtnBig} ${styles.ctrlBtnPunto} ${styles.ctrlBtnWarn}`}
-                onClick={handleDeshacer}
-              >
-                <span className={styles.ctrlBtnPuntoLabel}>Corregir</span>
-                <span className={styles.ctrlBtnPuntoNombre}>↶ Deshacer</span>
               </button>
             </div>
           </div>
