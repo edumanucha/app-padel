@@ -171,6 +171,16 @@ const pantallas = [
   { nombre: "grupo-cara", ruta: `/grupos/${P(950)}`, antes: (pg) => clickTexto(pg, "Cara a cara") },
   { nombre: "grupo-miembros", ruta: `/grupos/${P(950)}`, antes: (pg) => clickTexto(pg, "Miembros") },
   { nombre: "grupo-unirse", ruta: "/g/jueves-4kx9" },
+  // 2026-10-04
+  { nombre: "como-funciona", ruta: "/como-funciona" },
+  { nombre: "pruebas-torneos", ruta: "/pruebas-torneos" },
+  { nombre: "marcador-mirando", ruta: `/partido/${P(307)}/marcador`, full: false,
+    antes: async (pg) => { await clickTexto(pg, "Manual"); await clickTexto(pg, "Empezar con"); } },
+  { nombre: "marcador-final", ruta: `/partido/${P(304)}/marcador`, full: false },
+  { nombre: "visitante-inicio", ruta: "/", sinSesion: true },
+  { nombre: "visitante-perfil", ruta: "/perfil", sinSesion: true },
+  { nombre: "cargar-partido", ruta: "/cargar-partido" },
+  { nombre: "partido-cargado", ruta: `/partido/${P(306)}` },
 ];
 
 (async () => {
@@ -194,13 +204,13 @@ const pantallas = [
       await page.evaluateOnNewDocument(
         (clave, valor) => {
           try {
-            localStorage.setItem(clave, valor);
+            if (valor) localStorage.setItem(clave, valor);
             localStorage.setItem("padelito_guia", "hecha");
             localStorage.setItem("instalarAppFranjaCerrada", String(Date.now()));
           } catch { /* nada */ }
         },
         `sb-${REF}-auth-token`,
-        JSON.stringify(sesion)
+        s.sinSesion ? "" : JSON.stringify(sesion)
       );
       await page.setRequestInterception(true);
       page.on("request", (req) => {

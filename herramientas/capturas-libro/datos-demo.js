@@ -50,13 +50,15 @@ const definiciones = [
   { n: 301, d: 3, c: 1, estado: "abierto", ocupados: 3, jug: [id(102), id(104), id(107)] }, // abierto con lugar
   { n: 302, d: 4, c: 2, estado: "abierto", ocupados: 2, jug: [id(108), id(109)] },
   { n: 303, d: 0, c: 0, estado: "completo", hora: new Date().getHours(), jug: [YO, id(101), id(106), id(110)],
-    res: { estado: estadoMarcador([6, 3], [4, 2], { puntosA: 30, puntosB: 15, saque: "B" }), finalizado: false, ganador: null } }, // en juego
+    res: { estado: estadoMarcador([6, 3], [4, 2], { puntosA: 30, puntosB: 15, saque: "B" }), finalizado: false, ganador: null, anota_id: YO } }, // en juego
   { n: 304, d: -2, c: 1, estado: "jugado", jug: [YO, id(103), id(104), id(108)],
     res: { estado: estadoMarcador([6, 6], [4, 3], { finalizado: true, ganador: "A" }), finalizado: true, ganador: "A" } },
   { n: 305, d: -5, c: 2, estado: "jugado", jug: [YO, id(102), id(100), id(111)],
     res: { estado: estadoMarcador([4, 6], [6, 7], { finalizado: true, ganador: "B" }), finalizado: true, ganador: "B" } },
-  { n: 306, d: -9, c: 0, estado: "jugado", jug: [YO, id(105), id(107), id(109)],
-    res: { estado: estadoMarcador([6, 3, 10], [3, 6, 7], { finalizado: true, ganador: "A" }), finalizado: true, ganador: "A" } },
+  { n: 306, d: -1, c: 0, estado: "jugado", jug: [YO, id(105), id(107), id(109)],
+    res: { estado: estadoMarcador([6, 4], [3, 6], { finalizado: true, ganador: "A", cargadoAMano: true }), finalizado: true, ganador: "A" } },
+  { n: 307, d: 0, c: 1, estado: "completo", hora: new Date().getHours(), jug: [id(101), YO, id(106), id(110)],
+    res: { estado: estadoMarcador([6, 2], [4, 2], { puntosA: 40, puntosB: 30, saque: "A" }), finalizado: false, ganador: null, anota_id: id(101) } }, // lo anota otro
 ];
 
 const estadisticas = (pid, a, b) => ({
@@ -72,7 +74,7 @@ const partidos = definiciones.map((p) => {
     cantidad_jugadores: 4, lugares_ocupados: p.ocupados ?? p.jug.length, estado: p.estado, es_adhoc: false, punto_de_oro: false,
     nivel_min: 3, nivel_max: 6, costo_cancha: 24000, gastos: null, created_at: dias(p.d - 3),
   };
-  fila.resultados_partido = p.res ? { ganador: p.res.ganador, estado: p.res.estado, finalizado: p.res.finalizado } : null;
+  fila.resultados_partido = p.res ? { ganador: p.res.ganador, estado: p.res.estado, finalizado: p.res.finalizado, anota_id: p.res.anota_id ?? null } : null;
   fila.estadisticas_partido = p.res?.finalizado ? estadisticas(fila.id, 71, 58) : null;
   return fila;
 });

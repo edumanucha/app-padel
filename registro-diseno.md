@@ -44,6 +44,11 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-14 | `diseno-14-quienes-somos-perfil` | 2026-10-03 | Quiénes somos: tarjeta "Invitame a jugar" que lleva al perfil de quien arma la app | Publicado |
 | D-15 | `diseno-15-torneos-preview` | 2026-10-03 | Vista previa de torneos (/pruebas-torneos): americano, mexicano y armable (liga o eliminación) | Vista previa |
 | D-16 | `diseno-16-torneos` | 2026-10-03 | Torneos reales: lista, crear (americano, mexicano, liga, eliminación), jugar y podio, guardados en la base | Publicado |
+| D-17 | `diseno-17-un-anotador` | 2026-10-04 | Marcadorcito: un solo anotador (los demás miran y pueden pasar el control), pantalla final completa y 3 s para deshacer el último punto | Publicado |
+| D-18 | `diseno-18-modo-visitante` | 2026-10-04 | Modo visitante: Inicio sin cuenta y aviso en las pantallas privadas | Publicado |
+| D-19 | `diseno-19-partido-cargado` | 2026-10-04 | Cargar un partido jugado sin Marcadorcito: avisos, corrección, 'no jugué' y un máximo de uno por día | Publicado |
+| D-20 | `diseno-20-guia-celu` | 2026-10-04 | Guía de dónde dejar el celu (Marcadorcito libre y Cómo funciona) | Publicado |
+| D-21 | `diseno-21-avisos-marcadorcito` | 2026-10-04 | Aviso de Marcadorcito en juego, ayudas de cámara y voz, reloj recomendado, sin 'Generar partido rápido' | Publicado |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -185,6 +190,35 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Archivos:** `lib/torneosApp.js` (puente base ↔ cruces, probado simulando torneos completos de los 4 formatos), `components/TorneosForm.js`, `NuevoTorneoForm.js`, `TorneoForm.js`, rutas en `app/torneos`.
 - **Pendiente:** textos traducidos (hoy en español), tarjeta para compartir el podio, link público para seguir en vivo, avisar a los participantes con cuenta.
 
+### D-17 · `diseno-17-un-anotador` — un solo anotador y pantalla final (2026-10-04)
+
+- **Qué cambió:** solo una persona suma los puntos de un partido (quien lo empieza); los demás jugadores con cuenta lo miran en vivo con el cartel "Estás mirando · lleva los puntos X" y pueden recibir el control desde Opciones > Partido. Pantalla final con "Partido para X", duración, Compartir resultado, Ver estadísticas e Ir al Inicio. El último punto del partido tarda 3 s en cerrarse (con botón Deshacer). Protección contra puntos dobles.
+- **Pantallas afectadas:** Marcadorcito (vertical y apaisado).
+- **Por qué:** primer partido real con el reloj; dos celus anotando se pisaban y faltaban datos.
+- **Datos:** `072_un_solo_anotador.sql` (columna `anota_id`, política y `pasar_control_marcador`).
+
+### D-18 · `diseno-18-modo-visitante` — modo visitante (2026-10-04)
+
+- **Qué cambió:** el Inicio sin sesión muestra qué hay (probar Marcadorcito y torneo, consejos, cómo funciona, quiénes somos) con "Crear mi cuenta" como único botón amarillo. Las pantallas privadas muestran un aviso para crear la cuenta y, al volver del login, regresan a donde estaban. Públicas: login, consejos, quiénes somos, cómo funciona, privacidad, pruebas, demo del marcador, /p/ y /g/.
+- **Archivos:** `components/PuertaVisitante.js`, `components/HomeVisitante.js`, `components/HomeForm.js`.
+
+### D-19 · `diseno-19-partido-cargado` — partido jugado sin Marcadorcito (2026-10-04)
+
+- **Qué cambió:** pantalla "Cargar un partido jugado" (fecha, cancha, compañero y rivales con cuenta o por nombre, hasta 3 sets). Se avisa a los otros jugadores con cuenta; cualquiera puede corregir el resultado (7 días) o decir "No jugué este partido" sin aceptar nada. Suma al ranking como un partido normal. Máximo un partido cargado a mano por día.
+- **Datos:** `073_partidos_cargados_a_mano.sql` y `074_limite_diario_carga_manual.sql`.
+- **Pendiente:** los invitados sin cuenta no reciben aviso.
+
+### D-20 · `diseno-20-guia-celu` — guía de dónde dejar el celu (2026-10-04)
+
+- **Qué cambió:** dibujo de la cancha con el celu en el vidrio del fondo y cinco consejos. Va arriba de "Empezar a jugar" (Marcadorcito libre) y en Cómo funciona.
+- **Archivos:** `components/GuiaCelular.js`.
+
+### D-21 · `diseno-21-avisos-marcadorcito` — avisos y reloj recomendado (2026-10-04)
+
+- **Qué cambió:** notificación "X empezó a llevar el marcador de tu partido" a los otros jugadores con cuenta (abre el marcador) y acceso "Volver al partido" en el Inicio mientras está en juego. En Opciones, cámara y voz explican cómo usarlas (mano derecha abierta = punto A, izquierda = punto B, pulgar = deshacer; comandos de voz con "marcador" adelante). El reloj aparece como "Recomendado" y su formato queda fijo. Se saca "Generar partido rápido". Cómo funciona (es/en/pt) recomienda el reloj.
+- **Datos:** `075_aviso_marcadorcito_nuevo.sql`.
+- **Herramienta de QA (no es diseño):** `/pruebas-distancia` mide hasta qué distancia llegan los botones del reloj y si el puntaje se actualiza bien en el reloj.
+
 <!-- Plantilla para cada cambio nuevo:
 
 ### D-NN · `diseno-NN-nombre` — título (fecha)
@@ -242,5 +276,8 @@ Para comparar las versiones (banderas) cuando el usuario quiera. Puntaje de 1 a 
 | Apelaciones (admin) | `/apelaciones` | | | | | |
 | Admin canchas | `/admin/canchas` | | | | | |
 | Sin conexión | `/offline` | | | | | |
+| Torneos (lista, nuevo, detalle) | `/torneos` | | | | | |
+| Cargar un partido jugado | `/cargar-partido` | | | | | |
+| Inicio para visitantes | `/` sin cuenta | | | | | |
 | Hojas de abajo (opciones, filtros, etc.) | varias | | | | | |
 | Vista en compu (Inicio) | `/` en pantalla grande | | | | | |
