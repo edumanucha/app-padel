@@ -184,7 +184,16 @@ export default function HomeForm() {
     } catch {
       return;
     }
-    if (!id) return;
+    if (!id) {
+      // Sin Marcadorcito abierto en este celu: si juego un partido que otra
+      // persona está llevando, se muestra el acceso para mirarlo (2026-10-04).
+      if (!sinConexion()) {
+        supabase.rpc("mi_marcadorcito_en_juego").then(({ data }) => {
+          if (data) setPartidoEnCurso(data);
+        }, () => {});
+      }
+      return;
+    }
     if (sinConexion()) {
       Promise.resolve().then(() => setPartidoEnCurso(id));
       return;
@@ -347,6 +356,8 @@ export default function HomeForm() {
     }
     if (n.tipo === "mensaje_nuevo") {
       router.push("/mensajes");
+    } else if (n.tipo === "marcadorcito_nuevo" && n.partido_id) {
+      router.push(`/partido/${n.partido_id}/marcador`);
     } else if (n.partido_id) {
       router.push(`/partido/${n.partido_id}`);
     }

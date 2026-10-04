@@ -1075,6 +1075,9 @@ export default function MarcadorForm({ partidoId }) {
         .select()
         .single();
       resultadoRes = insertRes;
+      // Quien empieza a llevar el marcador avisa a los demás jugadores con
+      // cuenta (2026-10-04). Si falla, el marcador anda igual.
+      if (!insertRes.error) supabase.rpc("avisar_marcadorcito_nuevo", { p_partido: partidoId }).then(() => {}, () => {});
     }
 
     if (resultadoRes.error) {
@@ -2445,7 +2448,7 @@ export default function MarcadorForm({ partidoId }) {
                 modo: "camara",
                 icono: <IconoMano width={30} height={30} />,
                 nombre: "Gestos",
-                detalle: "Con la cámara: mano abierta del lado de cada pareja; pulgar para deshacer.",
+                detalle: "Con la cámara: mano derecha abierta = punto A · mano izquierda abierta = punto B · pulgar solo = deshacer.",
                 activar: () => {
                   setModoElegido("camara");
                   activarCamara();
@@ -2573,7 +2576,7 @@ export default function MarcadorForm({ partidoId }) {
                 </label>
               )}
               {camaraActiva && (
-                <span className="text-xs text-muted pl-1">Mano abierta del lado de la pareja A = punto A · del lado de la B = punto B · pulgar solo = deshacer. Sostené la seña un instante.</span>
+                <span className="text-xs text-muted pl-1">Mano derecha abierta = punto A · mano izquierda abierta = punto B · pulgar solo (para arriba o para abajo) = deshacer. Mostrá la seña a la cámara y sostenela un instante.</span>
               )}
               {ultimoGesto && <span className="text-xs text-muted pl-1">Último gesto: {ultimoGesto}</span>}
               {errorCamara && <span className="text-xs text-red-600 pl-1">{errorCamara}</span>}
