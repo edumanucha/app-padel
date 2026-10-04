@@ -2,28 +2,44 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { crearEstadoInicial, sumarPunto, formatearPuntos, setsGanados } from "@/lib/marcadorEngine";
 
-// Herramienta de QA (2026-10-04, pedido del usuario): saber hasta qué
-// distancia del celu llegan los botones del reloj. Solo cuenta puntos, sin
-// partido ni base de datos. Usa el mismo modo reloj del Marcadorcito real
-// (Media Session con un silencio en loop): siguiente = punto A, anterior =
-// punto B, pausa/play = un comando más para probar. Cada vez que el celu
-// recibe un toque del reloj suena un beep fuerte (agudo = A, dos graves = B),
-// se ilumina la pantalla y se anota la hora, así se puede ir alejando con el
-// reloj puesto y ver hasta dónde llega. El reloj también muestra el conteo
-// (así se ve en la muñeca si el toque se registró).
+// Herramienta de QA (2026-10-04, pedido del usuario): probar con el reloj
+// (1) hasta qué distancia del celu llegan sus botones y (2) que el puntaje
+// se actualice bien en el reloj, con los reenvíos del Marcadorcito real.
+// Usa el mismo motor de puntaje (15/30/40, games, sets, tie-break, saque) y
+// el mismo modo reloj: Media Session con un silencio en loop. Siguiente =
+// punto A, anterior = punto B, pausa/play = deshacer. Cada toque que le llega
+// al celu suena (agudo = A, dos graves = B, medio = deshacer), vibra y se
+// ilumina. El puntaje se manda al reloj igual que en el Marcadorcito: cuando
+// cambia, a los 1,5 / 4 / 8 / 14 s y cada 8 s. No guarda nada.
 
 const DISTANCIAS = [1, 2, 3, 4, 5, 6, 8, 10, 15, 20];
+
+// Mismo formato del reloj que el Marcadorcito ("corto-letras"): arriba el
+// game en curso con ● del que saca; abajo games y sets.
+function textoReloj(est) {
+  const { textoA, textoB } = formatearPuntos(est);
+  const { a, b } = setsGanados(est.setsA, est.setsB);
+  const gA = est.setsA[est.setsA.length - 1];
+  const gB = est.setsB[est.setsB.length - 1];
+  if (est.finalizado) return { titulo: `Final ${a}-${b}`, subtitulo: est.setsA.map((g, i) => `${g}-${est.setsB[i]}`).join(" ") };
+  const tb = est.tiebreak ? "TB " : "";
+  const pts = est.saque === "B" ? `${tb}${textoA}-${textoB}●` : `${tb}●${textoA}-${textoB}`;
+  return { titulo: pts, subtitulo: `G ${gA}-${gB} · S ${a}-${b}` };
+}
 
 export default function PruebaDistanciaRelojForm() {
   const router = useRouter();
   const [activo, setActivo] = useState(false);
   const [error, setError] = useState("");
-  const [puntosA, setPuntosA] = useState(0);
-  const [puntosB, setPuntosB] = useState(0);
-  const [destello, setDestello] = useState(null); // "A" | "B" | "otro"
+  const [estado, setEstado] = useState(crearEstadoInicial());
+  const [destello, setDestello] = useState(null); // "A" | "B" | "deshacer" | "tope"
   const [distancia, setDistancia] = useState(null);
-  const [registro, setRegistro] = useState([]); // { hora, tipo, metros }
+  const [registro, setRegistro] = useState([]); // { hora, tipo, metros, marcador }
+  const [envios, setEnvios] = useState(0);
+  const [ultimoEnvio, setUltimoEnvio] = useState("");
+  const [pulso, setPulso] = useState(0);
 
   const audio1Ref = useRef(null);
   const audio2Ref = useRef(null);
@@ -31,7 +47,8 @@ export default function PruebaDistanciaRelojForm() {
   const ctxRef = useRef(null);
   const wakeRef = useRef(null);
   const distanciaRef = useRef(null);
-  const cuentaRef = useRef({ a: 0, b: 0 });
+  const estadoRef = useRef(estado);
+  const histRef = useRef([]);
   const destelloTimerRef = useRef(null);
   const activoRef = useRef(false);
 
@@ -46,8 +63,8 @@ export default function PruebaDistanciaRelojForm() {
     return ctxRef.current;
   }
 
-  // Beep fuerte para oírlo desde lejos: A = uno agudo, B = dos graves,
-  // otro botón = uno medio largo.
+  // Sonidos fuertes para oírlos desde lejos: A = uno agudo, B = dos graves,
+  // deshacer = uno medio y largo.
   function beep(tipo) {
     const ctx = audioCtx();
     if (!ctx) return;
@@ -66,48 +83,75 @@ export default function PruebaDistanciaRelojForm() {
     }
   }
 
-  // Mismo truco del Marcadorcito: el reloj no refresca si solo cambian los
-  // metadatos; se alterna entre dos audios en silencio.
-  async function mostrarEnReloj() {
-    try {
-      const { a, b } = cuentaRef.current;
-      const actual = sonandoRef.current;
-      const siguiente = actual === audio1Ref.current ? audio2Ref.current : audio1Ref.current;
-      siguiente.loop = true;
-      await siguiente.play();
-      actual?.pause();
-      sonandoRef.current = siguiente;
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: `A ${a} · B ${b}`,
-        artist: "⏭ Punto A · ⏮ Punto B",
-        album: "Prueba de distancia",
-      });
-      navigator.mediaSession.playbackState = "playing";
-    } catch {
-      /* si falla el refresco, la prueba sigue contando igual */
+  function aplicar(tipo) {
+    const actual = estadoRef.current;
+    let nuevo = actual;
+    if (tipo === "deshacer") {
+      const previo = histRef.current.pop();
+      if (previo) nuevo = previo;
+    } else if (!actual.finalizado) {
+      histRef.current = [...histRef.current, actual].slice(-30);
+      nuevo = sumarPunto(actual, tipo).estado;
     }
+    estadoRef.current = nuevo;
+    setEstado(nuevo);
+    return nuevo;
   }
 
-  function llego(tipo) {
-    if (!activoRef.current) return;
-    if (tipo === "A") cuentaRef.current.a += 1;
-    if (tipo === "B") cuentaRef.current.b += 1;
-    setPuntosA(cuentaRef.current.a);
-    setPuntosB(cuentaRef.current.b);
-    beep(tipo);
+  // Un toque llegó (del reloj o de los botones de la pantalla).
+  function llego(tipo, origen = "reloj") {
+    if (origen === "reloj" && !activoRef.current) return;
+    const antes = estadoRef.current;
+    const tope = tipo !== "deshacer" && antes.finalizado;
+    const nuevo = tope ? antes : aplicar(tipo);
+    beep(tipo === "deshacer" ? "otro" : tipo);
     if (navigator.vibrate) navigator.vibrate(120);
-    setDestello(tipo);
+    setDestello(tope ? "tope" : tipo);
     clearTimeout(destelloTimerRef.current);
-    destelloTimerRef.current = setTimeout(() => setDestello(null), 800);
+    destelloTimerRef.current = setTimeout(() => setDestello(null), 900);
+    const { textoA, textoB } = formatearPuntos(nuevo);
     const hora = new Date().toLocaleTimeString("es-AR");
-    setRegistro((r) => [{ hora, tipo, metros: distanciaRef.current }, ...r].slice(0, 80));
-    if (tipo !== "otro") mostrarEnReloj();
-    else {
-      // Mantener viva la "reproducción" aunque el botón sea pausa/play.
+    setRegistro((r) => [{ hora, tipo: tope ? "tope" : tipo, origen, metros: distanciaRef.current, marcador: `${textoA}-${textoB}` }, ...r].slice(0, 80));
+    // Mantener viva la "reproducción" aunque el botón sea pausa/play.
+    if (origen === "reloj") {
       sonandoRef.current?.play().catch(() => {});
       navigator.mediaSession.playbackState = "playing";
     }
   }
+
+  // Manda el puntaje al reloj: alterna entre dos audios en silencio (el reloj
+  // no refresca si solo cambian los metadatos).
+  useEffect(() => {
+    if (!activo) return;
+    const sale = sonandoRef.current;
+    const entra = sale === audio1Ref.current ? audio2Ref.current : audio1Ref.current;
+    if (!entra) return;
+    const { titulo, subtitulo } = textoReloj(estado);
+    entra.currentTime = 0;
+    entra
+      .play()
+      .then(() => {
+        if (sale && sale !== entra) sale.pause();
+        sonandoRef.current = entra;
+        navigator.mediaSession.metadata = new MediaMetadata({ title: titulo, artist: subtitulo, album: "Prueba del reloj" });
+        navigator.mediaSession.playbackState = "playing";
+        setEnvios((n) => n + 1);
+        setUltimoEnvio(new Date().toLocaleTimeString("es-AR"));
+      })
+      .catch(() => {});
+  }, [estado, activo, pulso]);
+
+  // Reenvíos: a los 1,5 / 4 / 8 / 14 s de cada cambio y cada 8 s.
+  useEffect(() => {
+    if (!activo) return;
+    const tiempos = [1500, 4000, 8000, 14000].map((ms) => setTimeout(() => setPulso((n) => n + 1), ms));
+    return () => tiempos.forEach(clearTimeout);
+  }, [activo, estado]);
+  useEffect(() => {
+    if (!activo) return;
+    const id = setInterval(() => setPulso((n) => n + 1), 8000);
+    return () => clearInterval(id);
+  }, [activo]);
 
   async function activar() {
     setError("");
@@ -119,18 +163,14 @@ export default function PruebaDistanciaRelojForm() {
       audioCtx(); // despierta el audio con este toque
       const audio = audio1Ref.current;
       audio.loop = true;
+      audio2Ref.current.loop = true;
       await audio.play();
       sonandoRef.current = audio;
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: `A ${cuentaRef.current.a} · B ${cuentaRef.current.b}`,
-        artist: "⏭ Punto A · ⏮ Punto B",
-        album: "Prueba de distancia",
-      });
       const acciones = {
         nexttrack: () => llego("A"),
         previoustrack: () => llego("B"),
-        pause: () => llego("otro"),
-        play: () => llego("otro"),
+        pause: () => llego("deshacer"),
+        play: () => llego("deshacer"),
       };
       for (const [accion, fn] of Object.entries(acciones)) {
         try { navigator.mediaSession.setActionHandler(accion, fn); } catch { /* nada */ }
@@ -164,11 +204,13 @@ export default function PruebaDistanciaRelojForm() {
   }
 
   function ponerEnCero() {
-    cuentaRef.current = { a: 0, b: 0 };
-    setPuntosA(0);
-    setPuntosB(0);
+    const inicial = crearEstadoInicial();
+    estadoRef.current = inicial;
+    histRef.current = [];
+    setEstado(inicial);
     setRegistro([]);
-    if (activoRef.current) mostrarEnReloj();
+    setEnvios(0);
+    setUltimoEnvio("");
   }
 
   useEffect(() => () => {
@@ -177,44 +219,54 @@ export default function PruebaDistanciaRelojForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Resumen por distancia: cuántos toques llegaron a cada una.
-  const resumen = DISTANCIAS.map((m) => ({ m, n: registro.filter((r) => r.metros === m).length })).filter((x) => x.n > 0);
-  const sinDistancia = registro.filter((r) => r.metros == null).length;
+  const { textoA, textoB } = formatearPuntos(estado);
+  const { a: setsA, b: setsB } = setsGanados(estado.setsA, estado.setsB);
+  const gA = estado.setsA[estado.setsA.length - 1];
+  const gB = estado.setsB[estado.setsB.length - 1];
+  const enReloj = textoReloj(estado);
 
-  const fondoDestello = destello === "A" ? "bg-accent" : destello === "B" ? "bg-accent-2" : destello === "otro" ? "bg-accent-3/30" : "bg-bg";
+  // Resumen por distancia: toques del reloj que llegaron a cada una.
+  const delReloj = registro.filter((r) => r.origen === "reloj");
+  const resumen = DISTANCIAS.map((m) => ({ m, n: delReloj.filter((r) => r.metros === m).length })).filter((x) => x.n > 0);
+  const sinDistancia = delReloj.filter((r) => r.metros == null).length;
+
+  const fondoDestello =
+    destello === "A" ? "bg-accent" : destello === "B" ? "bg-accent-2" : destello === "deshacer" || destello === "tope" ? "bg-accent-3/30" : "bg-bg";
+  const mensajeDestello =
+    destello === "A" ? "¡Llegó el toque: punto A!" : destello === "B" ? "¡Llegó el toque: punto B!" : destello === "deshacer" ? "Llegó pausa/play: deshacer" : destello === "tope" ? "Partido terminado: poné en cero" : "";
 
   return (
     <div className="w-full max-w-md flex flex-col gap-4 text-ink">
-      <div className="flex items-center justify-between">
-        <h1 className="font-titulo text-3xl uppercase leading-none">Prueba de distancia del reloj</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="font-titulo text-3xl uppercase leading-none">Prueba del reloj</h1>
         <button onClick={() => router.push("/")} className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 cursor-pointer">
           Volver
         </button>
       </div>
 
       <p className="text-sm text-muted leading-relaxed">
-        Dejá el celu quieto, activá la prueba y andá alejándote con el reloj puesto, tocando <b className="text-ink">siguiente</b> (punto A) y{" "}
-        <b className="text-ink">anterior</b> (punto B). Cada toque que le llega al celu suena un beep fuerte (agudo = A, dos graves = B) y se ilumina la
-        pantalla. Si el reloj no llega, no pasa nada. No guarda nada.
+        Dejá el celu quieto, activá la prueba y andá alejándote con el reloj puesto: <b className="text-ink">siguiente</b> = punto A,{" "}
+        <b className="text-ink">anterior</b> = punto B, <b className="text-ink">pausa/play</b> = deshacer. Cada toque que llega suena, vibra y suma
+        con puntaje real. Mirá el reloj: tiene que mostrar el mismo marcador que el celu. No guarda nada.
       </p>
 
       <div className={`rounded-[8px] border border-ink/15 p-4 flex flex-col items-center gap-2 transition-colors duration-200 ${fondoDestello}`}>
-        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{activo ? "Esperando toques del reloj" : "Apagado"}</span>
+        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">
+          {activo ? "Esperando toques del reloj" : "Apagado"} · Sets {setsA}-{setsB} · Games {gA}-{gB}
+          {estado.tiebreak ? " · Tie-break" : ""}
+        </span>
         <div className="w-full flex items-center justify-around">
           <div className="flex flex-col items-center">
-            <span className="text-xs font-bold uppercase text-muted">Punto A</span>
-            <span className="font-numero text-7xl leading-none">{puntosA}</span>
+            <span className="text-xs font-bold uppercase text-muted">A {estado.saque === "A" && !estado.finalizado ? "●" : ""}</span>
+            <span className="font-numero text-7xl leading-none">{textoA}</span>
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-xs font-bold uppercase text-muted">Punto B</span>
-            <span className="font-numero text-7xl leading-none">{puntosB}</span>
+            <span className="text-xs font-bold uppercase text-muted">B {estado.saque === "B" && !estado.finalizado ? "●" : ""}</span>
+            <span className="font-numero text-7xl leading-none">{textoB}</span>
           </div>
         </div>
-        <span className="text-sm font-semibold h-5">
-          {destello === "A" && "¡Llegó el toque: punto A!"}
-          {destello === "B" && "¡Llegó el toque: punto B!"}
-          {destello === "otro" && "Llegó otro botón (pausa/play)"}
-        </span>
+        <span className="text-sm font-semibold min-h-5 text-center">{estado.finalizado ? `Ganó ${estado.ganador}` : mensajeDestello}</span>
+        {estado.finalizado && mensajeDestello && <span className="text-sm font-semibold text-center">{mensajeDestello}</span>}
       </div>
 
       {!activo ? (
@@ -232,6 +284,30 @@ export default function PruebaDistanciaRelojForm() {
         </p>
       )}
 
+      <div className="flex flex-col gap-1.5 border-y border-ink/10 py-3">
+        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">Lo que se le manda al reloj</span>
+        <span className="font-numero text-2xl leading-tight">{enReloj.titulo}</span>
+        <span className="text-sm text-muted">{enReloj.subtitulo}</span>
+        <span className="text-xs text-muted">
+          {activo ? `Envíos: ${envios}${ultimoEnvio ? ` · último a las ${ultimoEnvio}` : ""}` : "Se manda cuando activás la prueba."} Si el reloj muestra otra cosa, no se actualizó.
+        </span>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">Sumar desde la pantalla (para comparar)</span>
+        <div className="grid grid-cols-3 gap-2">
+          <button onClick={() => llego("A", "pantalla")} className="rounded-[6px] bg-accent text-accent-ink font-bold py-2 cursor-pointer">
+            Punto A
+          </button>
+          <button onClick={() => llego("B", "pantalla")} className="rounded-[6px] bg-accent-2 text-accent-2-ink font-bold py-2 cursor-pointer">
+            Punto B
+          </button>
+          <button onClick={() => llego("deshacer", "pantalla")} className="rounded-[6px] border border-ink/15 font-bold py-2 cursor-pointer">
+            Deshacer
+          </button>
+        </div>
+      </div>
+
       <div className="flex flex-col gap-2">
         <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">¿A cuántos metros estás? (opcional)</span>
         <div className="flex flex-wrap gap-2">
@@ -247,13 +323,13 @@ export default function PruebaDistanciaRelojForm() {
           ))}
         </div>
         <p className="text-xs text-muted">
-          Elegí la distancia antes de alejarte (cada toque queda anotado con ese número) o mirá la hora de cada toque en la lista de abajo.
+          Elegí la distancia antes de alejarte: cada toque del reloj queda anotado con ese número. La página no puede medirla sola.
         </p>
       </div>
 
       {(resumen.length > 0 || sinDistancia > 0) && (
         <div className="flex flex-col">
-          <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted pb-1.5 border-b-2 border-ink">Toques que llegaron</span>
+          <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted pb-1.5 border-b-2 border-ink">Toques del reloj que llegaron</span>
           {resumen.map((x) => (
             <div key={x.m} className="flex justify-between py-1.5 border-b border-ink/10 text-sm">
               <span className="font-bold">{x.m} m</span>
@@ -281,11 +357,12 @@ export default function PruebaDistanciaRelojForm() {
         <div className="flex flex-col">
           {registro.map((r, i) => (
             <div key={i} className="flex justify-between gap-3 py-1.5 border-b border-ink/10 text-sm">
-              <span className={r.tipo === "otro" ? "text-muted" : "font-bold"}>
-                {r.tipo === "A" ? "Punto A (siguiente)" : r.tipo === "B" ? "Punto B (anterior)" : "Pausa / play"}
+              <span className={r.tipo === "deshacer" || r.tipo === "tope" ? "text-muted" : "font-bold"}>
+                {r.tipo === "A" ? "Punto A" : r.tipo === "B" ? "Punto B" : r.tipo === "deshacer" ? "Deshacer" : "Ignorado (terminó)"} → {r.marcador}
+                <span className="font-normal text-muted"> · {r.origen === "reloj" ? "reloj" : "pantalla"}</span>
               </span>
               <span className="text-xs text-muted whitespace-nowrap">
-                {r.metros ? `${r.metros} m · ` : ""}
+                {r.metros && r.origen === "reloj" ? `${r.metros} m · ` : ""}
                 {r.hora}
               </span>
             </div>
