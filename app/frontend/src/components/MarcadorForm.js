@@ -2600,14 +2600,14 @@ export default function MarcadorForm({ partidoId }) {
               )}
               {vozDisponible && escuchando && (
                 <div className="text-xs text-muted pl-1 flex flex-col gap-0.5">
-                  <span>Empezá siempre diciendo “marcador”, y después:</span>
-                  <span>“punto A” o “punto B”: suma el punto.</span>
-                  <span>“deshacer”: borra el último punto.</span>
-                  <span>“saque A” o “saque B”: cambia quién saca.</span>
-                  <span>“pausa” y “continuar”: frenan y reanudan la escucha.</span>
-                  <span>“repetir”: dice el marcador en voz alta.</span>
-                  <span>“40 15”: corrige los puntos del game (primero A, después B).</span>
-                  <span>“juegos 3 2”: corrige los games del set.</span>
+                  <span>Decí siempre “marcador” y después el comando:</span>
+                  <span>“marcador punto A” o “marcador punto B”: suma el punto.</span>
+                  <span>“marcador deshacer”: borra el último punto.</span>
+                  <span>“marcador saque A” o “marcador saque B”: cambia quién saca.</span>
+                  <span>“marcador pausa” y “marcador continuar”: frenan y reanudan la escucha.</span>
+                  <span>“marcador repetir”: dice el marcador en voz alta.</span>
+                  <span>“marcador 40 15”: corrige los puntos del game (primero A, después B).</span>
+                  <span>“marcador juegos 3 2”: corrige los games del set.</span>
                 </div>
               )}
 
