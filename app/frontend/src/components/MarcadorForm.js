@@ -1574,18 +1574,8 @@ export default function MarcadorForm({ partidoId }) {
   //   "puntos-solos": "30-15" / "2-0 · S 0-0 · 1' · Marcadorcito"
   // Default "corto-letras" (el favorito final del usuario, 2026-09-30): corto
   // para que ningún renglón se mueva tipo marquesina en el reloj.
-  const [formatoReloj, setFormatoReloj] = useState(() => {
-    if (typeof window === "undefined") return "corto-letras";
-    try {
-      return localStorage.getItem("marcadorcito_formato_reloj") || "corto-letras";
-    } catch {
-      return "corto-letras";
-    }
-  });
-  function elegirFormatoReloj(valor) {
-    setFormatoReloj(valor);
-    try { localStorage.setItem("marcadorcito_formato_reloj", valor); } catch {}
-  }
+  // Formato fijo (2026-10-04): el favorito del usuario, sin selector.
+  const formatoReloj = "corto-letras";
   // Cuál de los dos <audio> está sonando ahora (ver actualizarTituloReloj).
   const relojSonandoRef = useRef(null);
   const [relojActivo, setRelojActivo] = useState(false);
@@ -2582,6 +2572,9 @@ export default function MarcadorForm({ partidoId }) {
                   Corregir lados
                 </label>
               )}
+              {camaraActiva && (
+                <span className="text-xs text-muted pl-1">Mano abierta del lado de la pareja A = punto A · del lado de la B = punto B · pulgar solo = deshacer. Sostené la seña un instante.</span>
+              )}
               {ultimoGesto && <span className="text-xs text-muted pl-1">Último gesto: {ultimoGesto}</span>}
               {errorCamara && <span className="text-xs text-red-600 pl-1">{errorCamara}</span>}
 
@@ -2591,24 +2584,6 @@ export default function MarcadorForm({ partidoId }) {
               {relojActivo && (
                 <>
                   <span className="text-xs text-muted pl-1">⏭ Punto A · ⏮ Punto B · ⏸ Deshacer (al inicio, antes del primer punto, cambia el saque). Tanteador en vivo en el reloj y aviso al terminar el partido.</span>
-                  <span className="text-xs text-muted pl-1">Qué se ve en el reloj (● = quién saca):</span>
-                  <div className="flex flex-col gap-1.5">
-                    {[
-                      ["corto-letras", "●30-15", "G 2-0 · S 0-0"],
-                      ["puntos-solos", "●30-15", "2-0 · S 0-0 · 1' · Marcadorcito"],
-                      ["games-arriba", "Games 2-0 · Sets 0-0 · 1'", "●30-15 Marcadorcito"],
-                      ["puntos-y-todo", "●30-15 Marcadorcito", "30-15 · G 2-0 · S 0-0 · 1'"],
-                    ].map(([valor, arriba, abajo]) => (
-                      <button
-                        key={valor}
-                        onClick={() => elegirFormatoReloj(valor)}
-                        className={`text-left rounded-[6px] px-3 py-2 border cursor-pointer ${formatoReloj === valor ? "border-ink ring-1 ring-ink bg-surface" : "border-ink/15 bg-surface"}`}
-                      >
-                        <span className="block text-sm font-semibold">{arriba}</span>
-                        <span className="block text-xs text-muted">{abajo}</span>
-                      </button>
-                    ))}
-                  </div>
                 </>
               )}
               {errorReloj && <span className="text-xs text-red-600 pl-1">{errorReloj}</span>}
@@ -2619,6 +2594,9 @@ export default function MarcadorForm({ partidoId }) {
                 </FilaOpcion>
               ) : (
                 <span className="text-xs text-muted">Voz no disponible en este navegador</span>
+              )}
+              {vozDisponible && escuchando && (
+                <span className="text-xs text-muted pl-1">Siempre empezá con “marcador”: “marcador punto A” · “punto B” · “deshacer” · “saque A” · “saque B” · “pausa” · “continuar” · “repetir” (dice el marcador) · “marcador 40 15” (corrige los puntos) · “marcador juegos 3 2” (corrige los games).</span>
               )}
 
               <FilaOpcion etiqueta={<><IconoParlante className="ico" aria-hidden /> Anuncios</>}>

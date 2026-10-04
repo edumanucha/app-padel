@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 import GuiaCelular from "@/components/GuiaCelular";
 import PelotaLoader from "@/components/PelotaLoader";
 import CampoCancha from "@/components/CampoCancha";
-import { IconoPlay, IconoPelota, IconoRayo } from "@/components/Icons";
+import { IconoPlay, IconoPelota } from "@/components/Icons";
 import { crearEstadoInicial } from "@/lib/marcadorEngine";
 import {
   usuarioActual,
@@ -131,36 +131,6 @@ export default function MarcadorLibreForm() {
     }
     verificarSesion();
   }, [router]);
-
-  // Botón "Generar partido rápido" (2026-09-13, mismo pedido que en
-  // CrearPartidoForm.js -- acá el usuario avisó que lo esperaba en ESTE
-  // formulario, "Marcadorcito"/marcador libre, no en el otro): completa
-  // solo los casilleros vacíos, nunca pisa lo que ya se cargó a mano.
-  // Los 3 jugadores quedan como invitados libres (texto), no hace falta
-  // vincular cuentas reales para probar rápido.
-  async function generarPartidoRapido() {
-    if (cancha.trim() === "" && !sinConexion()) {
-      const { data } = await supabase
-        .from("canchas")
-        .select("id, nombre")
-        .order("nombre", { ascending: true })
-        .limit(1)
-        .maybeSingle();
-      if (data) {
-        setCancha(data.nombre);
-        setCanchaId(data.id);
-      }
-    }
-    if (companero.termino.trim() === "") {
-      setCompanero({ termino: "Compañero QA", jugadorId: null, nombre: "Compañero QA" });
-    }
-    if (rival1.termino.trim() === "") {
-      setRival1({ termino: "Rival QA 1", jugadorId: null, nombre: "Rival QA 1" });
-    }
-    if (rival2.termino.trim() === "") {
-      setRival2({ termino: "Rival QA 2", jugadorId: null, nombre: "Rival QA 2" });
-    }
-  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -367,14 +337,6 @@ export default function MarcadorLibreForm() {
         className="self-start font-semibold text-xs px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
       >
         Cargar un partido ya jugado (sin Marcadorcito)
-      </button>
-
-      <button
-        type="button"
-        onClick={generarPartidoRapido}
-        className="self-start font-semibold text-xs px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer inline-flex items-center gap-1.5"
-      >
-        <IconoRayo className="ico" aria-hidden /> Generar partido rápido
       </button>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">

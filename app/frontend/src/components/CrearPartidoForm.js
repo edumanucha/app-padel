@@ -8,7 +8,6 @@ import CampoCancha from "@/components/CampoCancha";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
 
-import { IconoRayo } from "@/components/Icons";
 // Rediseño Cartel (2026-10-01): campos con contorno fino y esquinas casi
 // rectas; las etiquetas de sección van chicas, en mayúscula.
 const inputClass =
@@ -76,38 +75,6 @@ export default function CrearPartidoForm() {
     setNivelMin(searchParams.get("nivelMin") ?? "");
     setNivelMax(searchParams.get("nivelMax") ?? "");
   }, [searchParams]);
-
-  // Botón "Generar partido rápido" (2026-09-13, a pedido del usuario para
-  // agilizar QA manual: "no puedo estar poniendo datos todo el tiempo") --
-  // completa SOLO los campos que estén vacíos (nunca pisa algo que la
-  // persona ya cargó a mano) con el primer valor disponible de cada lista,
-  // sin enviar el formulario -- la persona revisa y confirma con "Crear
-  // partido" como siempre.
-  async function generarPartidoRapido() {
-    if (fechaHora.trim() === "") {
-      const manana = new Date(Date.now() + 24 * 60 * 60 * 1000);
-      manana.setMinutes(0, 0, 0);
-      const pad = (n) => String(n).padStart(2, "0");
-      setFechaHora(
-        `${manana.getFullYear()}-${pad(manana.getMonth() + 1)}-${pad(manana.getDate())}T${pad(manana.getHours())}:00`
-      );
-    }
-    if (cancha.trim() === "") {
-      const { data } = await supabase
-        .from("canchas")
-        .select("id, nombre")
-        .order("nombre", { ascending: true })
-        .limit(1)
-        .maybeSingle();
-      if (data) {
-        setCancha(data.nombre);
-        setCanchaId(data.id);
-      }
-    }
-    if (cantidadJugadores === "") {
-      setCantidadJugadores(4);
-    }
-  }
 
   const formularioCompleto =
     fechaHora.trim() !== "" &&
@@ -239,14 +206,6 @@ export default function CrearPartidoForm() {
         </button>
       </div>
       <p className="text-muted text-sm -mt-3">{t("crearPartido.subtitulo")}</p>
-
-      <button
-        type="button"
-        onClick={generarPartidoRapido}
-        className="self-start font-semibold text-xs px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer inline-flex items-center gap-1.5"
-      >
-        <IconoRayo className="ico" aria-hidden /> Generar partido rápido
-      </button>
 
       <label className="flex flex-col gap-1">
         <span className={etiquetaClass}>{t("crearPartido.fechaYHora")}</span>
