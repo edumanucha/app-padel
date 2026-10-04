@@ -1388,6 +1388,10 @@ export default function MarcadorForm({ partidoId }) {
     },
     [anunciar, nombresCortos, nombreEquipoVoz, notificarReloj]
   );
+  const notificarRelojRef = useRef(null);
+  useEffect(() => {
+    notificarRelojRef.current = notificarReloj;
+  }, [notificarReloj]);
   const handleSumarPuntoRef = useRef(null);
   useEffect(() => {
     handleSumarPuntoRef.current = handleSumarPunto;
@@ -1707,22 +1711,35 @@ export default function MarcadorForm({ partidoId }) {
     : 0;
 
   // El reloj a veces se pierde un cambio. Para que quede siempre al día,
-  // cada punto se vuelve a publicar a los 2 y a los 6 segundos, y además
-  // cada 15 segundos aunque no haya cambios (pedido del usuario, 2026-10-04).
+  // cada punto se vuelve a publicar a los 1,5 / 4 / 8 / 14 segundos, y además
+  // cada 8 segundos aunque no haya cambios (pedido del usuario, 2026-10-04).
   const [pulsoReloj, setPulsoReloj] = useState(0);
   const claveEstadoReloj = resultado ? JSON.stringify([resultado.estado?.setsA, resultado.estado?.setsB, resultado.estado?.puntosA, resultado.estado?.puntosB, resultado.finalizado]) : "";
   useEffect(() => {
     if (!relojActivo || !claveEstadoReloj) return;
-    const t1 = setTimeout(() => setPulsoReloj((n) => n + 1), 2000);
-    const t2 = setTimeout(() => setPulsoReloj((n) => n + 1), 6000);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
+    const tiempos = [1500, 4000, 8000, 14000].map((ms) => setTimeout(() => setPulsoReloj((n) => n + 1), ms));
+    return () => tiempos.forEach(clearTimeout);
   }, [relojActivo, claveEstadoReloj]);
   useEffect(() => {
     if (!relojActivo) return;
-    const id = setInterval(() => setPulsoReloj((n) => n + 1), 15000);
+    let ultimo = Date.now();
+    const id = setInterval(() => {
+      setPulsoReloj((n) => n + 1);
+      // Si el sistema durmió la app (pasó mucho más que los 15 s), el reloj
+      // pudo quedar con el marcador viejo: se manda una notificación con el
+      // marcador actual para que se note y se resincronice.
+      const ahoraTick = Date.now();
+      const hueco = ahoraTick - ultimo;
+      ultimo = ahoraTick;
+      const actual = resultadoRef.current;
+      if (hueco > 30000 && actual && !actual.finalizado) {
+        const { textoA, textoB } = formatearPuntos(actual.estado);
+        const { a, b } = setsGanados(actual.estado.setsA, actual.estado.setsB);
+        const gA = actual.estado.setsA[actual.estado.setsA.length - 1];
+        const gB = actual.estado.setsB[actual.estado.setsB.length - 1];
+        notificarRelojRef.current?.("Marcadorcito reconectado", `Sets ${a}-${b} · Games ${gA}-${gB} · ${textoA}-${textoB}`);
+      }
+    }, 8000);
     return () => clearInterval(id);
   }, [relojActivo]);
   useEffect(() => {
@@ -2783,12 +2800,20 @@ export default function MarcadorForm({ partidoId }) {
         {resultado.finalizado ? (
           <div className={styles.finalBanner}>
             Partido para {nombreEquipo(resultado.ganador)}
+            {minutosReloj > 0 && (
+              <span style={{ fontSize: "0.7em", opacity: 0.8 }}>
+                {minutosReloj >= 60 ? `${Math.floor(minutosReloj / 60)} h ${String(minutosReloj % 60).padStart(2, "0")} min` : `${minutosReloj} min`}
+              </span>
+            )}
             <button
               className={`${styles.ctrlBtn} ${styles.ctrlBtnCompartir}`}
               onClick={handleCompartirResultado}
               disabled={compartiendo}
             >
               {compartiendo ? "Armando..." : <><IconoCompartir className="ico" aria-hidden /> Compartir resultado</>}
+            </button>
+            <button className={styles.ctrlBtn} onClick={() => router.push(`/partido/${partidoId}/estadisticas`)}>
+              Ver estadísticas
             </button>
             <button className={styles.ctrlBtn} onClick={handleIrAlInicio}>
               Ir al Inicio
