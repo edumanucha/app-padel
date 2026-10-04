@@ -2593,16 +2593,25 @@ export default function MarcadorForm({ partidoId }) {
         {mostrarOpciones && (
           <HojaAbajo titulo="Opciones" onCerrar={() => setMostrarOpciones(false)}>
             <PestanasHoja
-              pestanas={[
-                ["puntos", "Puntos"],
-                ["reglas", "Reglas"],
-                ["partido", "Partido"],
-              ]}
+              pestanas={
+                soyAnotador
+                  ? [
+                      ["puntos", "Puntos"],
+                      ["reglas", "Reglas"],
+                      ["partido", "Partido"],
+                    ]
+                  : [
+                      ["puntos", "Puntos"],
+                      ["partido", "Partido"],
+                    ]
+              }
               activa={pestanaOpciones}
               onCambiar={setPestanaOpciones}
             />
             {pestanaOpciones === "puntos" && (
             <div className="flex flex-col gap-3">
+              {soyAnotador && (
+                <>
               <FilaOpcion etiqueta={<><IconoCamara className="ico" aria-hidden /> Cámara (gestos)</>}>
                 <Toggle
                   checked={camaraActiva}
@@ -2622,18 +2631,26 @@ export default function MarcadorForm({ partidoId }) {
               )}
               {ultimoGesto && <span className="text-xs text-muted pl-1">Último gesto: {ultimoGesto}</span>}
               {errorCamara && <span className="text-xs text-red-600 pl-1">{errorCamara}</span>}
+                </>
+              )}
 
-              <FilaOpcion etiqueta={<><IconoReloj className="ico" aria-hidden /> Reloj o auriculares</>}>
+              <FilaOpcion etiqueta={<><IconoReloj className="ico" aria-hidden /> {soyAnotador ? "Reloj o auriculares" : "Ver el marcador en el reloj"}</>}>
                 <Toggle checked={relojActivo} onChange={(v) => (v ? activarReloj() : desactivarReloj())} />
               </FilaOpcion>
-              {!relojActivo && <span className="text-xs text-muted pl-1">Es el modo que mejor funciona: lo recomendamos.</span>}
+              {!relojActivo && <span className="text-xs text-muted pl-1">{soyAnotador ? "Es el modo que mejor funciona: lo recomendamos." : "El reloj te muestra el marcador en vivo."}</span>}
               {relojActivo && (
                 <>
-                  <span className="text-xs text-muted pl-1">⏭ Punto A · ⏮ Punto B · ⏸ Deshacer (al inicio, antes del primer punto, cambia el saque). Tanteador en vivo en el reloj y aviso al terminar el partido.</span>
+                  <span className="text-xs text-muted pl-1">
+                    {soyAnotador
+                      ? "⏭ Punto A · ⏮ Punto B · ⏸ Deshacer (al inicio, antes del primer punto, cambia el saque). Tanteador en vivo en el reloj y aviso al terminar el partido."
+                      : "Tanteador en vivo en el reloj y aviso al terminar el partido."}
+                  </span>
                 </>
               )}
               {errorReloj && <span className="text-xs text-red-600 pl-1">{errorReloj}</span>}
 
+              {soyAnotador && (
+                <>
               {vozDisponible ? (
                 <FilaOpcion etiqueta={<><IconoMicrofono className="ico" aria-hidden /> Voz</>}>
                   <Toggle checked={escuchando} onChange={setEscuchando} />
@@ -2652,6 +2669,8 @@ export default function MarcadorForm({ partidoId }) {
                   <span>“marcador 40 15”: corrige los puntos del game (primero A, después B).</span>
                   <span>“marcador juegos 3 2”: corrige los games del set.</span>
                 </div>
+              )}
+                </>
               )}
 
               <FilaOpcion etiqueta={<><IconoParlante className="ico" aria-hidden /> Anuncios</>}>
@@ -2682,6 +2701,7 @@ export default function MarcadorForm({ partidoId }) {
 
             {pestanaOpciones === "partido" && (
             <div className="flex flex-col gap-3">
+              {soyAnotador && (
               <div className="flex gap-2">
                 <button
                   className="flex-1 text-xs font-bold uppercase tracking-[0.08em] px-3 py-2 rounded-[6px] border border-ink/15 text-ink cursor-pointer disabled:opacity-60"
@@ -2697,6 +2717,7 @@ export default function MarcadorForm({ partidoId }) {
                   {pausado ? "▶ Reanudar" : "⏸ Pausar"}
                 </button>
               </div>
+              )}
               {soyAnotador && !resultado.finalizado && participantes.some((j) => j.id !== usuarioId) && (
                 <div className="flex flex-col gap-1.5">
                   <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">Pasar el control del marcador a</span>
@@ -2756,7 +2777,7 @@ export default function MarcadorForm({ partidoId }) {
                 </>
               )}
 
-            {!confirmandoTerminar ? (
+            {soyAnotador && (!confirmandoTerminar ? (
               <button
                 className="text-xs font-bold uppercase tracking-[0.08em] px-3 py-2 rounded-[6px] text-red-600 border border-red-600/40 cursor-pointer self-start"
                 onClick={() => setConfirmandoTerminar(true)}
@@ -2782,7 +2803,7 @@ export default function MarcadorForm({ partidoId }) {
                   Cancelar
                 </button>
               </div>
-            )}
+            ))}
             </div>
             )}
           </HojaAbajo>
