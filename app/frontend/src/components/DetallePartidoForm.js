@@ -1,5 +1,6 @@
 "use client";
 
+import PartidoCargadoAMano from "@/components/PartidoCargadoAMano";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
@@ -398,6 +399,8 @@ export default function DetallePartidoForm({ partidoId }) {
             </div>
           );
         })()}
+
+        <PartidoCargadoAMano partidoId={partidoId} usuarioId={usuarioId} />
 
         {muestraMarcadorcito && (
           <button

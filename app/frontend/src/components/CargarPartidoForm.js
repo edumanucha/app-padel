@@ -151,6 +151,8 @@ export default function CargarPartidoForm() {
       setError(`No se pudo guardar el resultado: ${resultadoError.message}`);
       return;
     }
+    // Avisa a los otros jugadores con cuenta (si falla, el partido igual queda cargado).
+    await supabase.rpc("avisar_partido_cargado", { p_partido: partido.id });
     router.replace("/mis-partidos");
   }
 
