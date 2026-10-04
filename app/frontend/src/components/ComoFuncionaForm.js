@@ -1,5 +1,6 @@
 "use client";
 
+import GuiaCelular from "@/components/GuiaCelular";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/i18n/LocaleContext";
 
@@ -61,6 +62,8 @@ export default function ComoFuncionaForm() {
           </div>
         ))}
       </div>
+
+      <GuiaCelular />
 
       <div className="flex flex-col">
         <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted pb-2">{t("home.seViene")}</span>

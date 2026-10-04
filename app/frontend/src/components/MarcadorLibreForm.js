@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import GuiaCelular from "@/components/GuiaCelular";
 import PelotaLoader from "@/components/PelotaLoader";
 import CampoCancha from "@/components/CampoCancha";
 import { IconoPlay, IconoPelota, IconoRayo } from "@/components/Icons";
@@ -442,6 +443,8 @@ export default function MarcadorLibreForm() {
             </span>
           </label>
         </div>
+
+        <GuiaCelular />
 
         {error && <p className="text-red-600 text-sm">{error}</p>}
 
