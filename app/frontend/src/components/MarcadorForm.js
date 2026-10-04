@@ -340,6 +340,11 @@ function tiempoTranscurrido(desde) {
 export default function MarcadorForm({ partidoId }) {
   const router = useRouter();
   const [usuarioId, setUsuarioId] = useState(null);
+  // Quién lleva los puntos (2026-10-04): solo esa persona suma, deshace y
+  // cierra el partido; el resto mira (y puede ver el tanteador en su reloj).
+  // Ver 072_un_solo_anotador.sql.
+  const [participantes, setParticipantes] = useState([]); // [{ id, nombre }]
+  const soyAnotadorRef = useRef(true);
   const [partido, setPartido] = useState(null);
   const [equipoA, setEquipoA] = useState([]);
   const [equipoB, setEquipoB] = useState([]);
@@ -950,6 +955,7 @@ export default function MarcadorForm({ partidoId }) {
     // En qué pareja juega el usuario (para el aviso final del modo Reloj:
     // "Ganaste"/"Perdiste"). Null si opera el marcador sin jugar.
     miEquipoRef.current = filas.find((f) => f.jugador_id === usuarioId)?.equipo ?? null;
+    setParticipantes(filas.filter((f) => f.jugador_id).map((f) => ({ id: f.jugador_id, nombre: nombreDe(f) })));
     setEquipoB(filas.filter((f) => f.equipo === "B").map(nombreDe));
   }
 
@@ -1222,6 +1228,7 @@ export default function MarcadorForm({ partidoId }) {
   );
 
   async function persistir(nuevoEstado, finalizado, ganador) {
+    if (!soyAnotadorRef.current) return;
     // Optimista y SÍNCRONO antes del await -- así, si llega otro click
     // (propio o de otro dispositivo) mientras este update todavía viaja a
     // la red, ya encuentra resultadoRef.current al día y encadena bien.
@@ -1262,6 +1269,7 @@ export default function MarcadorForm({ partidoId }) {
     async (lado, confirmado = false) => {
       const actual = resultadoRef.current;
       if (!actual || actual.finalizado || actual.estado.pausado) return;
+      if (!soyAnotadorRef.current) return;
       // Con el cierre del partido en espera (3 s) no se suman más puntos.
       if (cierreRef.current && !confirmado) return;
       const ahoraPunto = Date.now();
@@ -1388,6 +1396,11 @@ export default function MarcadorForm({ partidoId }) {
     },
     [anunciar, nombresCortos, nombreEquipoVoz, notificarReloj]
   );
+  const soyAnotador = !resultado?.anota_id || resultado.anota_id === usuarioId;
+  const nombreAnotador = participantes.find((j) => j.id === resultado?.anota_id)?.nombre ?? "otro jugador";
+  useEffect(() => {
+    soyAnotadorRef.current = soyAnotador;
+  }, [soyAnotador]);
   const notificarRelojRef = useRef(null);
   useEffect(() => {
     notificarRelojRef.current = notificarReloj;
@@ -1509,7 +1522,7 @@ export default function MarcadorForm({ partidoId }) {
 
   async function handleDeshacer() {
     const actual = resultadoRef.current;
-    if (!actual) return;
+    if (!actual || !soyAnotadorRef.current) return;
     // Corregir: si el partido estaba por cerrarse, se cancela el cierre y
     // el último punto queda sin sumar.
     ultimoPuntoRef.current = { lado: null, t: 0 };
@@ -2069,6 +2082,7 @@ export default function MarcadorForm({ partidoId }) {
   // el celu. Si fue creado sin señal y nunca se subió, alcanza con borrarlo
   // del celu.
   async function handleDescartarPartido() {
+    if (!soyAnotadorRef.current) return;
     const local = leerPartidoLocal(partidoId);
     if (!(local?.creadoSinSenal && !local.subido)) {
       const { error: cancelarError } = await supabase.from("partidos").update({ estado: "cancelado" }).eq("id", partidoId);
@@ -2086,6 +2100,17 @@ export default function MarcadorForm({ partidoId }) {
     }
     saliendoRef.current = true;
     router.replace("/");
+  }
+
+  // Pasar el control del marcador a otro jugador del partido.
+  async function handlePasarControl(nuevoId) {
+    const { error: pasarError } = await supabase.rpc("pasar_control_marcador", { p_partido: partidoId, p_nuevo: nuevoId });
+    if (pasarError) {
+      setError("No se pudo pasar el control. Probá de nuevo.");
+      return;
+    }
+    soyAnotadorRef.current = false;
+    if (resultadoRef.current) actualizarResultadoLocal({ ...resultadoRef.current, anota_id: nuevoId });
   }
 
   // Partido terminado: salir al Inicio sin pasar por el menú (pedido del
@@ -2505,7 +2530,7 @@ export default function MarcadorForm({ partidoId }) {
                 control en dos lugares. */}
             <button
               onClick={() => handleCambiarSaque(saque === "A" ? "B" : "A")}
-              disabled={pausado}
+              disabled={pausado || !soyAnotador}
               className={`${styles.pill} ${styles.pillMicOff}`}
               style={{ marginLeft: "auto", padding: "6px 10px" }}
               aria-label="Cambiar saque"
@@ -2628,7 +2653,7 @@ export default function MarcadorForm({ partidoId }) {
                 <button
                   className="flex-1 text-xs font-bold uppercase tracking-[0.08em] px-3 py-2 rounded-[6px] border border-ink/15 text-ink cursor-pointer disabled:opacity-60"
                   onClick={() => handleCambiarSaque(saque === "A" ? "B" : "A")}
-                  disabled={pausado}
+                  disabled={pausado || !soyAnotador}
                 >
                   <IconoPelota className="ico" aria-hidden /> Cambiar saque
                 </button>
@@ -2639,6 +2664,24 @@ export default function MarcadorForm({ partidoId }) {
                   {pausado ? "▶ Reanudar" : "⏸ Pausar"}
                 </button>
               </div>
+              {soyAnotador && !resultado.finalizado && participantes.some((j) => j.id !== usuarioId) && (
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">Pasar el control del marcador a</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {participantes
+                      .filter((j) => j.id !== usuarioId)
+                      .map((j) => (
+                        <button
+                          key={j.id}
+                          className="text-xs font-bold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
+                          onClick={() => handlePasarControl(j.id)}
+                        >
+                          {j.nombre}
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
               {/* Apelar solo tiene sentido con el partido YA CERRADO
                   (2026-09-12, a pedido del usuario: "no tiene sentido que
                   salga apelar mientras está jugando") -- se oculta durante
@@ -2860,7 +2903,13 @@ export default function MarcadorForm({ partidoId }) {
           <div className={styles.finalBanner}>⏸ Partido en pausa</div>
         )}
 
-        {!resultado.finalizado && (
+        {!resultado.finalizado && !soyAnotador && (
+          <div className={styles.finalBanner}>
+            Estás mirando · lleva los puntos {nombreAnotador}
+          </div>
+        )}
+
+        {!resultado.finalizado && soyAnotador && (
           <div className={styles.controls} style={{ justifyContent: "center" }}>
             <div className={styles.controlGroup}>
               <button
