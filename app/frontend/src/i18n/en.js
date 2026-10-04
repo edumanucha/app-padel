@@ -599,6 +599,8 @@ const en = {
       oportunidadesQuiebre: "Break point chances",
       oportunidadesPuntosJuego: "Game point chances",
       rachaMaximaVosRival: "Max streak (you / rival)",
+      puntoMasLargo: "Longest point (approx.)",
+      puntoMasLargoInfo: "Calculated from the time between two points in a row in the same game, so it includes the time to get ready to serve. Changeovers and long pauses are not counted.",
       duracion: "Duration",
       partidosGanadosPct: "Matches won",
       quiebresConvertidos: "Breaks converted",

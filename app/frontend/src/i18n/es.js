@@ -599,6 +599,8 @@ const es = {
       oportunidadesQuiebre: "Oportunidades de quiebre",
       oportunidadesPuntosJuego: "Oportunidades de puntos de juego",
       rachaMaximaVosRival: "Racha máxima (vos / rival)",
+      puntoMasLargo: "Punto más largo (aprox.)",
+      puntoMasLargoInfo: "Se calcula con el tiempo entre dos puntos seguidos del mismo game, así que incluye el tiempo de preparar el saque. No cuenta los cambios de lado ni las pausas largas.",
       duracion: "Duración",
       partidosGanadosPct: "Partidos ganados",
       quiebresConvertidos: "Quiebres convertidos",

@@ -1314,8 +1314,15 @@ export default function MarcadorForm({ partidoId }) {
       const nuevoEstado = {
         log: [
           ...(actual.estado.log ?? []),
-          entradaDePunto(core, lado, { puntoDeOro: actual.estado.puntoDeOro ?? false, superTiebreak3erSet: actual.estado.superTiebreak3erSet ?? false }, eventos),
+          entradaDePunto(
+            core,
+            lado,
+            { puntoDeOro: actual.estado.puntoDeOro ?? false, superTiebreak3erSet: actual.estado.superTiebreak3erSet ?? false },
+            eventos,
+            actual.estado.ultimoPuntoMs ? (Date.now() - actual.estado.ultimoPuntoMs) / 1000 : 0
+          ),
         ],
+        ultimoPuntoMs: Date.now(),
         setsA: nuevoCore.setsA,
         setsB: nuevoCore.setsB,
         puntosA: nuevoCore.puntosA,
@@ -1466,12 +1473,19 @@ export default function MarcadorForm({ partidoId }) {
     estadisticasGuardadasRef.current = true;
     const fin = resultado.updated_at ? new Date(resultado.updated_at).getTime() : Date.now();
     const duracion = fin - new Date(resultado.created_at).getTime();
-    supabase
-      .from("estadisticas_partido")
-      .upsert({ partido_id: partidoId, ...estadisticasDeLog(log, duracion) }, { onConflict: "partido_id", ignoreDuplicates: true })
-      .then(({ error: statsError }) => {
-        if (statsError) estadisticasGuardadasRef.current = false;
-      });
+    const filaStats = { partido_id: partidoId, ...estadisticasDeLog(log, duracion) };
+    const guardar = (fila) => supabase.from("estadisticas_partido").upsert(fila, { onConflict: "partido_id", ignoreDuplicates: true });
+    guardar(filaStats).then(async ({ error: statsError }) => {
+      if (!statsError) return;
+      // Si todavía no existe la columna del punto más largo (SQL 077), se
+      // guarda igual el resto de las estadísticas.
+      if (/punto_mas_largo_s/.test(statsError.message ?? "")) {
+        const { punto_mas_largo_s: _omitida, ...sinColumna } = filaStats;
+        const { error: segundoError } = await guardar(sinColumna);
+        if (!segundoError) return;
+      }
+      estadisticasGuardadasRef.current = false;
+    });
   }, [resultado, partidoId]);
 
   // Pisa los games del set actual de una sola vez ("juegos 6 4"), en vez

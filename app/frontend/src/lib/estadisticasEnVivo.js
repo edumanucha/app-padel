@@ -2,7 +2,9 @@
 // El marcador anota una entrada por punto dentro de estado.log y, al terminar
 // el partido, de ahí salen los números que se guardan en estadisticas_partido
 // (ver 047_estadisticas_partido.sql). Cada entrada es un texto corto:
-//   "<quién ganó><quién sacaba><banderas>", ej. "AB18".
+//   "<quién ganó><quién sacaba><banderas>.<segundos>", ej. "AB18.42"
+// (los segundos son lo que pasó desde el punto anterior; los registros
+// viejos no los traen).
 import { sumarPunto } from "@/lib/marcadorEngine";
 
 const F_QUIEBRE_OP = 1; // el que resta podía quebrar con este punto
@@ -16,7 +18,7 @@ const F_TIEBREAK = 64; // punto de tie-break
 const otro = (l) => (l === "A" ? "B" : "A");
 
 // `core` es el estado ANTES del punto (el mismo que arma handleSumarPunto).
-export function entradaDePunto(core, lado, config, eventos) {
+export function entradaDePunto(core, lado, config, eventos, segundos = 0) {
   const sacador = core.saque;
   let banderas = 0;
   if (core.tiebreak) {
@@ -34,11 +36,12 @@ export function entradaDePunto(core, lado, config, eventos) {
     }
     if (core.puntosA >= 3 && core.puntosB >= 3) banderas |= F_DEUCE;
   }
-  return `${lado}${sacador}${banderas}`;
+  return `${lado}${sacador}${banderas}.${Math.max(0, Math.min(999, Math.round(segundos)))}`;
 }
 
 function leer(entrada) {
-  return { lado: entrada[0], sacador: entrada[1], banderas: Number(entrada.slice(2)) };
+  const [banderas, segundos] = entrada.slice(2).split(".");
+  return { lado: entrada[0], sacador: entrada[1], banderas: Number(banderas), segundos: Number(segundos ?? 0) || 0 };
 }
 
 // Devuelve las columnas de estadisticas_partido (sin partido_id).
@@ -59,17 +62,25 @@ export function estadisticasDeLog(log, duracionMs) {
     racha_max_a: 0,
     racha_max_b: 0,
     games_en_deuce: 0,
+    punto_mas_largo_s: 0,
   };
   let racha = { lado: null, largo: 0 };
   let gameConDeuce = false;
+  let anteriorCerroGame = true;
   for (const entrada of log) {
-    const { lado, sacador, banderas } = leer(entrada);
+    const { lado, sacador, banderas, segundos } = leer(entrada);
     const receptor = otro(sacador);
     r[`puntos_totales_${lado.toLowerCase()}`]++;
 
     racha = lado === racha.lado ? { lado, largo: racha.largo + 1 } : { lado, largo: 1 };
     const claveRacha = `racha_max_${lado.toLowerCase()}`;
     if (racha.largo > r[claveRacha]) r[claveRacha] = racha.largo;
+
+    // Punto más largo (aproximado): el mayor tiempo entre dos puntos seguidos
+    // del mismo game. No cuenta el cambio de lado ni las pausas largas
+    // (más de 2 minutos). Incluye el tiempo de preparar el saque.
+    if (!anteriorCerroGame && segundos > 0 && segundos <= 120 && segundos > r.punto_mas_largo_s) r.punto_mas_largo_s = segundos;
+    anteriorCerroGame = !!(banderas & F_FIN_GAME);
 
     if (banderas & F_QUIEBRE_OP) r[`quiebres_op_${receptor.toLowerCase()}`]++;
     if (banderas & F_QUIEBRE_CONV) r[`quiebres_conv_${receptor.toLowerCase()}`]++;

@@ -599,6 +599,8 @@ const pt = {
       oportunidadesQuiebre: "Oportunidades de quebra",
       oportunidadesPuntosJuego: "Oportunidades de pontos de jogo",
       rachaMaximaVosRival: "Sequência máxima (você / rival)",
+      puntoMasLargo: "Ponto mais longo (aprox.)",
+      puntoMasLargoInfo: "Calculado com o tempo entre dois pontos seguidos do mesmo game, então inclui o tempo de se preparar para sacar. Trocas de lado e pausas longas não contam.",
       duracion: "Duração",
       partidosGanadosPct: "Partidas vencidas",
       quiebresConvertidos: "Quebras convertidas",

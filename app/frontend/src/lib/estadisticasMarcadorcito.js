@@ -28,6 +28,7 @@ export function estadisticasDeLado(stats, miEquipo) {
     puntosPropios: stats[`puntos_totales_${mio}`],
     puntosRival: stats[`puntos_totales_${rival}`],
     juegosADeuce: stats.games_en_deuce,
+    puntoMasLargoS: stats.punto_mas_largo_s ?? 0,
   };
 }
 

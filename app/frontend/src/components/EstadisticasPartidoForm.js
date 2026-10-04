@@ -250,7 +250,11 @@ export default function EstadisticasPartidoForm({ partidoId }) {
         />
         <Dato etiqueta={t("estadisticas.rachaMaximaVosRival")} valor={`${d.racha} / ${d.rachaRival}`} className="pr-3 border-t border-ink/10" />
         <Dato etiqueta={t("estadisticas.juegosADeuceCorto")} valor={d.juegosADeuce} className="pl-3 border-l border-t border-ink/15" />
+        {d.puntoMasLargoS > 0 && (
+          <Dato etiqueta={t("estadisticas.puntoMasLargo")} valor={`${d.puntoMasLargoS} s`} className="pr-3 border-t border-ink/10" />
+        )}
       </div>
+      {d.puntoMasLargoS > 0 && <p className="text-xs text-muted -mt-2">{t("estadisticas.puntoMasLargoInfo")}</p>}
 
       <div className="flex flex-col [&>*]:py-3 [&>*]:border-b [&>*]:border-ink/10">
         <BarraEstadistica
