@@ -2438,7 +2438,7 @@ export default function MarcadorForm({ partidoId }) {
                 modo: "voz",
                 icono: <IconoMicrofono width={30} height={30} />,
                 nombre: "Voz",
-                detalle: "Decí “marcador punto A” o “punto B”.",
+                detalle: "Decí “marcador punto A” o “marcador punto B”. Para corregir: “marcador deshacer”.",
                 activar: () => {
                   setModoElegido("voz");
                   setEscuchando(true);
@@ -2599,7 +2599,16 @@ export default function MarcadorForm({ partidoId }) {
                 <span className="text-xs text-muted">Voz no disponible en este navegador</span>
               )}
               {vozDisponible && escuchando && (
-                <span className="text-xs text-muted pl-1">Siempre empezá con “marcador”: “marcador punto A” · “punto B” · “deshacer” · “saque A” · “saque B” · “pausa” · “continuar” · “repetir” (dice el marcador) · “marcador 40 15” (corrige los puntos) · “marcador juegos 3 2” (corrige los games).</span>
+                <div className="text-xs text-muted pl-1 flex flex-col gap-0.5">
+                  <span>Empezá siempre diciendo “marcador”, y después:</span>
+                  <span>“punto A” o “punto B”: suma el punto.</span>
+                  <span>“deshacer”: borra el último punto.</span>
+                  <span>“saque A” o “saque B”: cambia quién saca.</span>
+                  <span>“pausa” y “continuar”: frenan y reanudan la escucha.</span>
+                  <span>“repetir”: dice el marcador en voz alta.</span>
+                  <span>“40 15”: corrige los puntos del game (primero A, después B).</span>
+                  <span>“juegos 3 2”: corrige los games del set.</span>
+                </div>
               )}
 
               <FilaOpcion etiqueta={<><IconoParlante className="ico" aria-hidden /> Anuncios</>}>
