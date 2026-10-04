@@ -1091,3 +1091,19 @@
   display: block;
   white-space: nowrap;
 }
+
+/* Encabezado del tablero (cancha y "Set 2 · Sacan ... · Sets 1-0"): una sola
+   línea fija que se corta con "..." -- antes cambiaba de alto según el largo
+   de los nombres (2026-10-04, pedido del usuario). */
+.matchLabel,
+.matchSub {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.who {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}

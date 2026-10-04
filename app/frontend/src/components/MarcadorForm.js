@@ -2522,10 +2522,10 @@ export default function MarcadorForm({ partidoId }) {
         ref={boardRef}
       >
         <div className={styles.header}>
-          <div>
+          <div style={{ minWidth: 0 }}>
             <div className={styles.matchLabel}>{partido.cancha}</div>
             <div className={styles.matchSub}>
-              {tiebreak ? (esSuperTiebreakFinal ? "Súper tie-break" : "Tie-break") : `Set ${setsA.length}`} · Sacan {nombreEquipo(saque)}
+              {tiebreak ? (esSuperTiebreakFinal ? "Súper tie-break" : "Tie-break") : `Set ${setsA.length}`} · Sacan {nombresCortos(saque)}
               {/* Resumen de sets ganados juntos, tipo "1-1"/"2-1" (2026-09-11,
                   a pedido del usuario) -- antes solo se veía como dos
                   dígitos separados, uno en cada fila de la tabla, sin
@@ -2850,7 +2850,7 @@ export default function MarcadorForm({ partidoId }) {
               <div className={styles.players}>
                 <span className={styles.name}>
                   {saque === "A" && <span className={styles.serveBall}>●</span>}
-                  <span className={styles.nameText}>{equipoA.length > 0 ? equipoA.join(" / ") : "Pareja A"}</span>
+                  <span className={styles.nameText}>{nombresCortos("A")}</span>
                 </span>
               </div>
               <div
@@ -2886,7 +2886,7 @@ export default function MarcadorForm({ partidoId }) {
               <div className={styles.players}>
                 <span className={styles.name}>
                   {saque === "B" && <span className={styles.serveBall}>●</span>}
-                  <span className={styles.nameText}>{equipoB.length > 0 ? equipoB.join(" / ") : "Pareja B"}</span>
+                  <span className={styles.nameText}>{nombresCortos("B")}</span>
                 </span>
               </div>
               <div
@@ -2942,7 +2942,7 @@ export default function MarcadorForm({ partidoId }) {
             <span className={styles.pointsLabel}>{tiebreak ? "Tie-break" : "Puntos"}</span>
             <div className={styles.pointsRow}>
               <div className={styles.pointsSide}>
-                <span className={styles.who}>{nombreEquipo("A")}</span>
+                <span className={styles.who}>{nombresCortos("A")}</span>
                 <span className={styles.pointsValue} ref={numARef}>
                   <DotDigit valor={textoA} solido={tema === "contraste"} />
                 </span>
@@ -2955,7 +2955,7 @@ export default function MarcadorForm({ partidoId }) {
                 <span className={styles.pointsSep}>–</span>
               )}
               <div className={styles.pointsSide}>
-                <span className={styles.who}>{nombreEquipo("B")}</span>
+                <span className={styles.who}>{nombresCortos("B")}</span>
                 <span className={styles.pointsValue} ref={numBRef}>
                   <DotDigit valor={textoB} solido={tema === "contraste"} />
                 </span>
@@ -2998,7 +2998,7 @@ export default function MarcadorForm({ partidoId }) {
                 disabled={pausado}
               >
                 <span className={styles.ctrlBtnPuntoLabel}>Punto</span>
-                <span className={styles.ctrlBtnPuntoNombre}>{nombreEquipo("A")}</span>
+                <span className={styles.ctrlBtnPuntoNombre}>{nombresCortos("A")}</span>
               </button>
               <button
                 className={`${styles.ctrlBtn} ${styles.ctrlBtnPunto} ${styles.ctrlDeshacer}`}
@@ -3013,7 +3013,7 @@ export default function MarcadorForm({ partidoId }) {
                 disabled={pausado}
               >
                 <span className={styles.ctrlBtnPuntoLabel}>Punto</span>
-                <span className={styles.ctrlBtnPuntoNombre}>{nombreEquipo("B")}</span>
+                <span className={styles.ctrlBtnPuntoNombre}>{nombresCortos("B")}</span>
               </button>
             </div>
           </div>
