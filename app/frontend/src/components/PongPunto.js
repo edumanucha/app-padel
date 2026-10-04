@@ -8,7 +8,8 @@ import { useEffect, useRef } from "react";
 // rebota en la pala de quien lo hizo y le pasa por al lado a la del rival; ahí
 // se ilumina la pala de quien ganó el punto. Después vuelve al rebote lento.
 // `evento` = { lado: "A" | "B", n } y cambia con cada punto sumado.
-export default function PongPunto({ evento }) {
+// `compacto` = versión más finita para el modo apaisado (va detrás de los puntos).
+export default function PongPunto({ evento, compacto = false }) {
   const franjaRef = useRef(null);
   const bolaRef = useRef(null);
   const palaARef = useRef(null);
@@ -77,7 +78,7 @@ export default function PongPunto({ evento }) {
         est.dir = est.ganador === "A" ? 1 : -1;
       }
 
-      const y = Math.sin(est.t * (rapido ? 9 : 4)) * (rapido ? 5 : 4);
+      const y = Math.sin(est.t * (rapido ? 9 : 4)) * (compacto ? (rapido ? 3 : 2) : rapido ? 5 : 4);
       if (bolaRef.current) bolaRef.current.style.transform = `translate(${est.x}px, ${y}px)`;
       raf = requestAnimationFrame(cuadro);
     }
@@ -90,15 +91,15 @@ export default function PongPunto({ evento }) {
     }
     raf = requestAnimationFrame(cuadro);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [compacto]);
 
   return (
     <div aria-hidden="true" className="w-full">
-      <div ref={franjaRef} className="relative h-[22px] overflow-hidden" style={{ borderTop: "1px dashed rgba(234,244,240,0.22)", borderBottom: "1px dashed rgba(234,244,240,0.22)" }}>
-        <div ref={palaARef} className="absolute left-1 top-[3px] w-1 h-4 rounded-sm transition-all duration-150" style={{ background: "rgba(234,244,240,0.55)" }} />
-        <div ref={palaBRef} className="absolute right-1 top-[3px] w-1 h-4 rounded-sm transition-all duration-150" style={{ background: "rgba(234,244,240,0.55)" }} />
+      <div ref={franjaRef} className={`relative overflow-hidden ${compacto ? "h-[16px]" : "h-[22px]"}`} style={{ borderTop: "1px dashed rgba(234,244,240,0.22)", borderBottom: "1px dashed rgba(234,244,240,0.22)" }}>
+        <div ref={palaARef} className={`absolute left-1 w-1 rounded-sm transition-all duration-150 ${compacto ? "top-[2px] h-3" : "top-[3px] h-4"}`} style={{ background: "rgba(234,244,240,0.55)" }} />
+        <div ref={palaBRef} className={`absolute right-1 w-1 rounded-sm transition-all duration-150 ${compacto ? "top-[2px] h-3" : "top-[3px] h-4"}`} style={{ background: "rgba(234,244,240,0.55)" }} />
         <div className="absolute left-1/2 top-0 bottom-0" style={{ borderLeft: "1px dotted rgba(234,244,240,0.22)" }} />
-        <div ref={bolaRef} className="absolute left-0 top-[6px] w-[10px] h-[10px]" style={{ background: "#f2c53d" }} />
+        <div ref={bolaRef} className={`absolute left-0 ${compacto ? "top-[4px] w-2 h-2" : "top-[6px] w-[10px] h-[10px]"}`} style={{ background: "#f2c53d" }} />
       </div>
     </div>
   );

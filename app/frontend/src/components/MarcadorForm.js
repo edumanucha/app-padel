@@ -2905,8 +2905,13 @@ export default function MarcadorForm({ partidoId }) {
               <span className={styles.leyendoIcon} ref={leyendoIconRef} />
               <span className={styles.leyendoAccion} ref={leyendoAccionRef} />
             </div>
+            {modoApaisado && (
+              <div style={{ position: "absolute", left: 8, right: 8, top: "50%", transform: "translateY(-50%)", zIndex: 0, pointerEvents: "none", opacity: 0.85 }}>
+                <PongPunto compacto evento={pongEvento} />
+              </div>
+            )}
             <span className={styles.pointsLabel}>{tiebreak ? "Tie-break" : "Puntos"}</span>
-            <div className={styles.pointsRow}>
+            <div className={styles.pointsRow} style={modoApaisado ? { position: "relative", zIndex: 1 } : undefined}>
               <div className={styles.pointsSide}>
                 <span className={styles.who}>{nombreEquipo("A")}</span>
                 <span className={styles.pointsValue} ref={numARef}>
