@@ -481,6 +481,27 @@ export default function MarcadorForm({ partidoId }) {
     osc.stop(ctx.currentTime + 0.2);
   }
 
+  // Sonido propio de cada equipo (2026-10-04, pedido del usuario): se tiene
+  // que distinguir de lejos quién sumó. A = un golpe agudo; B = dos golpes
+  // graves seguidos. Mismo archivo real (punto.mp3), con el tono cambiado.
+  function sonarPunto(lado) {
+    if (!sonidoActivoRef.current) return;
+    const golpe = (tasa, demoraMs) =>
+      setTimeout(() => {
+        const audio = new Audio("/sonidos/punto.mp3");
+        audio.preservesPitch = false;
+        audio.playbackRate = tasa;
+        audio.volume = 0.8;
+        audio.play().catch(() => {});
+      }, demoraMs);
+    if (lado === "A") {
+      golpe(1.5, 0);
+    } else {
+      golpe(0.7, 0);
+      golpe(0.7, 260);
+    }
+  }
+
   // Efectos visuales (pop del puntaje, flash del lado que sumó, pelotita
   // volando, texto grande superpuesto) -- portados del prototipo y de la
   // demo (2026-09-10/11) a pedido del usuario, que notó que en el
@@ -1196,7 +1217,19 @@ export default function MarcadorForm({ partidoId }) {
     // (propio o de otro dispositivo) mientras este update todavía viaja a
     // la red, ya encuentra resultadoRef.current al día y encadena bien.
     const base = resultadoRef.current;
-    if (base) actualizarResultadoLocal({ ...base, estado: nuevoEstado, finalizado, ganador });
+    // Al cerrar el partido se anota la hora de fin: la tarjeta y el reloj
+    // calculan la duración como created_at -> updated_at, y el updated_at
+    // local quedaba con el valor del inicio (duración 0).
+    const cierra = !!base && finalizado && !base.finalizado;
+    if (base) {
+      actualizarResultadoLocal({
+        ...base,
+        estado: nuevoEstado,
+        finalizado,
+        ganador,
+        ...(cierra ? { updated_at: new Date().toISOString() } : {}),
+      });
+    }
 
     // Primero al celular, después a la red (ver "Blindaje sin señal" arriba).
     // Si falla, ya no se muestra un error que empuja el tablero: queda
@@ -1260,6 +1293,7 @@ export default function MarcadorForm({ partidoId }) {
       persistir(nuevoEstado, nuevoCore.finalizado, nuevoCore.ganador);
 
       efectoPunto(lado);
+      sonarPunto(lado);
 
       // Al reloj: un único aviso, al final del partido (2026-09-30, pedido
       // del usuario -- el tanteador ya se ve en vivo en el título, los avisos
@@ -1597,9 +1631,31 @@ export default function MarcadorForm({ partidoId }) {
   //   "40-15 Marcadorcito"         (abajo, quieto: game en curso + la marca)
   // Los minutos salen del mismo created_at que usa el timer de la pantalla
   // y el título se refresca una vez por minuto (dep. minutosReloj).
+  // Con el partido terminado el tiempo se congela en la hora de fin.
+  const finReloj = resultado?.finalizado && resultado?.updated_at ? new Date(resultado.updated_at).getTime() : ahora;
   const minutosReloj = resultado?.created_at
-    ? Math.max(0, Math.floor((ahora - new Date(resultado.created_at).getTime()) / 60000))
+    ? Math.max(0, Math.floor((finReloj - new Date(resultado.created_at).getTime()) / 60000))
     : 0;
+
+  // El reloj a veces se pierde un cambio. Para que quede siempre al día,
+  // cada punto se vuelve a publicar a los 2 y a los 6 segundos, y además
+  // cada 15 segundos aunque no haya cambios (pedido del usuario, 2026-10-04).
+  const [pulsoReloj, setPulsoReloj] = useState(0);
+  const claveEstadoReloj = resultado ? JSON.stringify([resultado.estado?.setsA, resultado.estado?.setsB, resultado.estado?.puntosA, resultado.estado?.puntosB, resultado.finalizado]) : "";
+  useEffect(() => {
+    if (!relojActivo || !claveEstadoReloj) return;
+    const t1 = setTimeout(() => setPulsoReloj((n) => n + 1), 2000);
+    const t2 = setTimeout(() => setPulsoReloj((n) => n + 1), 6000);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [relojActivo, claveEstadoReloj]);
+  useEffect(() => {
+    if (!relojActivo) return;
+    const id = setInterval(() => setPulsoReloj((n) => n + 1), 15000);
+    return () => clearInterval(id);
+  }, [relojActivo]);
   useEffect(() => {
     if (!relojActivo || !resultado) return;
     const est = resultado.estado;
@@ -1658,7 +1714,7 @@ export default function MarcadorForm({ partidoId }) {
         fijarPosicionReloj();
       })
       .catch(() => {});
-  }, [resultado, relojActivo, minutosReloj, formatoReloj, nombresCortos]);
+  }, [resultado, relojActivo, minutosReloj, formatoReloj, nombresCortos, pulsoReloj]);
 
   // Al salir del marcador, soltar el control del reloj.
   useEffect(() => () => {
@@ -1938,6 +1994,18 @@ export default function MarcadorForm({ partidoId }) {
     try {
       localStorage.removeItem(clavePendiente);
       localStorage.removeItem(`marcadorcito_local_${partidoId}`);
+      if (localStorage.getItem("marcadorcito_en_curso") === String(partidoId)) localStorage.removeItem("marcadorcito_en_curso");
+    } catch {
+      // nada
+    }
+    saliendoRef.current = true;
+    router.replace("/");
+  }
+
+  // Partido terminado: salir al Inicio sin pasar por el menú (pedido del
+  // usuario, 2026-10-04: "cuesta salir de un partido terminado").
+  function handleIrAlInicio() {
+    try {
       if (localStorage.getItem("marcadorcito_en_curso") === String(partidoId)) localStorage.removeItem("marcadorcito_en_curso");
     } catch {
       // nada
@@ -2652,6 +2720,9 @@ export default function MarcadorForm({ partidoId }) {
               disabled={compartiendo}
             >
               {compartiendo ? "Armando..." : <><IconoCompartir className="ico" aria-hidden /> Compartir resultado</>}
+            </button>
+            <button className={styles.ctrlBtn} onClick={handleIrAlInicio}>
+              Ir al Inicio
             </button>
           </div>
         ) : (
