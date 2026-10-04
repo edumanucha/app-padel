@@ -2313,7 +2313,7 @@ export default function MarcadorForm({ partidoId }) {
   // en el mismo return, fuera de "⚙️ Opciones" y fuera de este chooser,
   // para que activarCamara() los encuentre sin importar desde qué pantalla
   // se la llame.
-  const mostrarChooser = modoElegido === null && !resultado.finalizado;
+  const mostrarChooser = modoElegido === null && !resultado.finalizado && soyAnotador; // quien solo mira va directo al contador (2026-10-04)
 
   const { setsA, setsB, tiebreak, esSuperTiebreakFinal, saque, pausado, puntoDeOro, superTiebreak3erSet } = resultado.estado;
   // "Sets jugados" muestra TODOS los sets, incluido el actual/último
