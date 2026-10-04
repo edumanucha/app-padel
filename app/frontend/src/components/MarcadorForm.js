@@ -130,6 +130,7 @@ function ElegirModo({ modos, bateria }) {
               {m.icono}
             </span>
             <span className={`text-[10.5px] font-bold uppercase tracking-[0.12em] ${m.modo === elegido ? "text-ink" : "text-muted"}`}>{m.nombre}</span>
+            {m.modo === "reloj" && <span className="text-[9px] font-bold uppercase tracking-[0.08em] text-[#154139] -mt-0.5">Recomendado</span>}
           </button>
         ))}
       </div>
@@ -2421,7 +2422,7 @@ export default function MarcadorForm({ partidoId }) {
                 modo: "reloj",
                 icono: <IconoReloj width={30} height={30} />,
                 nombre: "Reloj",
-                detalle: "⏭ punto A · ⏮ punto B · ⏸ deshacer. Y el reloj te muestra el resultado.",
+                detalle: "Es el que mejor funciona. ⏭ punto A · ⏮ punto B · ⏸ deshacer. Y el reloj te muestra el resultado.",
                 activar: () => {
                   setModoElegido("reloj");
                   activarReloj();
@@ -2584,6 +2585,7 @@ export default function MarcadorForm({ partidoId }) {
               <FilaOpcion etiqueta={<><IconoReloj className="ico" aria-hidden /> Reloj o auriculares</>}>
                 <Toggle checked={relojActivo} onChange={(v) => (v ? activarReloj() : desactivarReloj())} />
               </FilaOpcion>
+              {!relojActivo && <span className="text-xs text-muted pl-1">Es el modo que mejor funciona: lo recomendamos.</span>}
               {relojActivo && (
                 <>
                   <span className="text-xs text-muted pl-1">⏭ Punto A · ⏮ Punto B · ⏸ Deshacer (al inicio, antes del primer punto, cambia el saque). Tanteador en vivo en el reloj y aviso al terminar el partido.</span>
