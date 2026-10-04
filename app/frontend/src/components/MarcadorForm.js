@@ -1415,6 +1415,32 @@ export default function MarcadorForm({ partidoId }) {
   }, [handleSumarPunto]);
   useEffect(() => () => clearTimeout(cierreRef.current), []);
 
+  // Quien solo mira (2026-10-04): además del envío en vivo de Supabase, que a
+  // veces se corta en el celu (pantalla apagada, señal que se va), consulta el
+  // marcador cada 3 segundos y al volver a la pantalla, así nunca queda
+  // desactualizado.
+  useEffect(() => {
+    if (!partidoId || !resultado || soyAnotador || resultado.finalizado) return;
+    let vivo = true;
+    async function traer() {
+      if (document.visibilityState === "hidden" || leerPendiente()) return;
+      const { data } = await supabase.from("resultados_partido").select("*").eq("partido_id", partidoId).maybeSingle();
+      if (!vivo || !data) return;
+      const actual = resultadoRef.current;
+      if (actual && actual.updated_at === data.updated_at && actual.anota_id === data.anota_id && actual.finalizado === data.finalizado) return;
+      actualizarResultadoLocal(data);
+      actualizarResultadoLocalGuardado(partidoId, { estado: data.estado, finalizado: data.finalizado, ganador: data.ganador });
+    }
+    const id = setInterval(traer, 3000);
+    document.addEventListener("visibilitychange", traer);
+    return () => {
+      vivo = false;
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", traer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [partidoId, soyAnotador, !!resultado, resultado?.finalizado]);
+
   // Estadísticas del partido real (2026-10-04): al terminar se guardan en
   // estadisticas_partido, y las ven todos los jugadores con perfil. Si falla
   // (sin señal), se reintenta la próxima vez que se abra el partido.
