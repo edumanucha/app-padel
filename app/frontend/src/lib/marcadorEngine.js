@@ -105,7 +105,10 @@ export function sumarPunto(estado, lado, config = { puntoDeOro: false, superTieb
   if (tiebreak) {
     if (lado === "A") puntosA++;
     else puntosB++;
-    saque = otro(saque);
+    // Saque en el tie-break: el primero saca 1 punto y después cada pareja
+    // saca 2 seguidos (el saque cambia tras el 1º, 3º, 5º... punto).
+    const jugados = puntosA + puntosB;
+    if (jugados % 2 === 1) saque = otro(saque);
 
     if (tiebreakDecidido(puntosA, puntosB, tiebreakHasta)) {
       const idx = setsA.length - 1;
@@ -133,6 +136,9 @@ export function sumarPunto(estado, lado, config = { puntoDeOro: false, superTieb
       setsA[idx] = ganadorSet === "A" ? 7 : 6;
       setsB[idx] = ganadorSet === "A" ? 6 : 7;
       eventos.push({ tipo: "set", ganador: ganadorSet });
+      // El set siguiente arranca sacando quien restó primero en el tie-break.
+      const sacoPrimero = ((jugados + 1) >> 1) % 2 === 0 ? saque : otro(saque);
+      saque = otro(sacoPrimero);
       puntosA = 0;
       puntosB = 0;
 
