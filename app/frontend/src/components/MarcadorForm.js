@@ -482,40 +482,37 @@ export default function MarcadorForm({ partidoId }) {
     if (audioCtxRef.current && audioCtxRef.current.state === "suspended") audioCtxRef.current.resume();
     return audioCtxRef.current;
   }
-  function sonarError() {
-    if (!sonidoActivoRef.current) return;
+  // Sonidos del Marcadorcito (2026-10-04, pedido del usuario: le gustaron los
+  // de la prueba de distancia del reloj). Tonos fuertes para oírlos de lejos:
+  // punto A = un beep agudo; punto B = dos graves; deshacer = uno medio y
+  // largo; game ganado = tres notas que suben.
+  function tonos(lista, volumen = 0.6) {
     const ctx = obtenerAudioCtx();
     if (!ctx) return;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = "square";
-    osc.frequency.setValueAtTime(140, ctx.currentTime);
-    gain.gain.setValueAtTime(0.15, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-    osc.connect(gain).connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.2);
+    for (const [freq, retraso, largo] of lista) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "square";
+      osc.frequency.value = freq;
+      const t0 = ctx.currentTime + retraso;
+      gain.gain.setValueAtTime(volumen, t0);
+      gain.gain.exponentialRampToValueAtTime(0.001, t0 + largo);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t0);
+      osc.stop(t0 + largo + 0.02);
+    }
   }
-
-  // Sonido propio de cada equipo (2026-10-04, pedido del usuario): se tiene
-  // que distinguir de lejos quién sumó. A = un golpe agudo; B = dos golpes
-  // graves seguidos. Mismo archivo real (punto.mp3), con el tono cambiado.
+  function sonarError() {
+    if (!sonidoActivoRef.current) return;
+    tonos([[900, 0, 0.5]]);
+  }
   function sonarPunto(lado) {
     if (!sonidoActivoRef.current) return;
-    const golpe = (tasa, demoraMs) =>
-      setTimeout(() => {
-        const audio = new Audio("/sonidos/punto.mp3");
-        audio.preservesPitch = false;
-        audio.playbackRate = tasa;
-        audio.volume = 0.8;
-        audio.play().catch(() => {});
-      }, demoraMs);
-    if (lado === "A") {
-      golpe(1.5, 0);
-    } else {
-      golpe(0.7, 0);
-      golpe(0.7, 260);
-    }
+    tonos(lado === "A" ? [[1400, 0, 0.25]] : [[500, 0, 0.2], [500, 0.28, 0.2]]);
+  }
+  function sonarJuego() {
+    if (!sonidoActivoRef.current) return;
+    tonos([[660, 0, 0.14], [880, 0.16, 0.14], [1320, 0.32, 0.3]], 0.5);
   }
 
   // Efectos visuales (pop del puntaje, flash del lado que sumó, pelotita
@@ -1391,6 +1388,8 @@ export default function MarcadorForm({ partidoId }) {
           // nada, `leyendoOcupadaHastaRef` queda en 0.
           const delayGame = Math.max(550, leyendoOcupadaHastaRef.current - Date.now());
           setTimeout(() => efectoGame(ev.ganador), delayGame);
+          // El sonido del game va después del beep del punto, para que no se pisen.
+          setTimeout(sonarJuego, 450);
           const { a, b } = setsGanados(nuevoCore.setsA, nuevoCore.setsB);
           anunciar(`Juego para ${nombreEquipoVoz(ev.ganador)}. ${a} a ${b}.`);
         } else if (ev.tipo === "set") {
