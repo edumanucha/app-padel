@@ -17,6 +17,7 @@ import GuiaPadelito from "@/components/GuiaPadelito";
 import { useEnPantalla } from "@/lib/useEnPantalla";
 import marcadorStyles from "@/components/Marcador.module.css";
 import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, IconoTrofeo, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion, IconoChevron, IconoCorazon, IconoGrupo, IconoLibro, IconoMedalla } from "@/components/Icons";
+import HomeVisitante from "@/components/HomeVisitante";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
 
@@ -170,6 +171,7 @@ export default function HomeForm() {
   const [proximamenteTocado, setProximamenteTocado] = useState(null);
   const [mostrarMas, setMostrarMas] = useState(false);
   const [partidoEnCurso, setPartidoEnCurso] = useState(null);
+  const [visitante, setVisitante] = useState(false);
   const [homeSinSenal, setHomeSinSenal] = useState(false);
 
   // "Volver al partido" (2026-09-30, pedido del usuario): el Marcadorcito
@@ -227,7 +229,11 @@ export default function HomeForm() {
         // Sin sesión: directo al login (2026-10-03, a pedido del usuario: la app
         // se enfoca solo en pádel, se sacó "Elegí tu deporte").
         if (sinConexion()) window.location.replace("/offline");
-        else router.replace("/login");
+        else {
+          // Visitante (2026-10-04): se muestra un Inicio para mirar, sin cuenta.
+          setVisitante(true);
+          setCargando(false);
+        }
         return;
       }
 
@@ -358,6 +364,8 @@ export default function HomeForm() {
     }
     setHistorial(data ?? []);
   }
+
+  if (visitante) return <HomeVisitante />;
 
   if (cargando) {
     return (

@@ -32,7 +32,7 @@ function Subtitulo({ children }) {
 // vinculado (jugador_id); si sigue escribiendo texto libre sin elegir
 // ninguna, al enviar el formulario queda como invitado libre
 // (invitado_nombre), sin cuenta ni perfil asociado (US-2.8).
-function SlotJugador({ etiqueta, valor, onChange, excluirIds = [] }) {
+export function SlotJugador({ etiqueta, valor, onChange, excluirIds = [] }) {
   const [resultados, setResultados] = useState([]);
   const [buscando, setBuscando] = useState(false);
 
@@ -359,6 +359,14 @@ export default function MarcadorLibreForm() {
           Volver
         </button>
       </div>
+
+      <button
+        type="button"
+        onClick={() => router.push("/cargar-partido")}
+        className="self-start font-semibold text-xs px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
+      >
+        Cargar un partido ya jugado (sin Marcadorcito)
+      </button>
 
       <button
         type="button"

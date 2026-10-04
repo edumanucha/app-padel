@@ -1,6 +1,7 @@
 import { Archivo, Big_Shoulders, Schibsted_Grotesk, Chakra_Petch } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
+import PuertaVisitante from "@/components/PuertaVisitante";
 import PageTransition from "@/components/PageTransition";
 import RegistrarServiceWorker from "@/components/RegistrarServiceWorker";
 import { LocaleProvider } from "@/i18n/LocaleContext";
@@ -103,7 +104,7 @@ export default function RootLayout({ children }) {
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <RegistrarServiceWorker />
         <LocaleProvider>
-          <PageTransition>{children}</PageTransition>
+          <PageTransition><PuertaVisitante>{children}</PuertaVisitante></PageTransition>
           <BottomNav />
         </LocaleProvider>
       </body>

@@ -109,6 +109,13 @@ export default function MisPartidosForm() {
         </button>
       </div>
 
+      <button
+        onClick={() => router.push("/cargar-partido")}
+        className="col-completa self-start text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
+      >
+        Cargar un partido jugado
+      </button>
+
       {error && <p className="text-red-600 text-sm col-completa">{error}</p>}
 
       {partidos.length === 0 && (
