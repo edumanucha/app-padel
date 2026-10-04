@@ -88,6 +88,12 @@ export default function CargarPartidoForm() {
     }
 
     setGuardando(true);
+    const { data: yaCargue } = await supabase.rpc("cargue_partido_hoy");
+    if (yaCargue) {
+      setError("Hoy ya cargaste un partido a mano: se puede uno por día. Mañana podés cargar el siguiente.");
+      setGuardando(false);
+      return;
+    }
     const { data: partido, error: partidoError } = await supabase
       .from("partidos")
       .insert({
