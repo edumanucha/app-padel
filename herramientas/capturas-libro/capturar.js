@@ -229,7 +229,8 @@ async function principal() {
       // En la captura de página entera, la barra de abajo (fija) quedaría
       // flotando en el medio: se la manda al final de la página.
       if (s.full !== false) {
-        await page.addStyleTag({ content: "nav.fixed{position:absolute!important;bottom:16px!important;top:auto!important}" });
+        // Para el video de Instagram se saca la barra de abajo (flotaría en el medio de la captura).
+        await page.addStyleTag({ content: CARPETA === "video" ? "nav.fixed{display:none!important}" : "nav.fixed{position:absolute!important;bottom:16px!important;top:auto!important}" });
         await esperar(200);
       }
       const archivo = path.join(SALIDA, `${s.nombre}.png`);
