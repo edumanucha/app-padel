@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
-const inputClass = "rounded-[6px] bg-transparent border border-ink/15 px-3 py-2 text-ink text-center font-numero text-lg w-full";
+const inputClass = "rounded-[6px] bg-transparent border border-ink/15 px-3 py-2 text-ink text-center font-numero text-lg w-full min-w-0";
 
 // Bloque del detalle de un partido que alguien cargó a mano (2026-10-04):
 // muestra el resultado cargado y deja corregirlo o avisar que no jugaste. No
@@ -103,7 +103,7 @@ export default function PartidoCargadoAMano({ partidoId, usuarioId }) {
 
       {editando ? (
         <div className="flex flex-col gap-2">
-          <div className="grid grid-cols-[auto_1fr_1fr] gap-x-3 gap-y-2 items-center">
+          <div className="grid grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)] gap-x-3 gap-y-2 items-center">
             <span />
             <span className="text-xs font-bold uppercase text-muted text-center">Nosotros</span>
             <span className="text-xs font-bold uppercase text-muted text-center">Ellos</span>

@@ -1114,3 +1114,11 @@
   text-overflow: ellipsis;
   max-width: 100%;
 }
+
+/* Los botones del tablero no llevan el anillo amarillo global al tocarlos. */
+.ctrlBtn:not(:disabled):hover {
+  box-shadow: none;
+}
+.ctrlBtn {
+  -webkit-tap-highlight-color: transparent;
+}

@@ -194,15 +194,15 @@ export default function CargarPartidoForm() {
 
         <div className="flex flex-col gap-2 border-t border-ink/10 pt-4">
           <span className={etiquetaClass}>Resultado por sets (games)</span>
-          <div className="grid grid-cols-[auto_1fr_1fr] gap-x-3 gap-y-2 items-center">
+          <div className="grid grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)] gap-x-3 gap-y-2 items-center">
             <span />
             <span className="text-xs font-bold uppercase text-muted text-center">Nosotros</span>
             <span className="text-xs font-bold uppercase text-muted text-center">Ellos</span>
             {sets.map((s, i) => (
               <div key={i} className="contents">
                 <span className="text-sm font-semibold">Set {i + 1}</span>
-                <input inputMode="numeric" value={s.a} onChange={(e) => cambiarSet(i, "a", e.target.value)} placeholder="6" className={`${inputClass} text-center font-numero text-lg`} />
-                <input inputMode="numeric" value={s.b} onChange={(e) => cambiarSet(i, "b", e.target.value)} placeholder="4" className={`${inputClass} text-center font-numero text-lg`} />
+                <input inputMode="numeric" value={s.a} onChange={(e) => cambiarSet(i, "a", e.target.value)} placeholder="6" className={`${inputClass} text-center font-numero text-lg min-w-0 w-full`} />
+                <input inputMode="numeric" value={s.b} onChange={(e) => cambiarSet(i, "b", e.target.value)} placeholder="4" className={`${inputClass} text-center font-numero text-lg min-w-0 w-full`} />
               </div>
             ))}
           </div>

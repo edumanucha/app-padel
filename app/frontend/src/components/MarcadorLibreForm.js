@@ -143,46 +143,21 @@ export default function MarcadorLibreForm() {
       return;
     }
 
-    // Completa lo que haya quedado vacío con datos rápidos (2026-09-13, a
-    // pedido del usuario: "si no completás nada y tocás empezar a jugar,
-    // que complete con datos al azar pero que igual genere el
-    // marcadorcito" -- antes esto vivía solo en el botón separado
-    // "Generar partido rápido"; ahora "Empezar a jugar" hace lo mismo por
-    // su cuenta si hace falta, en el mismo toque). No usa el `cancha`/
-    // `companero`/etc. de React directo para el insert porque `setCancha`
-    // etc. son async -- calcula acá mismo los valores "efectivos" y
-    // también actualiza el estado, para que la pantalla quede consistente
-    // con lo que se guardó.
-    let canchaEfectiva = cancha;
-    let canchaIdEfectivo = canchaId;
-    if (canchaEfectiva.trim() === "" && !sinConexion()) {
-      const { data } = await supabase
-        .from("canchas")
-        .select("id, nombre")
-        .order("nombre", { ascending: true })
-        .limit(1)
-        .maybeSingle();
-      if (data) {
-        canchaEfectiva = data.nombre;
-        canchaIdEfectivo = data.id;
-        setCancha(canchaEfectiva);
-        setCanchaId(canchaIdEfectivo);
-      }
-    }
-    let companeroEfectivo = companero;
-    if (companeroEfectivo.termino.trim() === "") {
-      companeroEfectivo = { termino: "Compañero QA", jugadorId: null, nombre: "Compañero QA" };
-      setCompanero(companeroEfectivo);
-    }
-    let rival1Efectivo = rival1;
-    if (rival1Efectivo.termino.trim() === "") {
-      rival1Efectivo = { termino: "Rival QA 1", jugadorId: null, nombre: "Rival QA 1" };
-      setRival1(rival1Efectivo);
-    }
-    let rival2Efectivo = rival2;
-    if (rival2Efectivo.termino.trim() === "") {
-      rival2Efectivo = { termino: "Rival QA 2", jugadorId: null, nombre: "Rival QA 2" };
-      setRival2(rival2Efectivo);
+    // Hay que completar los datos (2026-10-05, pedido del usuario): ya no se
+    // inventa un partido rápido con "Compañero QA" y rivales de prueba.
+    const canchaEfectiva = cancha;
+    const canchaIdEfectivo = canchaId;
+    const companeroEfectivo = companero;
+    const rival1Efectivo = rival1;
+    const rival2Efectivo = rival2;
+    if (
+      canchaEfectiva.trim() === "" ||
+      companeroEfectivo.termino.trim() === "" ||
+      rival1Efectivo.termino.trim() === "" ||
+      rival2Efectivo.termino.trim() === ""
+    ) {
+      setError("Completá la cancha, tu compañero/a y los dos rivales (si no tienen cuenta, alcanza con el nombre).");
+      return;
     }
 
     // Valida que no se haya linkeado la misma cuenta real en dos

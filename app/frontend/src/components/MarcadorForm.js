@@ -109,7 +109,7 @@ function SelectorTema({ tema, onElegir }) {
 
 // Contenido de la hoja "¿Cómo llevamos los puntos?": 4 íconos redondos,
 // el detalle del elegido y "Empezar con ...". Arranca marcado el Reloj.
-function ElegirModo({ modos, bateria }) {
+function ElegirModo({ modos }) {
   const [elegido, setElegido] = useState("reloj");
   const actual = modos.find((m) => m.modo === elegido) ?? modos[0];
   return (
@@ -121,7 +121,7 @@ function ElegirModo({ modos, bateria }) {
             type="button"
             onClick={() => setElegido(m.modo)}
             aria-pressed={m.modo === elegido}
-            className="flex-1 flex flex-col items-center gap-1 cursor-pointer"
+            className="sin-anillo flex-1 flex flex-col items-center gap-1 cursor-pointer"
           >
             <span
               className={`w-14 h-14 rounded-full flex items-center justify-center text-3xl border-2 ${
@@ -136,11 +136,6 @@ function ElegirModo({ modos, bateria }) {
         ))}
       </div>
       <p className="text-sm text-center text-muted min-h-[2.75em]">{actual.detalle}</p>
-      {bateria && !bateria.cargando && bateria.nivel < 50 && actual.modo === "camara" && (
-        <p className="text-xs rounded-[6px] px-3 py-2 border border-accent bg-accent/15 text-ink">
-          Batería al {bateria.nivel}%. La cámara consume bastante: para un partido entero conviene arrancar con más de 50%.
-        </p>
-      )}
       <button
         type="button"
         onClick={actual.activar}
@@ -149,8 +144,7 @@ function ElegirModo({ modos, bateria }) {
         Empezar con {actual.nombre} →
       </button>
       <p className="text-xs text-center text-muted -mt-1">
-        {bateria ? `Batería ${bateria.nivel}%${bateria.cargando ? " (cargando)" : ""} · ` : ""}La pantalla queda prendida. Lo cambiás
-        cuando quieras desde Opciones.
+        La pantalla queda prendida. Lo cambiás cuando quieras desde Opciones.
       </p>
     </>
   );
@@ -905,25 +899,6 @@ export default function MarcadorForm({ partidoId }) {
     }
   }, [resultado, partidoId]);
 
-  // Nivel de batería para el consejo del selector de modo (solo Chrome).
-  const [bateria, setBateria] = useState(null);
-  useEffect(() => {
-    if (typeof navigator === "undefined" || !navigator.getBattery) return;
-    let bat = null;
-    const actualizar = () => bat && setBateria({ nivel: Math.round(bat.level * 100), cargando: bat.charging });
-    navigator.getBattery().then((b) => {
-      bat = b;
-      actualizar();
-      b.addEventListener("levelchange", actualizar);
-      b.addEventListener("chargingchange", actualizar);
-    }).catch(() => {});
-    return () => {
-      if (bat) {
-        bat.removeEventListener("levelchange", actualizar);
-        bat.removeEventListener("chargingchange", actualizar);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     async function iniciar() {
@@ -2498,7 +2473,6 @@ export default function MarcadorForm({ partidoId }) {
       {mostrarChooser && (
         <HojaAbajo titulo="¿Cómo llevamos los puntos?">
           <ElegirModo
-            bateria={bateria}
             modos={[
               {
                 modo: "reloj",
