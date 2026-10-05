@@ -55,8 +55,22 @@ const archivo = Archivo({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://padelito-app.vercel.app"),
   title: "Padelito",
-  description: "App para organizar partidos de pádel",
+  description: "Llevá el marcador de tu partido de pádel desde el reloj. Gratis.",
+  openGraph: {
+    title: "Padelito: llevá el marcador desde tu reloj",
+    description: "Marcadorcito para pádel: sumás los puntos desde el reloj, con voz o con gestos. Probalo sin cuenta.",
+    url: "/",
+    siteName: "Padelito",
+    locale: "es_AR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Padelito: llevá el marcador desde tu reloj",
+    description: "Marcadorcito para pádel: sumás los puntos desde el reloj, con voz o con gestos. Probalo sin cuenta.",
+  },
   appleWebApp: {
     // iOS/Safari no lee el manifest.js para el ícono ni para "modo
     // standalone" (sin la barra del navegador) -- necesita estas dos

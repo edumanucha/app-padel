@@ -173,6 +173,7 @@ const pantallas = [
   { nombre: "grupo-unirse", ruta: "/g/jueves-4kx9" },
   // 2026-10-04
   { nombre: "como-funciona", ruta: "/como-funciona" },
+  { nombre: "reloj-info", ruta: "/reloj", sinSesion: true },
   { nombre: "pruebas-torneos", ruta: "/pruebas-torneos" },
   { nombre: "marcador-mirando", ruta: `/partido/${P(307)}/marcador`, full: false,
     antes: async (pg) => { await clickTexto(pg, "Manual"); await clickTexto(pg, "Empezar con"); } },
