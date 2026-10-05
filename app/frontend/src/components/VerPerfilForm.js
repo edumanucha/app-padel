@@ -87,6 +87,11 @@ export default function VerPerfilForm() {
   const [mostrarConfirmacionBaja, setMostrarConfirmacionBaja] = useState(false);
   const [dandoBaja, setDandoBaja] = useState(false);
   const [errorBaja, setErrorBaja] = useState("");
+  // Eliminar la cuenta de verdad (2026-10-05, SQL 081): hoja con confirmación escrita.
+  const [mostrarEliminar, setMostrarEliminar] = useState(false);
+  const [textoEliminar, setTextoEliminar] = useState("");
+  const [eliminando, setEliminando] = useState(false);
+  const [errorEliminar, setErrorEliminar] = useState("");
 
   const [perfilInactivo, setPerfilInactivo] = useState(null);
   const [reactivando, setReactivando] = useState(false);
@@ -343,6 +348,41 @@ export default function VerPerfilForm() {
     // volvemos al login.
     await supabase.auth.signOut();
     router.push("/login");
+  }
+
+  // Borra los datos personales y deja los partidos como "Jugador eliminado".
+  // No se puede deshacer. Primero se borran las fotos del perfil y después se
+  // llama a la base (eliminar_mi_cuenta, SQL 081); al final se cierra la sesión.
+  async function handleEliminarCuenta() {
+    setErrorEliminar("");
+    if (textoEliminar.trim().toUpperCase() !== "ELIMINAR") {
+      setErrorEliminar("Escribí ELIMINAR para confirmar.");
+      return;
+    }
+    setEliminando(true);
+    try {
+      const { data: archivos } = await supabase.storage.from("avatars").list(perfil.id);
+      if (archivos?.length) {
+        await supabase.storage.from("avatars").remove(archivos.map((a) => `${perfil.id}/${a.name}`));
+      }
+    } catch {
+      // Si la foto no se pudo borrar, igual se sigue: el perfil ya no la muestra.
+    }
+    const { error: rpcError } = await supabase.rpc("eliminar_mi_cuenta", { p_confirmacion: "ELIMINAR" });
+    if (rpcError) {
+      setEliminando(false);
+      setErrorEliminar("No se pudo eliminar la cuenta. Probá de nuevo en un rato.");
+      return;
+    }
+    try {
+      await supabase.auth.signOut();
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith("marcadorcito_") || k.startsWith("sb-"))
+        .forEach((k) => localStorage.removeItem(k));
+    } catch {
+      // nada
+    }
+    window.location.replace("/");
   }
 
   // US-1.6 (paso 2): reactivar una cuenta que estaba dada de baja.
@@ -941,6 +981,16 @@ export default function VerPerfilForm() {
         >
           {t("verPerfil.darDeBajaCuenta")}
         </button>
+        <button
+          onClick={() => {
+            setTextoEliminar("");
+            setErrorEliminar("");
+            setMostrarEliminar(true);
+          }}
+          className="text-sm font-semibold text-red-600 underline cursor-pointer self-start mt-3"
+        >
+          Eliminar mi cuenta
+        </button>
       </div>
 
       {/* Confirmar la baja en hoja de abajo (2026-10-01, mismo estilo que las
@@ -970,6 +1020,53 @@ export default function VerPerfilForm() {
           >
             {t("verPerfil.cancelar")}
           </button>
+        </HojaAbajo>
+      )}
+
+      {mostrarEliminar && (
+        <HojaAbajo titulo="Eliminar mi cuenta" onCerrar={eliminando ? undefined : () => setMostrarEliminar(false)} textoCerrar="✕">
+          <div className="flex flex-col gap-3 text-sm">
+            <p className="text-muted -mt-1">Esto no se puede deshacer. Si solo querés dejar de aparecer un tiempo, usá “Dar de baja”: se puede reactivar.</p>
+            <div className="flex flex-col gap-1">
+              <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">Se borra</span>
+              <span>Tu nombre, teléfono, foto, mensajes, notificaciones, disponibilidad, compañeros fijos y tu acceso con Google. Sales de los grupos y de los partidos que todavía no se jugaron.</span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">Se queda</span>
+              <span>Los partidos que ya jugaste, con tu nombre reemplazado por “Jugador eliminado”, para que a los demás no se les rompa el historial. Si creaste un grupo, pasa al miembro más antiguo.</span>
+            </div>
+            <label className="flex flex-col gap-1">
+              <span className="font-semibold">Escribí ELIMINAR para confirmar</span>
+              <input
+                value={textoEliminar}
+                onChange={(e) => setTextoEliminar(e.target.value)}
+                disabled={eliminando}
+                autoCapitalize="characters"
+                className="rounded-[6px] bg-transparent border border-ink/15 px-3 py-2 text-ink"
+              />
+            </label>
+            {errorEliminar && (
+              <p role="alert" className="text-red-600">
+                {errorEliminar}
+              </p>
+            )}
+            <button
+              onClick={handleEliminarCuenta}
+              disabled={eliminando || textoEliminar.trim().toUpperCase() !== "ELIMINAR"}
+              className="rounded-[6px] font-titulo font-black uppercase text-xl leading-none py-3.5 bg-red-600 text-white cursor-pointer disabled:opacity-40 inline-flex items-center justify-center gap-2"
+            >
+              {eliminando && <PelotaLoader />}
+              {eliminando ? "Eliminando…" : "Eliminar mi cuenta"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMostrarEliminar(false)}
+              disabled={eliminando}
+              className="rounded-[6px] font-semibold text-sm py-3 border border-ink/15 text-ink cursor-pointer disabled:opacity-60"
+            >
+              Cancelar
+            </button>
+          </div>
         </HojaAbajo>
       )}
     </div>
