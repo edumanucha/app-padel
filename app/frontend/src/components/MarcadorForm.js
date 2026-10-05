@@ -385,6 +385,7 @@ export default function MarcadorForm({ partidoId }) {
   // activa a mano desde "⚙️ Opciones" si lo quiere.
   const [silenciado, setSilenciado] = useState(true);
   const [ahora, setAhora] = useState(Date.now());
+  const [confirmandoCierreAbandonado, setConfirmandoCierreAbandonado] = useState(false);
   const [confirmandoTerminar, setConfirmandoTerminar] = useState(false);
   const [mostrarOpciones, setMostrarOpciones] = useState(false);
   const [pestanaOpciones, setPestanaOpciones] = useState("puntos");
@@ -2150,6 +2151,31 @@ export default function MarcadorForm({ partidoId }) {
     router.replace("/");
   }
 
+  // Cierra un partido que quedó abierto (2026-10-05): quien no lleva los puntos
+  // puede hacerlo si hace más de 30 minutos que nadie suma nada. El partido
+  // queda cancelado y no cuenta (SQL 078).
+  async function handleCerrarAbandonado() {
+    const { error: cerrarError } = await supabase.rpc("cerrar_marcador_abandonado", { p_partido: partidoId });
+    if (cerrarError) {
+      setError(
+        cerrarError.message?.includes("todavia_en_juego")
+          ? "Todavía hay movimiento en el partido: esperá a que pasen 30 minutos sin puntos."
+          : "No se pudo cerrar el partido. Probá de nuevo."
+      );
+      setConfirmandoCierreAbandonado(false);
+      return;
+    }
+    try {
+      localStorage.removeItem(clavePendiente);
+      localStorage.removeItem(`marcadorcito_local_${partidoId}`);
+      if (localStorage.getItem("marcadorcito_en_curso") === String(partidoId)) localStorage.removeItem("marcadorcito_en_curso");
+    } catch {
+      // nada
+    }
+    saliendoRef.current = true;
+    router.replace("/");
+  }
+
   // Pasar el control del marcador a otro jugador del partido.
   async function handlePasarControl(nuevoId) {
     const { error: pasarError } = await supabase.rpc("pasar_control_marcador", { p_partido: partidoId, p_nuevo: nuevoId });
@@ -2986,6 +3012,31 @@ export default function MarcadorForm({ partidoId }) {
                 <IconoReloj className="ico" aria-hidden /> Ver en mi reloj
               </button>
             )}
+            {(() => {
+              // Partido que quedó abierto: hace más de 30 minutos que nadie suma.
+              const minSinPuntos = resultado.updated_at ? Math.floor((ahora - new Date(resultado.updated_at).getTime()) / 60000) : 0;
+              if (minSinPuntos < 30) return null;
+              const hace = minSinPuntos >= 60 ? `${Math.floor(minSinPuntos / 60)} h` : `${minSinPuntos} min`;
+              return (
+                <>
+                  <span style={{ fontSize: "0.7em", opacity: 0.8 }}>Hace {hace} que nadie suma puntos. Si quedó abierto, podés cerrarlo (no cuenta).</span>
+                  {confirmandoCierreAbandonado ? (
+                    <>
+                      <button className={styles.ctrlBtn} onClick={handleCerrarAbandonado}>
+                        Sí, cerrar el partido
+                      </button>
+                      <button className={styles.ctrlBtn} onClick={() => setConfirmandoCierreAbandonado(false)}>
+                        Cancelar
+                      </button>
+                    </>
+                  ) : (
+                    <button className={styles.ctrlBtn} onClick={() => setConfirmandoCierreAbandonado(true)}>
+                      Cerrar partido
+                    </button>
+                  )}
+                </>
+              );
+            })()}
           </div>
         )}
 
