@@ -1272,7 +1272,7 @@ export default function MarcadorForm({ partidoId }) {
     async (lado, confirmado = false) => {
       const actual = resultadoRef.current;
       if (!actual || actual.finalizado || actual.estado.pausado) return;
-      if (!soyAnotadorRef.current) return;
+      if (!soyAnotadorRef.current || partidoCanceladoRef.current) return;
       // Con el cierre del partido en espera (3 s) no se suman más puntos.
       if (cierreRef.current && !confirmado) return;
       const ahoraPunto = Date.now();
@@ -1409,6 +1409,13 @@ export default function MarcadorForm({ partidoId }) {
     [anunciar, nombresCortos, nombreEquipoVoz, notificarReloj]
   );
   const soyAnotador = !resultado?.anota_id || resultado.anota_id === usuarioId;
+  // Partido cancelado (cerrado a mano o por pasar las 2,5 horas, SQL 078/079):
+  // el marcador queda a la vista pero sin controles.
+  const cancelado = partido?.estado === "cancelado" && !resultado?.finalizado;
+  const partidoCanceladoRef = useRef(false);
+  useEffect(() => {
+    partidoCanceladoRef.current = cancelado;
+  }, [cancelado]);
   // Franja tipo Pong (2026-10-04): se anima cuando el registro de puntos
   // crece en uno o más (también para quien solo mira). Al deshacer no.
   const [pongEvento, setPongEvento] = useState(null);
@@ -2151,17 +2158,12 @@ export default function MarcadorForm({ partidoId }) {
     router.replace("/");
   }
 
-  // Cierra un partido que quedó abierto (2026-10-05): quien no lleva los puntos
-  // puede hacerlo si hace más de 30 minutos que nadie suma nada. El partido
-  // queda cancelado y no cuenta (SQL 078).
+  // Termina un partido que quedó abierto (2026-10-05): cualquier jugador del
+  // partido puede hacerlo. El partido queda cancelado y no cuenta (SQL 078/080).
   async function handleCerrarAbandonado() {
     const { error: cerrarError } = await supabase.rpc("cerrar_marcador_abandonado", { p_partido: partidoId });
     if (cerrarError) {
-      setError(
-        cerrarError.message?.includes("todavia_en_juego")
-          ? "Todavía hay movimiento en el partido: esperá a que pasen 30 minutos sin puntos."
-          : "No se pudo cerrar el partido. Probá de nuevo."
-      );
+      setError("No se pudo terminar el partido. Probá de nuevo.");
       setConfirmandoCierreAbandonado(false);
       return;
     }
@@ -2998,11 +3000,20 @@ export default function MarcadorForm({ partidoId }) {
             </button>
           </div>
         )}
-        {!resultado.finalizado && pausado && (
+        {cancelado && (
+          <div className={styles.finalBanner}>
+            Partido cancelado
+            <span style={{ fontSize: "0.7em", opacity: 0.8 }}>Se cerró sin resultado y no cuenta para el ranking ni las estadísticas.</span>
+            <button className={styles.ctrlBtn} onClick={handleIrAlInicio}>
+              Ir al Inicio
+            </button>
+          </div>
+        )}
+        {!resultado.finalizado && !cancelado && pausado && (
           <div className={styles.finalBanner}>⏸ Partido en pausa</div>
         )}
 
-        {!resultado.finalizado && !soyAnotador && (
+        {!resultado.finalizado && !cancelado && !soyAnotador && (
           <div className={styles.finalBanner}>
             Estás mirando · lleva los puntos {nombreAnotador}
             {relojActivo ? (
@@ -3013,17 +3024,23 @@ export default function MarcadorForm({ partidoId }) {
               </button>
             )}
             {(() => {
-              // Partido que quedó abierto: hace más de 30 minutos que nadie suma.
+              // Cualquier jugador puede terminar el partido (2026-10-05, pedido
+              // del usuario): si se terminó antes y nadie lo cerró. Queda
+              // cancelado, sin resultado (SQL 078/080).
               const minSinPuntos = resultado.updated_at ? Math.floor((ahora - new Date(resultado.updated_at).getTime()) / 60000) : 0;
-              if (minSinPuntos < 30) return null;
               const hace = minSinPuntos >= 60 ? `${Math.floor(minSinPuntos / 60)} h` : `${minSinPuntos} min`;
               return (
                 <>
-                  <span style={{ fontSize: "0.7em", opacity: 0.8 }}>Hace {hace} que nadie suma puntos. Si quedó abierto, podés cerrarlo (no cuenta).</span>
+                  {minSinPuntos >= 30 && (
+                    <span style={{ fontSize: "0.7em", opacity: 0.8 }}>Hace {hace} que nadie suma puntos. Si quedó abierto, podés terminarlo.</span>
+                  )}
                   {confirmandoCierreAbandonado ? (
                     <>
+                      <span style={{ fontSize: "0.7em", opacity: 0.8 }}>
+                        El partido se cierra sin resultado y no cuenta. Si se jugó entero, cargalo después en “Cargar un partido jugado”.
+                      </span>
                       <button className={styles.ctrlBtn} onClick={handleCerrarAbandonado}>
-                        Sí, cerrar el partido
+                        Sí, terminar el partido
                       </button>
                       <button className={styles.ctrlBtn} onClick={() => setConfirmandoCierreAbandonado(false)}>
                         Cancelar
@@ -3031,7 +3048,7 @@ export default function MarcadorForm({ partidoId }) {
                     </>
                   ) : (
                     <button className={styles.ctrlBtn} onClick={() => setConfirmandoCierreAbandonado(true)}>
-                      Cerrar partido
+                      Terminar partido
                     </button>
                   )}
                 </>
@@ -3040,7 +3057,7 @@ export default function MarcadorForm({ partidoId }) {
           </div>
         )}
 
-        {!resultado.finalizado && soyAnotador && (
+        {!resultado.finalizado && !cancelado && soyAnotador && (
           <div className={styles.controls} style={{ justifyContent: "center" }}>
             <div className={styles.filaControles}>
               <button
