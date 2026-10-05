@@ -1,5 +1,6 @@
 // Guía de dónde dejar el celu para que el Marcadorcito te escuche y el reloj
-// se mantenga al día (2026-10-04). Se muestra antes de empezar un partido y
+// se mantenga al día (2026-10-04). Alcances (2026-10-05): reloj, casi 9 m en una
+// prueba real; voz, menos de 2 m. Se muestra antes de empezar un partido y
 // en "Cómo funciona". Dibujo simple: la cancha vista desde arriba, con el
 // celu en el vidrio del fondo, cerca del medio y a media altura.
 export default function GuiaCelular() {
@@ -14,7 +15,7 @@ export default function GuiaCelular() {
         {/* celu en el vidrio del fondo, centrado */}
         <rect x="146" y="12" width="28" height="10" rx="2" fill="#f2c53d" />
         <text x="160" y="42" textAnchor="middle" fontSize="11" fill="#f2c53d" fontWeight="700">CELU</text>
-        {/* radio de escucha */}
+        {/* radio de escucha (voz) */}
         <path d="M 90 22 Q 160 110 230 22" fill="none" stroke="#f2c53d" strokeWidth="1.5" strokeDasharray="3 4" />
         <circle cx="80" cy="120" r="7" fill="#eaf4f0" />
         <circle cx="240" cy="120" r="7" fill="#eaf4f0" />
@@ -22,10 +23,14 @@ export default function GuiaCelular() {
         <circle cx="210" cy="60" r="7" fill="#8fb6ae" />
       </svg>
       <ul className="flex flex-col gap-1.5 text-sm text-muted leading-relaxed list-disc pl-5">
-        <li>Apoyalo en el vidrio o la reja del fondo, <b className="text-ink">cerca del centro</b> y a la altura de la cintura.</li>
-        <li>Lo más cerca posible de quien dice los puntos: <b className="text-ink">a menos de 2 metros</b> la voz se entiende mucho mejor.</li>
-        <li>Con el micrófono hacia la cancha, sin tapar y con la pantalla prendida.</li>
-        <li>Si queda lejos, usá los botones del reloj: siguiente = punto A, anterior = punto B.</li>
+        <li>
+          <b className="text-ink">Con el reloj</b>, el celu puede quedar bastante lejos: en una prueba real llegó a casi 9 metros. Apoyalo en el bolso, el banco o colgado de la reja, con la pantalla prendida.
+        </li>
+        <li>
+          <b className="text-ink">Con la voz</b>, acercalo: a <b className="text-ink">menos de 2 metros</b> de quien dice los puntos, a la altura de la cintura y con el micrófono hacia la cancha.
+        </li>
+        <li>Lo mejor es el vidrio o la reja del fondo, <b className="text-ink">cerca del centro</b>, o el poste de la red.</li>
+        <li>Dejalo lejos del sol y de la línea de las pelotas.</li>
         <li>Dejalo cargando o con batería suficiente: un partido largo gasta bastante.</li>
       </ul>
     </div>
