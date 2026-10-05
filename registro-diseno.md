@@ -49,6 +49,9 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-19 | `diseno-19-partido-cargado` | 2026-10-04 | Cargar un partido jugado sin Marcadorcito: avisos, corrección, 'no jugué' y un máximo de uno por día | Publicado |
 | D-20 | `diseno-20-guia-celu` | 2026-10-04 | Guía de dónde dejar el celu (Marcadorcito libre y Cómo funciona) | Publicado |
 | D-21 | `diseno-21-avisos-marcadorcito` | 2026-10-04 | Aviso de Marcadorcito en juego, ayudas de cámara y voz, reloj recomendado, sin 'Generar partido rápido' | Publicado |
+| D-22 | `diseno-22-botones-franja-nombres` | 2026-10-04 | Marcadorcito: botones Punto A / Deshacer / Punto B con relieve, franja Pong con cancha de pádel, nombres cortos, sonidos nuevos | Publicado |
+| D-23 | `diseno-23-link-reloj` | 2026-10-05 | Vista previa del link, direcciones /probar y /reloj, guía del celu con el alcance real del reloj y de la voz | Publicado |
+| D-24 | `diseno-24-cerrar-y-eliminar` | 2026-10-05 | Cerrar partidos abiertos (cualquier jugador, o solo a las 2,5 h) y Eliminar mi cuenta | Publicado |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -218,6 +221,23 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Qué cambió:** notificación "X empezó a llevar el marcador de tu partido" a los otros jugadores con cuenta (abre el marcador) y acceso "Volver al partido" en el Inicio mientras está en juego. En Opciones, cámara y voz explican cómo usarlas (mano derecha abierta = punto A, izquierda = punto B, pulgar = deshacer; comandos de voz con "marcador" adelante). El reloj aparece como "Recomendado" y su formato queda fijo. Se saca "Generar partido rápido". Cómo funciona (es/en/pt) recomienda el reloj.
 - **Datos:** `075_aviso_marcadorcito_nuevo.sql`.
 - **Herramienta de QA (no es diseño):** `/pruebas-distancia` mide hasta qué distancia llegan los botones del reloj y si el puntaje se actualiza bien en el reloj.
+
+### D-22 · `diseno-22-botones-franja-nombres` — botones, franja Pong y nombres cortos (2026-10-04)
+
+- **Qué cambió:** Punto A, Deshacer y Punto B en una línea con relieve arcade (opción A de la maqueta), tamaño fijo y letra de cartel; franja Pong dibujada como una cancha (red, líneas de saque, línea central) con cuatro jugadores quietos que devuelven la pelota; en apaisado va chiquita entre los puntajes. Primer nombre de cada jugador en el tablero y encabezado de una línea. Sonidos de la prueba de distancia y uno de game ganado. Quien solo mira no ve las opciones de llevar puntos y puede activar su reloj.
+- **Pantallas afectadas:** Marcadorcito (vertical y apaisado).
+- **Maquetas mostradas:** botones (A, B, C y dos estilos de relieve), Pong (versión A y B, 2 contra 2, cancha real, jugadores quietos con rebote).
+- **Archivos:** `PongPunto.js`, `MarcadorForm.js`, `Marcador.module.css`.
+
+### D-23 · `diseno-23-link-reloj` — link compartible (2026-10-05)
+
+- **Qué cambió:** imagen de vista previa y textos al compartir el link (`opengraph-image.js`, metadatos del layout); `/probar` redirige al Marcadorcito de ejemplo; `/reloj` explica el modo reloj; guía del celu con el alcance real (reloj casi 9 m, voz menos de 2 m).
+- **Link:** `padelito-app.vercel.app` (el viejo `frontend-ten-theta-89.vercel.app` sigue andando).
+
+### D-24 · `diseno-24-cerrar-y-eliminar` — cerrar partidos abiertos y eliminar la cuenta (2026-10-05)
+
+- **Qué cambió:** cualquier jugador puede terminar un partido que quedó abierto (queda cancelado, cartel "Partido cancelado"); se cierran solos a las 2,5 h (pg_cron). En Mi perfil, "Eliminar mi cuenta" con confirmación escrita.
+- **Datos:** `078` a `081` (cerrar abandonado, cierre automático, cualquier jugador, eliminar cuenta).
 
 <!-- Plantilla para cada cambio nuevo:
 

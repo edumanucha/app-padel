@@ -1029,7 +1029,7 @@ export default function VerPerfilForm() {
             <p className="text-muted -mt-1">Esto no se puede deshacer. Si solo querés dejar de aparecer un tiempo, usá “Dar de baja”: se puede reactivar.</p>
             <div className="flex flex-col gap-1">
               <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">Se borra</span>
-              <span>Tu nombre, teléfono, foto, mensajes, notificaciones, disponibilidad, compañeros fijos y tu acceso con Google. Sales de los grupos y de los partidos que todavía no se jugaron.</span>
+              <span>Tu nombre, teléfono, foto, mensajes, notificaciones, disponibilidad, compañeros fijos y tu acceso con Google. Salís de los grupos y de los partidos que todavía no se jugaron.</span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">Se queda</span>
