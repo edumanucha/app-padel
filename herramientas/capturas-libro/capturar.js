@@ -184,7 +184,7 @@ const pantallas = [
   { nombre: "partido-cargado", ruta: `/partido/${P(306)}` },
 ];
 
-(async () => {
+async function principal() {
   fs.mkdirSync(SALIDA, { recursive: true });
   const perfil = path.join(__dirname, ".perfil-chrome");
   fs.rmSync(perfil, { recursive: true, force: true });
@@ -243,4 +243,8 @@ const pantallas = [
     }
   }
   console.log(resumen.join("\n"));
-})();
+}
+
+// Se puede usar como módulo (para grabar el video de Instagram) o correr solo.
+if (require.main === module) principal();
+module.exports = { responder, sesion, usuario, SUPABASE_HOST, REF, CEL, CHROME, BASE, id, esperar, clickTexto, clickSelector };

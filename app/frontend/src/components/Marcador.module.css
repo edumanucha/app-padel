@@ -1002,8 +1002,15 @@
   background: #9fe1cb;
   border-bottom-color: #3f8f78;
 }
-.ctrlPuntoA:hover,
+/* El hover general de .ctrlBtn pinta de verde oscuro: en los botones de punto
+   tiene que conservar su color (en el celu el hover queda pegado después del
+   toque y el botón se veía oscuro). */
+.ctrlPuntoA:hover {
+  background: var(--tab-acento, #f2c53d);
+  filter: brightness(1.05);
+}
 .ctrlPuntoB:hover {
+  background: #9fe1cb;
   filter: brightness(1.05);
 }
 .ctrlDeshacer {
