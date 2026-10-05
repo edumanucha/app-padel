@@ -31,7 +31,6 @@ export default function GuiaCelular() {
         </li>
         <li>Lo mejor es el vidrio o la reja del fondo, <b className="text-ink">cerca del centro</b>, o el poste de la red.</li>
         <li>Dejalo lejos del sol y de la línea de las pelotas.</li>
-        <li>Dejalo cargando o con batería suficiente: un partido largo gasta bastante.</li>
       </ul>
     </div>
   );
