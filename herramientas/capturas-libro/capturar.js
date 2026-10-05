@@ -175,6 +175,7 @@ const pantallas = [
   { nombre: "como-funciona", ruta: "/como-funciona" },
   { nombre: "reloj-info", ruta: "/reloj", sinSesion: true },
   { nombre: "pruebas-torneos", ruta: "/pruebas-torneos" },
+  { nombre: "probar-prueba", ruta: "/probar", sinSesion: true, full: false, antes: async (pg) => { await clickTexto(pg, "Pareja A"); await esperar(1300); await clickTexto(pg, "Pareja B"); await esperar(1500); } },
   { nombre: "eliminar-cuenta", ruta: "/perfil", full: false, antes: (pg) => clickTexto(pg, "Eliminar mi cuenta") },
   { nombre: "marcador-mirando", ruta: `/partido/${P(307)}/marcador`, full: false },
   { nombre: "marcador-final", ruta: `/partido/${P(304)}/marcador`, full: false },

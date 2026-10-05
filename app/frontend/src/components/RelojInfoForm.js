@@ -55,7 +55,7 @@ export default function RelojInfoForm() {
 
       <div className="flex flex-col gap-2">
         <button
-          onClick={() => router.push("/marcador-libre/demo")}
+          onClick={() => router.push("/probar")}
           className="rounded-[6px] bg-accent text-accent-ink font-titulo font-black uppercase text-xl py-2.5 cursor-pointer"
         >
           Probar el Marcadorcito

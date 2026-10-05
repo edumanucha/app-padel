@@ -1,7 +1,16 @@
-import { redirect } from "next/navigation";
+import ProbarConRelojForm from "@/components/ProbarConRelojForm";
 
-// Dirección corta para compartir (2026-10-05): lleva al Marcadorcito de
-// ejemplo, que se puede probar sin cuenta.
+export const metadata = {
+  title: "Probá el Marcadorcito · Padelito",
+  description: "Probá el marcador de pádel de Padelito con tu reloj, sin cuenta y gratis.",
+};
+
+// Dirección corta para compartir (2026-10-05): el Marcadorcito de verdad para
+// probar sin cuenta, con el reloj de quien lo prueba.
 export default function ProbarPage() {
-  redirect("/marcador-libre/demo");
+  return (
+    <main className="min-h-screen flex justify-center p-6">
+      <ProbarConRelojForm />
+    </main>
+  );
 }

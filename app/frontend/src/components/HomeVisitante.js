@@ -7,7 +7,7 @@ import { IconoChevron } from "@/components/Icons";
 // Inicio para quien todavía no tiene cuenta (2026-10-04): se puede mirar y
 // probar cosas, y se pide la cuenta recién al querer guardar algo.
 const LINKS = [
-  ["Probá el Marcadorcito", "Un partido de ejemplo, sin guardar nada", "/marcador-libre/demo"],
+  ["Probá el Marcadorcito", "El de verdad, con tu reloj y sin cuenta", "/probar"],
   ["Llevá el marcador desde tu reloj", "Cómo se conecta y hasta dónde llega", "/reloj"],
   ["Probá un torneo", "Americano, mexicano, liga o eliminación", "/pruebas-torneos"],
   ["Consejos de pádel", "Más de 160 para jugar mejor", "/consejos"],
