@@ -1,5 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // La app no usa next/image, así que el optimizador de imágenes (sharp) no
+  // hace falta dentro de las funciones: sacarlo achica cada versión publicada
+  // (2026-10-05, el plan gratis de Vercel avisó que se llenaba "Functions
+  // Storage" con tantas versiones).
+  outputFileTracingExcludes: {
+    "*": ["node_modules/@img/**", "node_modules/sharp/**"],
+  },
   async headers() {
     return [
       {
