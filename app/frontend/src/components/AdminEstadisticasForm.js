@@ -57,6 +57,7 @@ function Numero({ valor, titulo }) {
 export default function AdminEstadisticasForm() {
   const router = useRouter();
   const [datos, setDatos] = useState(null);
+  const [partidos, setPartidos] = useState(null); // SQL 083 (si todavía no se corrió, queda en null)
   const [error, setError] = useState("");
 
   async function cargar() {
@@ -68,7 +69,11 @@ export default function AdminEstadisticasForm() {
       router.replace("/login");
       return;
     }
-    const { data, error: rpcError } = await supabase.rpc("estadisticas_admin");
+    const [{ data, error: rpcError }, { data: dataPartidos }] = await Promise.all([
+      supabase.rpc("estadisticas_admin"),
+      supabase.rpc("estadisticas_partidos_admin"),
+    ]);
+    setPartidos(dataPartidos ?? null);
     if (rpcError) {
       if (/no_permitido/.test(rpcError.message ?? "")) {
         router.replace("/");
@@ -131,6 +136,18 @@ export default function AdminEstadisticasForm() {
         <Numero valor={`${minutos7}'`} titulo="Uso 7 días" />
         <Numero valor={`${minPorActivo}'`} titulo="Por activo" />
       </div>
+
+      {partidos && (
+        <Seccion titulo="Partidos terminados" nota="Llevados con el Marcadorcito vs. cargados a mano después de jugarlos (sin estadísticas de puntos).">
+          <Fila izq="Con el Marcadorcito" der={`${partidos.marcadorcito_7d ?? 0} en 7 d · ${partidos.marcadorcito_30d ?? 0} en 30 d · ${partidos.marcadorcito_total ?? 0} en total`} fuerte />
+          <Fila izq="Cargados a mano" der={`${partidos.a_mano_7d ?? 0} en 7 d · ${partidos.a_mano_30d ?? 0} en 30 d · ${partidos.a_mano_total ?? 0} en total`} fuerte />
+          <Fila
+            izq="Participación del Marcadorcito"
+            der={pct(partidos.marcadorcito_total ?? 0, (partidos.marcadorcito_total ?? 0) + (partidos.a_mano_total ?? 0))}
+          />
+          <Fila izq="Usuarios que cargaron alguno a mano" der={partidos.usuarios_a_mano ?? 0} />
+        </Seccion>
+      )}
 
       <Seccion titulo="Altas por día" nota="Últimos 30 días.">
         <div className="flex items-end gap-[3px] h-16">
