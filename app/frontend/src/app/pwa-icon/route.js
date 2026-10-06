@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { relojPadelito } from "@/lib/marcaPadelito";
 
 // Ícono de la app para instalar como PWA (2026-09-13, a pedido del
 // usuario: "modo instalar"). Se genera con next/og (Satori, ya incluido
@@ -18,7 +19,8 @@ import { ImageResponse } from "next/og";
 // puesto directo en `app/` (ver ese archivo), no una carpeta con
 // `route.js` -- este archivo solo lo usa manifest.js para los tamaños de
 // PWA (192/512), que si necesitan el querystring `?size=`.
-// Ícono nuevo (2026-10-03, opción A elegida por el usuario sobre una maqueta):
+// Logo nuevo (2026-10-06): reloj con la pelota de esfera y "40-15" (lib/marcaPadelito.js).
+// Antes (2026-10-03, opción A elegida por el usuario sobre una maqueta):
 // pelota amarilla fuerte con costuras verdes sobre el verde del cartel. Reemplaza
 // la versión de colores claros, que se veía desvaída. Mismo dibujo en
 // icon.js, apple-icon.js y pwa-icon/route.js.
@@ -39,10 +41,7 @@ export async function GET(request) {
           background: "#154139",
         }}
       >
-        <svg width={size} height={size} viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="33" fill="#f2c53d" />
-          <path d="M33 26c11 11 11 37 0 48M67 26c-11 11-11 37 0 48" fill="none" stroke="#154139" strokeWidth="5" strokeLinecap="round" />
-        </svg>
+        {relojPadelito({ alto: Math.round(size * 0.62) })}
       </div>
     ),
     { width: size, height: size }

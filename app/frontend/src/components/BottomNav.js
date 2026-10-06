@@ -14,6 +14,7 @@ import {
   IconoMenu,
 } from "@/components/Icons";
 import Logo from "@/components/Logo";
+import MarcaPadelito from "@/components/MarcaPadelito";
 import { useLocale } from "@/i18n/LocaleContext";
 
 // Barra de navegación fija (2026-09-12, a pedido del usuario, inspirada en
@@ -81,8 +82,8 @@ export default function BottomNav() {
       style={{ background: "#10201a" }}
     >
       <button onClick={() => router.push("/")} className="flex items-center gap-2 mr-4 cursor-pointer">
-        <Logo size={30} />
-        <span className="font-titulo font-black uppercase text-2xl leading-none text-[#eaf4f0]">Padelito</span>
+        <Logo size={34} fondo="#10201a" />
+        <MarcaPadelito className="text-[28px] text-[#eaf4f0]" />
       </button>
       {TABS_COMPU.map(({ href, texto, Icono }) => {
         const activa = href === "/" ? pathname === "/" : pathname.startsWith(href);

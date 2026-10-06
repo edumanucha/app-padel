@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { relojPadelito } from "@/lib/marcaPadelito";
 
 // Favicon real de la pestaña del navegador (2026-09-19). Nombre de
 // archivo especial de Next.js (no una carpeta con `route.js`, como se
@@ -7,7 +8,8 @@ import { ImageResponse } from "next/og";
 // en la pestaña por más que se probara en modo incógnito/otro
 // navegador). Mismo dibujo y paleta clara que `pwa-icon/route.js` (que
 // sigue existiendo aparte, para los tamaños grandes del manifest de PWA).
-// Ícono nuevo (2026-10-03, opción A elegida por el usuario sobre una maqueta):
+// Logo nuevo (2026-10-06): reloj con la pelota de esfera y "40-15" (lib/marcaPadelito.js).
+// Antes (2026-10-03, opción A elegida por el usuario sobre una maqueta):
 // pelota amarilla fuerte con costuras verdes sobre el verde del cartel. Reemplaza
 // la versión de colores claros, que se veía desvaída. Mismo dibujo en
 // icon.js, apple-icon.js y pwa-icon/route.js.
@@ -28,10 +30,7 @@ export default function Icon() {
           background: "#154139",
         }}
       >
-        <svg width="32" height="32" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="40" fill="#f2c53d" />
-          <path d="M31 22c12 12 12 44 0 56M69 22c-12 12-12 44 0 56" fill="none" stroke="#154139" strokeWidth="7" strokeLinecap="round" />
-        </svg>
+        {relojPadelito({ alto: 31 })}
       </div>
     ),
     { ...size }

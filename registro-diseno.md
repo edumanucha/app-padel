@@ -52,6 +52,8 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-22 | `diseno-22-botones-franja-nombres` | 2026-10-04 | Marcadorcito: botones Punto A / Deshacer / Punto B con relieve, franja Pong con cancha de pádel, nombres cortos, sonidos nuevos | Publicado |
 | D-23 | `diseno-23-link-reloj` | 2026-10-05 | Vista previa del link, direcciones /probar y /reloj, guía del celu con el alcance real del reloj y de la voz | Publicado |
 | D-24 | `diseno-24-cerrar-y-eliminar` | 2026-10-05 | Cerrar partidos abiertos (cualquier jugador, o solo a las 2,5 h) y Eliminar mi cuenta | Publicado |
+| D-25 | `diseno-25-tarjeta-resultado` | 2026-10-06 | Tarjeta del resultado: "Anotado con Padelito", fecha completa, tiempo · sets y la cancha | Publicado |
+| D-26 | `diseno-26-logo-reloj` | 2026-10-06 | Logo nuevo: reloj con la pelota de esfera y "40-15"; nombre "padelito" con la pelota de punto de la i | Publicado |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -238,6 +240,22 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 
 - **Qué cambió:** cualquier jugador puede terminar un partido que quedó abierto (queda cancelado, cartel "Partido cancelado"); se cierran solos a las 2,5 h (pg_cron). En Mi perfil, "Eliminar mi cuenta" con confirmación escrita.
 - **Datos:** `078` a `081` (cerrar abandonado, cierre automático, cualquier jugador, eliminar cuenta).
+
+### D-25 · `diseno-25-tarjeta-resultado` — tarjeta del resultado (2026-10-06)
+
+- **Qué cambió:** arriba "Anotado con Padelito" (antes "MARCADORCITO") y la fecha completa dd/mm/aaaa; abajo "40' · Sets 2-0" (se saca el "2 sets" repetido) y debajo la cancha. Sin el pie "Anotado con Marcadorcito".
+- **Pantallas afectadas:** tarjeta que se comparte al terminar el Marcadorcito (`lib/tarjetaResultado.js`).
+- **Opciones mostradas (maqueta):** antes / después, en el chat.
+- **Por qué:** que se sepa qué app es y cuándo/dónde se jugó.
+
+### D-26 · `diseno-26-logo-reloj` — logo nuevo (2026-10-06)
+
+- **Qué cambió:** el ícono pasa de la pelota sola a un **reloj cuya esfera es la pelota**, con el tanteador **"40-15"** (Chakra Petch convertida a trazo, `lib/marcaPadelito.js`). El nombre pasa a **"padelito" en minúsculas con la pelota como punto de la i** (`components/MarcaPadelito.js`); la "o" queda normal.
+- **Pantallas afectadas:** ícono de la pestaña, iPhone y PWA, imagen al compartir el link, barra de la compu, Inicio de visitantes y todos los lugares que usaban `Logo` (puerta de visitante, Quiénes somos, perfiles, mensajes).
+- **Opciones mostradas (maqueta):** 9 rondas (chat y hojas locales): pelota como O, punto de saque, P en la pelota, paleta, tablero, bote, reloj como O, "ito" chico; después variantes del reloj con y sin contador (15, 15-0, visor) y de la i con pelota.
+- **Elegida por el usuario:** reloj-pelota con "40-15" + "padelito" con la pelota en la i.
+- **Por qué:** la pelota sola era genérica (cualquier deporte de raqueta); el reloj dice lo que hace la app.
+- **Pendiente:** el ícono del APK de Android se actualiza al volver a generarlo con PWABuilder.
 
 <!-- Plantilla para cada cambio nuevo:
 

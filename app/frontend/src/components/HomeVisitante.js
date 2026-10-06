@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
+import MarcaPadelito from "@/components/MarcaPadelito";
 import { IconoChevron } from "@/components/Icons";
 
 // Inicio para quien todavía no tiene cuenta (2026-10-04): se puede mirar y
@@ -20,8 +21,8 @@ export default function HomeVisitante() {
   return (
     <div className="w-full max-w-md flex flex-col gap-6 text-ink">
       <div className="flex items-center gap-3">
-        <Logo size={40} />
-        <span className="font-titulo font-black uppercase text-3xl leading-none">Padelito</span>
+        <Logo size={46} />
+        <MarcaPadelito className="text-[38px]" />
       </div>
       <div className="flex flex-col gap-2">
         <h1 className="font-titulo text-5xl font-black uppercase leading-[0.92]">Armá partidos y llevá el marcador</h1>

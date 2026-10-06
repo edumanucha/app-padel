@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { relojPadelito } from "@/lib/marcaPadelito";
 
 // Imagen que se ve al compartir el link de Padelito en WhatsApp, Instagram,
 // etc. (2026-10-05, para el MVP): verde del cartel, pelota amarilla y la frase
@@ -23,7 +24,7 @@ export default function OpenGraphImage() {
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", maxWidth: 700 }}>
-          <div style={{ display: "flex", fontSize: 40, letterSpacing: 8, color: "#8fb6ae" }}>PADELITO</div>
+          <div style={{ display: "flex", fontSize: 40, letterSpacing: 2, color: "#8fb6ae" }}>padelito</div>
           <div style={{ display: "flex", fontSize: 84, fontWeight: 700, lineHeight: 1.05, marginTop: 24, color: "#f2c53d" }}>
             Llevá el marcador
           </div>
@@ -34,10 +35,7 @@ export default function OpenGraphImage() {
             Marcadorcito para pádel · gratis
           </div>
         </div>
-        <svg width="320" height="320" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="40" fill="#f2c53d" />
-          <path d="M31 22c12 12 12 44 0 56M69 22c-12 12-12 44 0 56" fill="none" stroke="#154139" strokeWidth="5" strokeLinecap="round" />
-        </svg>
+        {relojPadelito({ alto: 380 })}
       </div>
     ),
     { ...size }
