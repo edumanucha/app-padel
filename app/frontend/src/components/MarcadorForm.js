@@ -2105,9 +2105,31 @@ export default function MarcadorForm({ partidoId }) {
   // queda cancelado y el marcador NO se marca como finalizado -- así no
   // dispara el trigger de ranking ni entra en estadísticas. Solo cuentan los
   // partidos que terminan jugando (el motor los cierra solo).
-  function handleTerminarPartido() {
+  //
+  // Ajuste (2026-10-06, pedido del usuario): si el partido SE JUGÓ entero
+  // (el motor ya lo dio por terminado, o falta solo la confirmación de 3 s
+  // del último punto), "Terminar partido" lo GUARDA y sale; solo se descarta
+  // si quedó a medias.
+  async function handleTerminarPartido() {
+    if (!soyAnotadorRef.current) return;
+    // Último punto en espera de confirmación: se confirma ya.
+    if (cierreRef.current) {
+      clearTimeout(cierreRef.current);
+      cierreRef.current = null;
+      const lado = cierrePendiente?.lado;
+      setCierrePendiente(null);
+      if (lado) handleSumarPuntoRef.current?.(lado, true);
+    }
     const actual = resultadoRef.current;
-    if (!actual || actual.finalizado) return;
+    if (!actual) return;
+    if (actual.finalizado) {
+      // Se vuelve a asegurar en la base y se sale sin cancelar nada.
+      await persistir(actual.estado, true, actual.ganador);
+      anunciar("Partido guardado.");
+      saliendoRef.current = true;
+      router.replace("/");
+      return;
+    }
     anunciar("Partido terminado.");
     handleDescartarPartido();
   }
@@ -2119,6 +2141,12 @@ export default function MarcadorForm({ partidoId }) {
     if (!soyAnotadorRef.current) return;
     const local = leerPartidoLocal(partidoId);
     if (!(local?.creadoSinSenal && !local.subido)) {
+      const { data: enBase } = await supabase.from("resultados_partido").select("finalizado").eq("partido_id", partidoId).maybeSingle();
+      if (enBase?.finalizado) {
+        saliendoRef.current = true;
+        router.replace("/");
+        return;
+      }
       const { error: cancelarError } = await supabase.from("partidos").update({ estado: "cancelado" }).eq("id", partidoId);
       if (cancelarError) {
         setError(`No se pudo descartar el partido: ${cancelarError.message}`);
