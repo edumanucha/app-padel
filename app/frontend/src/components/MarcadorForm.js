@@ -318,9 +318,12 @@ function contarDedosExtendidos(landmarks) {
   };
 }
 
-function tiempoTranscurrido(desde) {
+// `hasta`: con el partido terminado el contador se congela en la hora de fin
+// (2026-10-06: seguía corriendo después del último punto).
+function tiempoTranscurrido(desde, hasta) {
   if (!desde) return "00:00";
-  const segundos = Math.max(0, Math.floor((Date.now() - new Date(desde).getTime()) / 1000));
+  const fin = hasta ? new Date(hasta).getTime() : Date.now();
+  const segundos = Math.max(0, Math.floor((fin - new Date(desde).getTime()) / 1000));
   const h = Math.floor(segundos / 3600);
   const m = Math.floor((segundos % 3600) / 60);
   const s = segundos % 60;
@@ -1564,6 +1567,11 @@ export default function MarcadorForm({ partidoId }) {
   async function handleDeshacer() {
     const actual = resultadoRef.current;
     if (!actual || !soyAnotadorRef.current) return;
+    // Con el partido ya terminado no se deshace nada (2026-10-06): un "pausa"
+    // del sistema -- por ejemplo al abrir "Compartir" -- llegaba como deshacer,
+    // reabría el partido y lo dejaba sin guardar. La ventana para corregir el
+    // último punto son los 3 s de antes del cierre (más abajo).
+    if (actual.finalizado) return;
     // Corregir: si el partido estaba por cerrarse, se cancela el cierre y
     // el último punto queda sin sumar.
     ultimoPuntoRef.current = { lado: null, t: 0 };
@@ -2566,7 +2574,7 @@ export default function MarcadorForm({ partidoId }) {
                 Escuchando
               </span>
             )}
-            <span className={`${styles.pill} ${styles.pillTimer}`}>{tiempoTranscurrido(resultado.created_at)}</span>
+            <span className={`${styles.pill} ${styles.pillTimer}`}>{tiempoTranscurrido(resultado.created_at, resultado.finalizado ? resultado.updated_at : null)}</span>
             {/* Cambiar saque visible siempre en el header (2026-09-12, a
                 pedido del usuario: "que el botón de cambiar saque esté
                 visible en la pantalla al lado del tiempo y de la
