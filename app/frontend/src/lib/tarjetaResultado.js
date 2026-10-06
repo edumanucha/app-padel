@@ -21,7 +21,9 @@ export function duracionTexto(minutos) {
   return hs ? `${hs}h ${String(min).padStart(2, "0")}'` : `${min}'`;
 }
 
-// datos = { parejaA, parejaB, setsA, setsB, ganador: "A"|"B", miEquipo: "A"|"B"|null, minutos, fecha: Date }
+// datos = { parejaA, parejaB, setsA, setsB, ganador: "A"|"B", miEquipo: "A"|"B"|null, minutos, fecha: Date, cancha? }
+// 2026-10-06 (pedido del usuario): arriba "Anotado con Padelito" y la fecha
+// completa (dd/mm/aaaa); abajo tiempo · sets ganados y, debajo, la cancha.
 export function dibujarTarjetaTV(ctx, datos, fuente = "sans-serif") {
   const W = ANCHO_TARJETA;
   const { parejaA, parejaB, setsA, setsB, ganador, miEquipo, minutos } = datos;
@@ -46,14 +48,14 @@ export function dibujarTarjetaTV(ctx, datos, fuente = "sans-serif") {
   let setsGanA = 0;
   let setsGanB = 0;
   setsA.forEach((g, i) => (g > setsB[i] ? setsGanA++ : g < setsB[i] ? setsGanB++ : null));
-  const fecha = (datos.fecha ?? new Date()).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" });
+  const fecha = (datos.fecha ?? new Date()).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
   const titulo = miEquipo ? (miEquipo === ganador ? "Partido ganado" : "Partido perdido") : "Resultado final";
 
   ctx.textBaseline = "alphabetic";
   ctx.fillStyle = C.fondo;
   ctx.fillRect(0, 0, W, ALTO_TARJETA);
 
-  texto("MARCADORCITO", 90, 150, f(800, 48), C.amarillo);
+  texto("Anotado con Padelito", 90, 150, f(800, 48), C.amarillo);
   texto(fecha, W - 90, 150, f(500, 44), C.gris, "right");
   texto(titulo, 90, 330, f(800, 88), C.blanco);
 
@@ -79,15 +81,8 @@ export function dibujarTarjetaTV(ctx, datos, fuente = "sans-serif") {
     });
   });
 
-  const nSets = setsA.length;
-  texto(
-    `${duracionTexto(minutos)}  ·  ${nSets} ${nSets === 1 ? "set" : "sets"}  ·  Sets ${setsGanA}-${setsGanB}`,
-    90,
-    1040,
-    f(500, 48),
-    C.gris
-  );
-  texto("Anotado con Marcadorcito", W / 2, 1250, f(600, 42), C.amarillo, "center");
+  texto(`${duracionTexto(minutos)}  ·  Sets ${setsGanA}-${setsGanB}`, 90, 1040, f(600, 56), C.blanco);
+  if (datos.cancha) textoQueEntre(datos.cancha, 90, 1120, 500, 46, C.gris, W - 180);
 }
 
 // Letra de la app (Archivo, cargada con next/font) para usarla en el canvas.

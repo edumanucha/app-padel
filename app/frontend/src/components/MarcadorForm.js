@@ -2241,6 +2241,7 @@ export default function MarcadorForm({ partidoId }) {
         miEquipo: miEquipoRef.current,
         minutos: Math.max(0, Math.floor((fin - inicio) / 60000)),
         fecha: new Date(fin),
+        cancha: canchaRef.current || null,
       });
       if (estado === "descargado") setError("Este navegador no deja compartir directo: se descargó la imagen.");
     } catch {
