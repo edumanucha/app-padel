@@ -16,13 +16,19 @@ const cl = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
 const ease = (p) => 1 - Math.pow(1 - p, 3);
 const eio = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
 
-export default function AnimacionInicio() {
+// Props para la página de prueba: `siempre` (sin el límite de una vez por día
+// ni la exclusión de /pruebas) y `sonido` (piques, beep de punto y game).
+export default function AnimacionInicio({ siempre = false, sonido = false, onFin } = {}) {
   const [ver, setVer] = useState(false);
   const [saliendo, setSaliendo] = useState(false);
   const refs = { cam: useRef(null), pel: useRef(null), cost: useRef(null), num: useRef(null), nombre: useRef(null) };
 
   useEffect(() => {
     try {
+      if (siempre) {
+        setVer(true);
+        return;
+      }
       if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
       if (window.location.pathname.startsWith("/pruebas")) return;
       const hoy = new Date().toISOString().slice(0, 10);
@@ -32,10 +38,33 @@ export default function AnimacionInicio() {
     } catch {
       // sin almacenamiento: no se muestra
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (!ver) return;
+    let ctx = null;
+    if (sonido) {
+      try {
+        ctx = new (window.AudioContext || window.webkitAudioContext)();
+      } catch {
+        ctx = null;
+      }
+    }
+    const tono = (f, ini, largo, vol = 0.22) => {
+      if (!ctx) return;
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = "square";
+      o.frequency.value = f;
+      const t0 = ctx.currentTime + ini;
+      g.gain.setValueAtTime(vol, t0);
+      g.gain.exponentialRampToValueAtTime(0.001, t0 + largo);
+      o.connect(g).connect(ctx.destination);
+      o.start(t0);
+      o.stop(t0 + largo + 0.02);
+    };
+    const sonidos = [[0.24, () => tono(180, 0, 0.06)], [0.6, () => tono(160, 0, 0.06)], [0.97, () => tono(140, 0, 0.06)], [1.1, () => tono(1400, 0, 0.2)], [2.45, () => { tono(660, 0, 0.1, 0.18); tono(880, 0.11, 0.1, 0.18); tono(1320, 0.22, 0.22, 0.18); }]];
+    const sonado = new Set();
     let raf = 0;
     let cerrar = 0;
     const NS = "http://www.w3.org/2000/svg";
@@ -101,19 +130,20 @@ export default function AnimacionInicio() {
         if (inicio === null) inicio = ts;
         const t = (ts - inicio) / 1000;
         pintar(t);
+        sonidos.forEach(([ts2, f], k) => { if (t >= ts2 && !sonado.has(k)) { sonado.add(k); f(); } });
         if (t < DUR) raf = requestAnimationFrame(cuadro);
-        else { setSaliendo(true); cerrar = setTimeout(() => setVer(false), 350); }
+        else { setSaliendo(true); cerrar = setTimeout(() => { setVer(false); onFin?.(); }, 350); }
       };
       raf = requestAnimationFrame(cuadro);
     };
     // Espera las letras (si tardan más de 1,5 s, arranca igual).
     Promise.race([document.fonts?.ready ?? Promise.resolve(), new Promise((r) => setTimeout(r, 1500))]).then(empezar);
-    return () => { cancelAnimationFrame(raf); clearTimeout(cerrar); };
+    return () => { cancelAnimationFrame(raf); clearTimeout(cerrar); ctx?.close?.(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ver]);
 
   if (!ver) return null;
-  const saltear = () => { setSaliendo(true); setTimeout(() => setVer(false), 250); };
+  const saltear = () => { setSaliendo(true); setTimeout(() => { setVer(false); onFin?.(); }, 250); };
   return (
     <div
       onClick={saltear}
