@@ -55,6 +55,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-25 | `diseno-25-tarjeta-resultado` | 2026-10-06 | Tarjeta del resultado: "Anotado con Padelito", fecha completa, tiempo · sets y la cancha | Publicado |
 | D-26 | `diseno-26-logo-reloj` | 2026-10-06 | Logo nuevo: reloj con la pelota de esfera y "40-15"; nombre "padelito" con la pelota de punto de la i | Publicado |
 | D-27 | `diseno-27-animacion-inicio` | 2026-10-06 | Animación de entrada: la pelota pica, "40-15", zoom out hasta "padelito" | Publicado |
+| D-28 | `diseno-28-tarjeta-pelota-cancha` | 2026-10-06 | Tarjeta del resultado: dos estilos al azar, "pelota" y "cancha" | Publicado |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -264,6 +265,12 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Componente:** `components/AnimacionInicio.js` (montado en `app/layout.js`).
 - **Opciones mostradas:** 8 versiones en el chat + un video de 3 s con sonido.
 - **Elegida por el usuario:** la v8 (pelota chica como en el encabezado, termina igual al encabezado).
+
+### D-28 · `diseno-28-tarjeta-pelota-cancha` — tarjeta del resultado, dos estilos (2026-10-06)
+
+- **Qué cambió:** la tarjeta que se comparte al terminar sale al azar en uno de dos estilos. **Pelota:** fondo amarillo con costuras gigantes, "GANAMOS" enorme, sets en números de tablero, parejas, tiempo y sets ganados, y "padelito" abajo; si se perdió, la misma en verde con "PERDIMOS". **Cancha:** la cancha vista desde arriba, cada pareja en su mitad (la propia arriba), los games de cada set en amarillo si se ganaron y la etiqueta GANAMOS/PERDIMOS sobre la red.
+- **Código:** `lib/tarjetaResultado.js` (`dibujarTarjetaPelota`, `dibujarTarjetaCancha`, `dibujarNombre`); la anterior (`dibujarTarjetaTV`) queda para /pruebas-tarjeta.
+- **Opciones mostradas:** 5 estilos (cartel, tablero, claro, pelota, cancha); el usuario eligió pelota y cancha, al azar.
 
 <!-- Plantilla para cada cambio nuevo:
 
