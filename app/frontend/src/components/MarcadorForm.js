@@ -1754,17 +1754,12 @@ export default function MarcadorForm({ partidoId }) {
     ? Math.max(0, Math.floor((finReloj - new Date(resultado.created_at).getTime()) / 60000))
     : 0;
 
-  // El reloj a veces se pierde un cambio. Para que quede siempre al día,
-  // cada punto se vuelve a publicar a los 1,5 / 4 / 8 / 14 segundos, y además
-  // cada 8 segundos aunque no haya cambios (pedido del usuario, 2026-10-04).
+  // El reloj a veces no aplica un cambio si el texto es idéntico al anterior.
+  // Por eso se publica cada 1,5 s (2026-10-06, pedido del usuario) y el
+  // renglón de abajo ALTERNA en cada envío: "Games · Sets · minutos" y
+  // "puntos Marcadorcito". El puntaje de arriba no se toca.
   const [pulsoReloj, setPulsoReloj] = useState(0);
-  const claveEstadoReloj = resultado ? JSON.stringify([resultado.estado?.setsA, resultado.estado?.setsB, resultado.estado?.puntosA, resultado.estado?.puntosB, resultado.finalizado]) : "";
-  useEffect(() => {
-    if (!relojActivo || !claveEstadoReloj) return;
-    const tiempos = [1500, 4000, 8000, 14000].map((ms) => setTimeout(() => setPulsoReloj((n) => n + 1), ms));
-    return () => tiempos.forEach(clearTimeout);
-  }, [relojActivo, claveEstadoReloj]);
-  useEffect(() => {
+    useEffect(() => {
     if (!relojActivo) return;
     let ultimo = Date.now();
     const id = setInterval(() => {
@@ -1783,7 +1778,7 @@ export default function MarcadorForm({ partidoId }) {
         const gB = actual.estado.setsB[actual.estado.setsB.length - 1];
         notificarRelojRef.current?.("Marcadorcito reconectado", `Sets ${a}-${b} · Games ${gA}-${gB} · ${textoA}-${textoB}`);
       }
-    }, 8000);
+    }, 1500);
     return () => clearInterval(id);
   }, [relojActivo]);
   useEffect(() => {
@@ -1805,7 +1800,7 @@ export default function MarcadorForm({ partidoId }) {
     const ptsSinSaque = resultado.finalizado ? `Final ${a}-${b}` : `${tb}${textoA}-${textoB}`;
     let [titulo, subtitulo] =
       formatoReloj === "corto-letras"
-        ? [pts, `G ${gA}-${gB} · S ${a}-${b}`]
+        ? [pts, pulsoReloj % 2 === 0 ? `Games ${gA}-${gB} · Sets ${a}-${b} · ${minutosReloj}'` : `${ptsSinSaque} Marcadorcito`]
         : formatoReloj === "puntos-solos"
         ? [pts, `${gA}-${gB} · S ${a}-${b} · ${minutosReloj}' · Marcadorcito`]
         : formatoReloj === "puntos-y-todo"
