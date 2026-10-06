@@ -47,3 +47,8 @@ docs/libro-diseno/
 herramientas/capturas-libro/.perfil-chrome/
 herramientas/capturas-libro/hoja.html
 herramientas/capturas-libro/hoja.png
+
+# Material de Instagram (videos, imagenes, guiones, epigrafes y plan de lanzamiento) -- solo local, nunca al repo (pedido del usuario, 2026-10-06)
+herramientas/video-instagram/
+contenido-instagram.md
+mvp-lanzamiento.md
