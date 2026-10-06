@@ -171,6 +171,18 @@ export default function MenuCompletoForm() {
                 <IconoChevron width={16} height={16} className="text-muted" style={{ transform: "rotate(-90deg)" }} aria-hidden />
               </button>
             )}
+            {seccion.esCuenta && esSuperusuario && (
+              <button
+                onClick={() => router.push("/admin/estadisticas")}
+                className={`${fila} cursor-pointer`}
+              >
+                <span className="w-9 h-9 rounded-[6px] bg-bg flex items-center justify-center flex-shrink-0">
+                  <IconoLlave width={18} height={18} />
+                </span>
+                <span className="flex-1 min-w-0">{t("home.adminEstadisticas")}</span>
+                <IconoChevron width={16} height={16} className="text-muted" style={{ transform: "rotate(-90deg)" }} aria-hidden />
+              </button>
+            )}
           </div>
         </div>
       ))}

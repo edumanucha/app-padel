@@ -3,6 +3,7 @@
 import PongPunto from "@/components/PongPunto";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { registrar } from "@/lib/analitica";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import DotDigit from "@/components/DotDigit";
@@ -436,7 +437,13 @@ export default function MarcadorForm({ partidoId }) {
   // gesto". Reemplaza el auto-activado silencioso de antes (que arriesgaba
   // prenderle la cámara a los 4 jugadores sin que lo pidieran) por una
   // elección real de un click, con Cámara como opción recomendada/default.
-  const [modoElegido, setModoElegido] = useState(null); // null | "camara" | "voz" | "botones"
+  const [modoElegidoEstado, setModoElegidoEstado] = useState(null); // null | "camara" | "voz" | "botones"
+  const modoElegido = modoElegidoEstado;
+  // Estadísticas de uso: qué modo eligió (se anota una vez por modo).
+  const setModoElegido = (modo) => {
+    setModoElegidoEstado(modo);
+    if (modo) registrar("marcador_modo", { modo });
+  };
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -796,6 +803,7 @@ export default function MarcadorForm({ partidoId }) {
     enviandoRef.current = false;
     if (updateError) {
       setSinSincronizar(true);
+      registrar("falla", { tipo: "sync" });
       return;
     }
     // Solo se borra si no llegó otro punto más nuevo mientras viajaba este.
@@ -1456,6 +1464,8 @@ export default function MarcadorForm({ partidoId }) {
     const log = resultado.estado?.log;
     if (!log?.length || !resultado.created_at) return;
     estadisticasGuardadasRef.current = true;
+    // Solo cuenta si quien lo lleva lo terminó recién (no al reabrir uno viejo).
+    if (soyAnotadorRef.current && resultado.updated_at && Date.now() - new Date(resultado.updated_at).getTime() < 10 * 60 * 1000) registrar("partido_terminado");
     const fin = resultado.updated_at ? new Date(resultado.updated_at).getTime() : Date.now();
     const duracion = fin - new Date(resultado.created_at).getTime();
     const filaStats = { partido_id: partidoId, ...estadisticasDeLog(log, duracion) };
@@ -1729,6 +1739,7 @@ export default function MarcadorForm({ partidoId }) {
       }
     } catch (e) {
       setErrorReloj(`No se pudo activar el reloj: ${e.message}`);
+      registrar("falla", { tipo: "reloj_activar" });
     }
   }
 
@@ -1846,7 +1857,9 @@ export default function MarcadorForm({ partidoId }) {
         navigator.mediaSession.playbackState = "playing";
         fijarPosicionReloj();
       })
-      .catch(() => {});
+      .catch(() => {
+        registrar("falla", { tipo: "reloj_envio" });
+      });
   }, [resultado, relojActivo, minutosReloj, formatoReloj, nombresCortos, pulsoReloj]);
 
   // Al salir del marcador, soltar el control del reloj.
@@ -2139,6 +2152,7 @@ export default function MarcadorForm({ partidoId }) {
   // del celu.
   async function handleDescartarPartido() {
     if (!soyAnotadorRef.current) return;
+    registrar("partido_cancelado");
     const local = leerPartidoLocal(partidoId);
     if (!(local?.creadoSinSenal && !local.subido)) {
       const { data: enBase } = await supabase.from("resultados_partido").select("finalizado").eq("partido_id", partidoId).maybeSingle();

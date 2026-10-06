@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
+import { registrar } from "@/lib/analitica";
 import CampoCancha from "@/components/CampoCancha";
 import { SlotJugador } from "@/components/MarcadorLibreForm";
 
@@ -159,6 +160,7 @@ export default function CargarPartidoForm() {
     }
     // Avisa a los otros jugadores con cuenta (si falla, el partido igual queda cargado).
     await supabase.rpc("avisar_partido_cargado", { p_partido: partido.id });
+    registrar("cargar_partido");
     router.replace("/mis-partidos");
   }
 

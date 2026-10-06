@@ -6,6 +6,7 @@ import DotDigit from "@/components/DotDigit";
 import PongPunto from "@/components/PongPunto";
 import styles from "@/components/Marcador.module.css";
 import { IconoReloj } from "@/components/Icons";
+import { registrar } from "@/lib/analitica";
 import { crearEstadoInicial, sumarPunto, formatearPuntos, setsGanados } from "@/lib/marcadorEngine";
 
 // Página pública /probar (2026-10-05, para el MVP): el Marcadorcito de verdad
@@ -46,9 +47,15 @@ export default function ProbarConRelojForm() {
   const sonandoRef = useRef(null);
   const wakeRef = useRef(null);
   const ultimoRef = useRef({ lado: null, t: 0 });
+  const puntosRef = useRef(0);
 
   useEffect(() => {
     setSoporteReloj(typeof navigator !== "undefined" && "mediaSession" in navigator);
+  }, []);
+
+  // Estadísticas de uso: entró a /probar.
+  useEffect(() => {
+    registrar("probar_abrir");
   }, []);
 
   // ---------- sonidos (los mismos tonos del Marcadorcito) ----------
@@ -101,6 +108,8 @@ export default function ProbarConRelojForm() {
     estadoRef.current = nuevo;
     setEstado(nuevo);
     setPuntosSumados((n) => n + 1);
+    if (puntosRef.current === 0) registrar("probar_punto");
+    puntosRef.current += 1;
     setPongEvento({ lado: tipo, n: ahora });
     sonarPunto(tipo);
     if (eventos.some((e) => e.tipo === "juego")) setTimeout(sonarJuego, 450);
@@ -313,7 +322,7 @@ export default function ProbarConRelojForm() {
         <div className="flex flex-col gap-3 border-2 border-ink rounded-[8px] p-4">
           <span className="font-titulo font-black uppercase text-2xl leading-none">¿Te gustó?</span>
           <p className="text-sm text-muted leading-relaxed">Creá tu cuenta gratis y guardá tus partidos, tus estadísticas y la tarjeta del resultado para compartir.</p>
-          <button onClick={() => router.push("/login")} className="rounded-[6px] bg-accent text-accent-ink font-titulo font-black uppercase text-xl py-2.5 cursor-pointer">
+          <button onClick={() => { registrar("probar_crear_cuenta"); router.push("/login"); }} className="rounded-[6px] bg-accent text-accent-ink font-titulo font-black uppercase text-xl py-2.5 cursor-pointer">
             Crear mi cuenta
           </button>
           <button onClick={() => setCartelCerrado(true)} className="text-sm font-semibold px-3 py-2 rounded-[6px] border border-ink/15 cursor-pointer">
@@ -322,7 +331,7 @@ export default function ProbarConRelojForm() {
         </div>
       )}
       {!mostrarCartel && (
-        <button onClick={() => router.push("/login")} className="text-sm font-semibold px-3 py-2 rounded-[6px] border border-ink/15 cursor-pointer">
+        <button onClick={() => { registrar("probar_crear_cuenta"); router.push("/login"); }} className="text-sm font-semibold px-3 py-2 rounded-[6px] border border-ink/15 cursor-pointer">
           Crear mi cuenta
         </button>
       )}

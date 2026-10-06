@@ -356,6 +356,8 @@ export default function HomeForm() {
     }
     if (n.tipo === "mensaje_nuevo") {
       router.push("/mensajes");
+    } else if (n.tipo === "usuario_nuevo") {
+      router.push("/admin/estadisticas");
     } else if (n.tipo === "marcadorcito_nuevo" && n.partido_id) {
       router.push(`/partido/${n.partido_id}/marcador`);
     } else if (n.partido_id) {

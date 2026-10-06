@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/i18n/LocaleContext";
 
-const SECCIONES = ["queDatos", "paraQue", "dondeSeGuarda", "tusDatos", "contacto"];
+const SECCIONES = ["queDatos", "paraQue", "dondeSeGuarda", "usoDeLaApp", "tusDatos", "contacto"];
 
 // Política de privacidad (2026-10-03), escrita en lenguaje simple y de
 // acuerdo con lo que la app hace de verdad. Mismo estilo que Quiénes somos:
