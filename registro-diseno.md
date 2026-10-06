@@ -54,6 +54,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-24 | `diseno-24-cerrar-y-eliminar` | 2026-10-05 | Cerrar partidos abiertos (cualquier jugador, o solo a las 2,5 h) y Eliminar mi cuenta | Publicado |
 | D-25 | `diseno-25-tarjeta-resultado` | 2026-10-06 | Tarjeta del resultado: "Anotado con Padelito", fecha completa, tiempo · sets y la cancha | Publicado |
 | D-26 | `diseno-26-logo-reloj` | 2026-10-06 | Logo nuevo: reloj con la pelota de esfera y "40-15"; nombre "padelito" con la pelota de punto de la i | Publicado |
+| D-27 | `diseno-27-animacion-inicio` | 2026-10-06 | Animación de entrada: la pelota pica, "40-15", zoom out hasta "padelito" | Publicado |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -256,6 +257,13 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Elegida por el usuario:** reloj-pelota con "40-15" + "padelito" con la pelota en la i.
 - **Por qué:** la pelota sola era genérica (cualquier deporte de raqueta); el reloj dice lo que hace la app.
 - **Pendiente:** el ícono del APK de Android se actualiza al volver a generarlo con PWABuilder.
+
+### D-27 · `diseno-27-animacion-inicio` — animación de entrada (2026-10-06)
+
+- **Qué cambió:** al abrir la app (primera vez del día) se ve ~3 s: fondo claro, cámara cerca, la pelota del logo entra picando 3 veces, se frena con "40-15" y la cámara se aleja hasta mostrar "padelito" con la pelota de punto de la i (igual al encabezado). Se saltea tocando. Sin sonido. No aparece con "reducir movimiento" ni en `/pruebas-*`.
+- **Componente:** `components/AnimacionInicio.js` (montado en `app/layout.js`).
+- **Opciones mostradas:** 8 versiones en el chat + un video de 3 s con sonido.
+- **Elegida por el usuario:** la v8 (pelota chica como en el encabezado, termina igual al encabezado).
 
 <!-- Plantilla para cada cambio nuevo:
 

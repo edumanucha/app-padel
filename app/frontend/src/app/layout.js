@@ -5,6 +5,7 @@ import PuertaVisitante from "@/components/PuertaVisitante";
 import PageTransition from "@/components/PageTransition";
 import RegistrarServiceWorker from "@/components/RegistrarServiceWorker";
 import Analitica from "@/components/Analitica";
+import AnimacionInicio from "@/components/AnimacionInicio";
 import { LocaleProvider } from "@/i18n/LocaleContext";
 
 // Archivo (2026-09-12, reemplaza a Barlow Condensed + Inter -- a pedido
@@ -119,6 +120,7 @@ export default function RootLayout({ children }) {
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <RegistrarServiceWorker />
         <Analitica />
+        <AnimacionInicio />
         <LocaleProvider>
           <PageTransition><PuertaVisitante>{children}</PuertaVisitante></PageTransition>
           <BottomNav />
