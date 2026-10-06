@@ -50,6 +50,11 @@ export default function PruebaRelojAlternaForm() {
   const [pulso, setPulso] = useState(0);
   const [envioLog, setEnvioLog] = useState([]); // { hora, ok, texto }
   const [fallas, setFallas] = useState(0);
+  // Para FORZAR el cuelgue (2026-10-06, pedido del usuario): ver si el reenvío
+  // lo recupera solo.
+  const [modoEnvio, setModoEnvio] = useState("alterna"); // "alterna" | "igual" (como antes: siempre el mismo texto)
+  const [congeladoHasta, setCongeladoHasta] = useState(0);
+  const congeladoRef = useRef(0);
   const [eventosPantalla, setEventosPantalla] = useState([]);
   const inicioRef = useRef(Date.now());
   const [ahora, setAhora] = useState(Date.now());
@@ -152,8 +157,9 @@ export default function PruebaRelojAlternaForm() {
     const sale = sonandoRef.current;
     const entra = sale === audio1Ref.current ? audio2Ref.current : audio1Ref.current;
     if (!entra) return;
+    if (Date.now() < congeladoRef.current) return; // envíos congelados a propósito
     const minutos = Math.floor((Date.now() - inicioRef.current) / 60000);
-    const { titulo, subtitulo } = textoReloj(estado, pulso, minutos);
+    const { titulo, subtitulo } = textoReloj(estado, modoEnvio === "igual" ? 0 : pulso, minutos);
     entra.currentTime = 0;
     entra
       .play()
@@ -171,7 +177,26 @@ export default function PruebaRelojAlternaForm() {
         setFallas((n) => n + 1);
         setEnvioLog((l) => [{ hora: new Date().toLocaleTimeString("es-AR"), ok: false, texto: `FALLÓ: ${e?.name || "error"}` }, ...l].slice(0, 14));
       });
-  }, [estado, activo, pulso]);
+  }, [estado, activo, pulso, modoEnvio]);
+
+  function anotar(texto) {
+    setEnvioLog((l) => [{ hora: new Date().toLocaleTimeString("es-AR"), ok: false, prueba: true, texto }, ...l].slice(0, 14));
+  }
+  // Corta los envíos 20 s: el reloj queda con el marcador viejo mientras se
+  // suman puntos. Al volver, el próximo envío tiene que ponerlo al día.
+  function congelar() {
+    const hasta = Date.now() + 20000;
+    congeladoRef.current = hasta;
+    setCongeladoHasta(hasta);
+    anotar("PRUEBA: envíos congelados 20 s");
+    setTimeout(() => anotar("PRUEBA: vuelven los envíos"), 20000);
+  }
+  // Simula que otra app (WhatsApp, una llamada) le saca el audio a la página.
+  function cortarAudio() {
+    audio1Ref.current?.pause();
+    audio2Ref.current?.pause();
+    anotar("PRUEBA: se cortó el audio (como una llamada)");
+  }
 
   // Envío fijo cada 1,5 s; el renglón de abajo alterna en cada envío.
   useEffect(() => {
@@ -326,13 +351,53 @@ export default function PruebaRelojAlternaForm() {
         )}
       </div>
 
+      <div className="flex flex-col gap-2 border-b border-ink/10 pb-3">
+        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">Forzar el cuelgue</span>
+        <p className="text-xs text-muted leading-relaxed">
+          1) Congelá los envíos, sumá 2 o 3 puntos desde la pantalla y mirá el reloj: queda viejo. Cuando vuelven los envíos, ¿se pone al día solo en 1 o 2 segundos?
+          2) Cortá el audio: ¿el reloj vuelve a recibir el marcador sin tocar nada?
+          3) Cambiá a “Siempre igual” (como era antes) y jugá un rato: si así se traba y con “Alterna” no, el arreglo sirve.
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={congelar}
+            disabled={!activo || Date.now() < congeladoHasta}
+            className="rounded-[6px] border border-ink/15 font-bold py-2 text-sm cursor-pointer disabled:opacity-50"
+          >
+            {Date.now() < congeladoHasta ? `Congelado (${Math.ceil((congeladoHasta - ahora) / 1000)} s)` : "Congelar envíos 20 s"}
+          </button>
+          <button onClick={cortarAudio} disabled={!activo} className="rounded-[6px] border border-ink/15 font-bold py-2 text-sm cursor-pointer disabled:opacity-50">
+            Cortar el audio
+          </button>
+        </div>
+        <div className="flex gap-2 items-center text-sm">
+          <span className="text-muted">Envío:</span>
+          {[
+            ["alterna", "Alterna (nuevo)"],
+            ["igual", "Siempre igual (viejo)"],
+          ].map(([v, nombre]) => (
+            <button
+              key={v}
+              onClick={() => {
+                setModoEnvio(v);
+                anotar(`PRUEBA: modo de envío ${nombre}`);
+              }}
+              aria-pressed={modoEnvio === v}
+              className={`px-3 py-1.5 rounded-[6px] border text-sm font-bold cursor-pointer ${modoEnvio === v ? "bg-ink text-bg border-ink" : "border-ink/15"}`}
+            >
+              {nombre}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="flex flex-col gap-1.5">
         <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted pb-1.5 border-b-2 border-ink">Registro de envíos (últimos 14)</span>
         {envioLog.length === 0 ? (
           <p className="text-xs text-muted">Todavía no se mandó nada.</p>
         ) : (
           envioLog.map((e, i) => (
-            <div key={i} className={`flex justify-between gap-2 py-1 border-b border-ink/10 text-xs ${e.ok ? "" : "text-[#dc2626] font-bold"}`}>
+            <div key={i} className={`flex justify-between gap-2 py-1 border-b border-ink/10 text-xs ${e.prueba ? "font-bold bg-accent/30" : e.ok ? "" : "text-[#dc2626] font-bold"}`}>
               <span className="min-w-0 break-words">{e.texto}</span>
               <span className="text-muted whitespace-nowrap">{e.hora}</span>
             </div>
