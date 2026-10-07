@@ -1774,7 +1774,7 @@ export default function MarcadorForm({ partidoId }) {
     : 0;
 
   // El reloj a veces no aplica un cambio si el texto es idéntico al anterior.
-  // Por eso se publica cada 1,5 s (2026-10-06, pedido del usuario) y el
+  // Por eso se publica cada 3 s (2026-10-06, pedido del usuario; antes 1,5 s, se subió para cuidar la batería) y el
   // renglón de abajo ALTERNA en cada envío: "Games · Sets · minutos" y
   // "puntos Marcadorcito". El puntaje de arriba no se toca.
   const [pulsoReloj, setPulsoReloj] = useState(0);
@@ -1797,7 +1797,7 @@ export default function MarcadorForm({ partidoId }) {
         const gB = actual.estado.setsB[actual.estado.setsB.length - 1];
         notificarRelojRef.current?.("Marcadorcito reconectado", `Sets ${a}-${b} · Games ${gA}-${gB} · ${textoA}-${textoB}`);
       }
-    }, 1500);
+    }, 3000);
     return () => clearInterval(id);
   }, [relojActivo]);
   useEffect(() => {

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { crearEstadoInicial, sumarPunto, formatearPuntos, setsGanados } from "@/lib/marcadorEngine";
 
 // Herramienta de QA (2026-10-06): copia de /pruebas-distancia con el ENVÍO
-// NUEVO al reloj: cada 1,5 s, con el renglón de arriba fijo (puntaje) y el de
+// NUEVO al reloj: cada 3 s, con el renglón de arriba fijo (puntaje) y el de
 // abajo alternando entre "Games · Sets · minutos" y "puntos Marcadorcito".
 // Además lleva un registro de cada envío (hora, si anduvo o falló) y de los
 // cambios de pantalla/segundo plano, para ver por qué el reloj se atrasa.
@@ -35,7 +35,7 @@ function textoReloj(est, pulso = 0, minutos = 0) {
   return { titulo: pts, subtitulo: pulso % 2 === 0 ? `Games ${gA}-${gB} · Sets ${a}-${b} · ${minutos}'` : `${ptsSinSaque} Marcadorcito` };
 }
 
-const CADA_MS = 1500;
+const CADA_MS = 3000;
 
 export default function PruebaRelojAlternaForm() {
   const router = useRouter();
@@ -198,7 +198,7 @@ export default function PruebaRelojAlternaForm() {
     anotar("PRUEBA: se cortó el audio (como una llamada)");
   }
 
-  // Envío fijo cada 1,5 s; el renglón de abajo alterna en cada envío.
+  // Envío fijo cada 3 s; el renglón de abajo alterna en cada envío.
   useEffect(() => {
     if (!activo) return;
     const id = setInterval(() => setPulso((n) => n + 1), CADA_MS);
@@ -302,7 +302,7 @@ export default function PruebaRelojAlternaForm() {
       <p className="text-sm text-muted leading-relaxed">
         Dejá el celu quieto, activá la prueba y andá alejándote con el reloj puesto: <b className="text-ink">siguiente</b> = punto A,{" "}
         <b className="text-ink">anterior</b> = punto B, <b className="text-ink">pausa/play</b> = deshacer. Cada toque que llega suena, vibra y suma
-        con puntaje real. Mirá el reloj: arriba tiene que estar el mismo puntaje que el celu y abajo tiene que ir cambiando cada 1,5 s entre games/sets/minutos y puntos + Marcadorcito. Si se queda quieto o atrasado, mirá abajo el registro de envíos. No guarda nada.
+        con puntaje real. Mirá el reloj: arriba tiene que estar el mismo puntaje que el celu y abajo tiene que ir cambiando cada 3 s entre games/sets/minutos y puntos + Marcadorcito. Si se queda quieto o atrasado, mirá abajo el registro de envíos. No guarda nada.
       </p>
 
       <div className={`rounded-[8px] border border-ink/15 p-4 flex flex-col items-center gap-2 transition-colors duration-200 ${fondoDestello}`}>
