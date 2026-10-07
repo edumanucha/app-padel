@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import DotDigit from "@/components/DotDigit";
 import PongPunto from "@/components/PongPunto";
 import styles from "@/components/Marcador.module.css";
-import { IconoReloj } from "@/components/Icons";
+import { IconoReloj, IconoChevron } from "@/components/Icons";
 import { registrar } from "@/lib/analitica";
 import { crearEstadoInicial, sumarPunto, formatearPuntos, setsGanados } from "@/lib/marcadorEngine";
 
@@ -15,6 +15,16 @@ import { crearEstadoInicial, sumarPunto, formatearPuntos, setsGanados } from "@/
 // suma un par de puntos, invita a crear la cuenta para guardar los partidos.
 // El reloj funciona como en el Marcadorcito: Media Session con un silencio en
 // loop; siguiente = punto A, anterior = punto B, pausa/play = deshacer.
+// Abajo, "Además, en Padelito" (2026-10-06, pedido del usuario): quien llega
+// desde Instagram ve el resto de la app, no solo el marcador.
+const ADEMAS = [
+  ["Mirá el partido en vivo", "Los demás siguen el marcador desde su celu o su reloj", "/como-funciona"],
+  ["Compartí el resultado", "Una tarjeta lista para mandar por WhatsApp o subir a Instagram", "/como-funciona"],
+  ["Armá partidos y encontrá con quién jugar", "Por nivel, zona y horario", "/como-funciona"],
+  ["Ranking y grupos con tus amigos", "Quién va primero y el cara a cara", "/como-funciona"],
+  ["Torneos entre amigos", "Americano, mexicano, liga o eliminación. Probalo sin cuenta", "/pruebas-torneos"],
+  ["Consejos de pádel", "Más de 160 para jugar mejor", "/consejos"],
+];
 
 function textoReloj(est) {
   const { textoA, textoB } = formatearPuntos(est);
@@ -122,7 +132,7 @@ export default function ProbarConRelojForm() {
   async function activarReloj() {
     setError("");
     if (!("mediaSession" in navigator)) {
-      setError("Este navegador no permite controlarlo con el reloj. Probá con Chrome en Android.");
+      setError("Este navegador no permite controlarlo con el reloj. Probá desde otro navegador.");
       return;
     }
     try {
@@ -288,7 +298,7 @@ export default function ProbarConRelojForm() {
       <div className="flex flex-col gap-2 border-y border-ink/10 py-4">
         <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">Con tu reloj</span>
         {!soporteReloj ? (
-          <p className="text-sm text-muted leading-relaxed">Este navegador no deja controlar el marcador con el reloj. Probá desde Chrome en un celu Android; mientras tanto, usá los botones de arriba.</p>
+          <p className="text-sm text-muted leading-relaxed">Este navegador no deja controlar el marcador con el reloj. Probá desde otro navegador; mientras tanto, usá los botones de arriba.</p>
         ) : relojActivo ? (
           <>
             <p className="text-sm leading-relaxed">
@@ -315,7 +325,7 @@ export default function ProbarConRelojForm() {
             {error}
           </p>
         )}
-        <p className="text-xs text-muted">Necesitás un reloj que controle la música del celu, y la pantalla del celu prendida.</p>
+        <p className="text-xs text-muted">Si tu reloj puede controlar la música del celu, puede controlar Padelito. Dejá la pantalla del celu prendida.</p>
       </div>
 
       {mostrarCartel && (
@@ -335,6 +345,22 @@ export default function ProbarConRelojForm() {
           Crear mi cuenta
         </button>
       )}
+
+      <div className="flex flex-col">
+        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted pb-1.5 border-b-2 border-ink">Además, en Padelito</span>
+        {ADEMAS.map(([titulo, detalle, href]) => (
+          <button key={titulo} onClick={() => router.push(href)} className="flex items-center gap-3 py-3 border-b border-ink/10 text-left cursor-pointer">
+            <span className="flex-1 min-w-0 flex flex-col">
+              <span className="font-semibold text-base">{titulo}</span>
+              <span className="text-xs text-muted">{detalle}</span>
+            </span>
+            <IconoChevron width={16} height={16} style={{ transform: "rotate(-90deg)" }} className="text-muted flex-shrink-0" aria-hidden />
+          </button>
+        ))}
+        <button onClick={() => router.push("/")} className="mt-3 text-sm font-semibold px-3 py-2 rounded-[6px] border border-ink/15 cursor-pointer">
+          Ver todo lo que hace Padelito
+        </button>
+      </div>
 
       <audio ref={audio1Ref} src="/sonidos/silencio.wav" preload="auto" className="hidden" />
       <audio ref={audio2Ref} src="/sonidos/silencio2.wav" preload="auto" className="hidden" />

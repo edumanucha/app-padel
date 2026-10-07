@@ -1675,7 +1675,7 @@ export default function MarcadorForm({ partidoId }) {
   async function activarReloj() {
     setErrorReloj("");
     if (!("mediaSession" in navigator)) {
-      setErrorReloj("Este navegador no permite controlar con el reloj. Usá Chrome en Android.");
+      setErrorReloj("Este navegador no permite controlar con el reloj. Probá desde otro navegador.");
       return;
     }
     try {

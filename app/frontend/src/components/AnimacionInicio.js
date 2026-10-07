@@ -25,7 +25,9 @@ export default function AnimacionInicio({ siempre = false, sonido = false, onFin
 
   useEffect(() => {
     try {
-      if (siempre) {
+      // ?animacion en la dirección (p. ej. /?animacion) la muestra aunque ya
+      // se haya visto hoy: sirve para ver la app "desde cero".
+      if (siempre || new URLSearchParams(window.location.search).has("animacion")) {
         setVer(true);
         return;
       }

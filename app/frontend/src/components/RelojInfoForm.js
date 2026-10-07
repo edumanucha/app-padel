@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 // (casi 9 metros, Redmi Watch con Android y Chrome).
 const PASOS = [
   ["Conectá el reloj al celu", "Por Bluetooth, con la app de tu reloj, como siempre."],
-  ["Abrí Padelito en Chrome", "Armá el partido en el Marcadorcito y elegí Reloj."],
+  ["Abrí Padelito", "Armá el partido en el Marcadorcito y elegí Reloj."],
   ["Dejá el celu cerca", "Con la pantalla prendida, en el bolso, el banco o colgado de la reja."],
   ["Sumá puntos desde la muñeca", "Con los controles de música: siguiente es punto A, anterior es punto B y pausa deshace."],
 ];
@@ -49,7 +49,7 @@ export default function RelojInfoForm() {
       <div className="flex flex-col gap-1.5 border-b border-ink/10 pb-4">
         <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">Qué necesitás</span>
         <p className="text-sm leading-relaxed">
-          Un celu Android con Chrome y un reloj que pueda controlar la música del celu. Lo probamos con un Redmi Watch. En iPhone y con otros relojes todavía no lo probamos.
+          Si tu reloj puede controlar la música del celu, puede controlar Padelito.
         </p>
       </div>
 
