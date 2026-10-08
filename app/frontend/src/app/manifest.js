@@ -19,6 +19,8 @@ export default function manifest() {
       { src: "/pwa-icon?size=192", sizes: "192x192", type: "image/png", purpose: "maskable" },
       { src: "/pwa-icon?size=512", sizes: "512x512", type: "image/png", purpose: "any" },
       { src: "/pwa-icon?size=512", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      // Silueta para el ícono chico de las notificaciones (2026-10-07).
+      { src: "/pwa-badge?size=512", sizes: "512x512", type: "image/png", purpose: "monochrome" },
     ],
   };
 }
