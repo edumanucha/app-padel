@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import MarcaPadelito from "@/components/MarcaPadelito";
+import InstalarApp from "@/components/InstalarApp";
 import { IconoChevron } from "@/components/Icons";
 
 // Inicio para quien todavía no tiene cuenta (2026-10-04): se puede mirar y
@@ -20,6 +21,7 @@ export default function HomeVisitante() {
   const router = useRouter();
   return (
     <div className="w-full max-w-md flex flex-col gap-6 text-ink">
+      <InstalarApp variante="franja" />
       <div className="flex items-center gap-3">
         <Logo size={46} />
         <MarcaPadelito className="text-[38px]" />

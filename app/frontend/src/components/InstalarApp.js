@@ -12,9 +12,6 @@ const tarjeta = "bg-surface text-ink rounded-[8px] p-4 border border-ink/10";
 const APK_DISPONIBLE = true;
 const LINK_APK = "/padelito.apk";
 
-// La franja del inicio, si se cierra, vuelve a aparecer a los 3 días.
-const CLAVE_FRANJA_CERRADA = "instalarAppFranjaCerrada";
-const DIAS_FRANJA_CERRADA = 3;
 
 function estaInstalada() {
   if (typeof window === "undefined") return false;
@@ -31,15 +28,6 @@ function esAndroid() {
   return /android/i.test(navigator.userAgent);
 }
 
-function franjaCerradaHace() {
-  try {
-    const cuando = Number(localStorage.getItem(CLAVE_FRANJA_CERRADA));
-    return cuando ? (Date.now() - cuando) / 86400000 : Infinity;
-  } catch {
-    return Infinity;
-  }
-}
-
 // "Instalar app" (2026-09-13, a pedido del usuario: "de hacerlo
 // instalable"). Android/compu: captura el evento `beforeinstallprompt` del
 // navegador y lo dispara al tocar el botón. iOS Safari no tiene ese evento
@@ -47,8 +35,9 @@ function franjaCerradaHace() {
 //
 // 2026-09-30 (pedido del usuario: "si no está instalada, que aparezca el
 // botón en la home y en el perfil"; eligió la opción 2 en /pruebas-instalar):
-// - variante "franja": franja amarilla finita arriba del inicio, se cierra
-//   con ✕ y vuelve a los 3 días.
+// - variante "franja": franja finita arriba del inicio (y del inicio de
+//   visitantes). Desde 2026-10-07 no se cierra: aparece siempre que la app
+//   no esté instalada (pedido del usuario; antes la ✕ la escondía 3 días).
 // - variante "boton": botón punteado en el perfil, no se cierra.
 // - variante "tarjeta" (la de siempre): Configuración, no se cierra.
 // Ahora aparece siempre que la app no esté instalada, aunque el navegador
@@ -56,13 +45,11 @@ function franjaCerradaHace() {
 export default function InstalarApp({ variante = "tarjeta" }) {
   const [promptEvent, setPromptEvent] = useState(null);
   const [instalada, setInstalada] = useState(true); // arranca en true para no parpadear antes de chequear
-  const [cerrada, setCerrada] = useState(false);
   const [mostrarPasos, setMostrarPasos] = useState(false);
   const [mostrarHoja, setMostrarHoja] = useState(false);
 
   useEffect(() => {
     setInstalada(estaInstalada());
-    if (variante === "franja") setCerrada(franjaCerradaHace() < DIAS_FRANJA_CERRADA);
 
     function alCapturarPrompt(e) {
       e.preventDefault();
@@ -110,16 +97,7 @@ export default function InstalarApp({ variante = "tarjeta" }) {
     setPromptEvent(null);
   }
 
-  function handleCerrar() {
-    setCerrada(true);
-    try {
-      localStorage.setItem(CLAVE_FRANJA_CERRADA, String(Date.now()));
-    } catch {
-      // sin almacenamiento: se cierra solo por esta vez
-    }
-  }
-
-  if (instalada || cerrada) return null;
+  if (instalada) return null;
 
   const pasos = mostrarPasos && (
     <ol className="text-xs text-muted flex flex-col gap-1 list-decimal list-inside text-left">
@@ -188,9 +166,6 @@ export default function InstalarApp({ variante = "tarjeta" }) {
             className="rounded-[6px] bg-[#14261f] text-[#f2c53d] px-3 py-1 cursor-pointer flex-shrink-0"
           >
             Instalar
-          </button>
-          <button onClick={handleCerrar} aria-label="Cerrar" className="opacity-60 px-1 cursor-pointer flex-shrink-0">
-            ✕
           </button>
         </div>
         {pasos && !mostrarHoja && <div className={tarjeta}>{pasos}</div>}
