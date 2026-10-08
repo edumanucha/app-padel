@@ -70,8 +70,28 @@ export default function AnimacionInicio({ siempre = false, sonido = false, onFin
         // nada
       }
     };
-    const alOcultar = () => document.visibilityState === "hidden" && marcar();
-    const id = setInterval(marcar, 60000);
+    // Al volver a la app después de más de una hora, también sale: Android
+    // deja la app dormida en segundo plano y al reabrirla la "despierta" en
+    // la misma pantalla, sin volver a cargar la página (2026-10-08, el
+    // usuario la abrió al día siguiente y no le salió).
+    const alOcultar = () => {
+      if (document.visibilityState === "hidden") {
+        marcar();
+        return;
+      }
+      try {
+        const ultima = Number(localStorage.getItem(CLAVE)) || 0;
+        const reducir = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+        if (ultima && Date.now() - ultima > UNA_HORA && !reducir && !window.location.pathname.startsWith("/pruebas")) {
+          setSaliendo(false);
+          setVer(true);
+        }
+        marcar();
+      } catch {
+        // nada
+      }
+    };
+    const id = setInterval(() => document.visibilityState === "visible" && marcar(), 60000);
     document.addEventListener("visibilitychange", alOcultar);
     window.addEventListener("pagehide", marcar);
     return () => {
