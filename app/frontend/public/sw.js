@@ -146,7 +146,7 @@ self.addEventListener("push", (event) => {
     self.registration.showNotification(datos.titulo || "Padelito", {
       body: datos.cuerpo || "",
       icon: "/pwa-icon?size=192",
-      badge: "/pwa-icon?size=192",
+      badge: "/pwa-badge",
       tag: datos.etiqueta || undefined,
       renotify: !!datos.etiqueta,
       data: { url: datos.url || "/" },
