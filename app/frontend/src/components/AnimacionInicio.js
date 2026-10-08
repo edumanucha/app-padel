@@ -6,10 +6,12 @@ import { useEffect, useRef, useState } from "react";
 // sobre fondo claro y con la cámara cerca, la pelota del logo entra picando,
 // se frena con "40-15" y la cámara se aleja hasta mostrar "padelito" con la
 // pelota como punto de la i (igual al encabezado). ~3 s.
-// Solo la primera vez del día, se saltea con un toque, sin sonido (el
-// navegador no deja sonar antes de un toque) y no aparece si el celu pide
-// reducir movimiento.
-const CLAVE = "padelito_animacion_dia";
+// Sale al abrir la app después de una hora sin usarla (antes: una vez por
+// día; cambiado el 2026-10-07 a pedido del usuario). Se saltea con un toque,
+// sin sonido (el navegador no deja sonar antes de un toque) y no aparece si
+// el celu pide reducir movimiento.
+const CLAVE = "padelito_animacion_ultima";
+const UNA_HORA = 60 * 60 * 1000;
 const DUR = 2.9;
 
 const cl = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
@@ -33,15 +35,37 @@ export default function AnimacionInicio({ siempre = false, sonido = false, onFin
       }
       if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
       if (window.location.pathname.startsWith("/pruebas")) return;
-      const hoy = new Date().toISOString().slice(0, 10);
-      if (localStorage.getItem(CLAVE) === hoy) return;
-      localStorage.setItem(CLAVE, hoy);
+      const ultima = Number(localStorage.getItem(CLAVE)) || 0;
+      localStorage.setItem(CLAVE, String(Date.now()));
+      if (Date.now() - ultima < UNA_HORA) return;
       setVer(true);
     } catch {
       // sin almacenamiento: no se muestra
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Mientras se usa la app se renueva la marca de "última vez", así la
+  // animación vuelve recién después de una hora sin abrirla.
+  useEffect(() => {
+    if (siempre) return;
+    const marcar = () => {
+      try {
+        localStorage.setItem(CLAVE, String(Date.now()));
+      } catch {
+        // nada
+      }
+    };
+    const alOcultar = () => document.visibilityState === "hidden" && marcar();
+    const id = setInterval(marcar, 60000);
+    document.addEventListener("visibilitychange", alOcultar);
+    window.addEventListener("pagehide", marcar);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", alOcultar);
+      window.removeEventListener("pagehide", marcar);
+    };
+  }, [siempre]);
 
   useEffect(() => {
     if (!ver) return;

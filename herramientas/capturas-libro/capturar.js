@@ -210,7 +210,7 @@ async function principal() {
             localStorage.setItem("padelito_guia", "hecha");
             localStorage.setItem("instalarAppFranjaCerrada", String(Date.now()));
             // Sin la animación de entrada (taparía la captura).
-            localStorage.setItem("padelito_animacion_dia", new Date().toISOString().slice(0, 10));
+            localStorage.setItem("padelito_animacion_ultima", String(Date.now()));
           } catch { /* nada */ }
         },
         `sb-${REF}-auth-token`,

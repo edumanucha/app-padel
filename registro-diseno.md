@@ -261,7 +261,7 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 
 ### D-27 · `diseno-27-animacion-inicio` — animación de entrada (2026-10-06)
 
-- **Qué cambió:** al abrir la app (primera vez del día) se ve ~3 s: fondo claro, cámara cerca, la pelota del logo entra picando 3 veces, se frena con "40-15" y la cámara se aleja hasta mostrar "padelito" con la pelota de punto de la i (igual al encabezado). Se saltea tocando. Sin sonido. No aparece con "reducir movimiento" ni en `/pruebas-*`.
+- **Qué cambió:** al abrir la app (primera vez del día; desde el 2026-10-07, después de una hora sin usarla) se ve ~3 s: fondo claro, cámara cerca, la pelota del logo entra picando 3 veces, se frena con "40-15" y la cámara se aleja hasta mostrar "padelito" con la pelota de punto de la i (igual al encabezado). Se saltea tocando. Sin sonido. No aparece con "reducir movimiento" ni en `/pruebas-*`.
 - **Componente:** `components/AnimacionInicio.js` (montado en `app/layout.js`).
 - **Opciones mostradas:** 8 versiones en el chat + un video de 3 s con sonido.
 - **Elegida por el usuario:** la v8 (pelota chica como en el encabezado, termina igual al encabezado).
