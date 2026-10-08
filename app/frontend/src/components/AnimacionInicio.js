@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 // el celu pide reducir movimiento.
 const CLAVE = "padelito_animacion_ultima";
 const UNA_HORA = 60 * 60 * 1000;
+const CLAVE_SESION = "padelito_animacion_sesion";
 const DUR = 2.9;
 
 const cl = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
@@ -37,6 +38,19 @@ export default function AnimacionInicio({ siempre = false, sonido = false, onFin
       if (window.location.pathname.startsWith("/pruebas")) return;
       const ultima = Number(localStorage.getItem(CLAVE)) || 0;
       localStorage.setItem(CLAVE, String(Date.now()));
+      // App instalada (APK o PWA): sale cada vez que se abre de cero (la
+      // sesión es nueva). La app comparte la memoria con Chrome, así que con
+      // la regla de la hora no salía si se había usado la web (2026-10-08).
+      const instalada =
+        window.matchMedia?.("(display-mode: standalone)").matches ||
+        window.navigator.standalone === true ||
+        document.referrer.startsWith("android-app://");
+      if (instalada) {
+        if (sessionStorage.getItem(CLAVE_SESION)) return;
+        sessionStorage.setItem(CLAVE_SESION, "1");
+        setVer(true);
+        return;
+      }
       if (Date.now() - ultima < UNA_HORA) return;
       setVer(true);
     } catch {
