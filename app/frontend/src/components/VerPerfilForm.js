@@ -8,6 +8,7 @@ import HojaAbajo from "@/components/HojaAbajo";
 import PelotaLoader from "@/components/PelotaLoader";
 import AvatarUpload from "@/components/AvatarUpload";
 import Logo from "@/components/Logo";
+import InstalarApp from "@/components/InstalarApp";
 import DestacadosPerfil from "@/components/DestacadosPerfil";
 import { calcularDestacados } from "@/lib/destacadosPerfil";
 import BarraEstadistica from "@/components/BarraEstadistica";
@@ -732,6 +733,10 @@ export default function VerPerfilForm() {
           </div>
         </div>
       </div>
+
+      {/* Instalar la app (2026-09-30, opción 2 elegida por el usuario): solo
+          aparece si no está instalada. */}
+      <InstalarApp variante="boton" />
 
       <DestacadosPerfil destacados={destacados} />
 
