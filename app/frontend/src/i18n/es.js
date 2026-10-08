@@ -9,6 +9,12 @@ const es = {
       marcadorcito: "Marcadorcito",
       perfil: "Perfil",
     },
+    apk: {
+      hayNueva: "Hay una versión nueva de Padelito",
+      detalle: "Tocá Actualizar y confirmá en la pantalla del celu. No perdés nada.",
+      actualizar: "Actualizar",
+      cerrar: "Cerrar",
+    },
     avisos: {
       ofrecerTitulo: "¿Te avisamos al celu?",
       ofrecerTexto: "Cuando empiece tu partido, te inviten a jugar o te escriban, te llega una notificación aunque tengas la app cerrada.",

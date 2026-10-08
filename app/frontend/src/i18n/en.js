@@ -9,6 +9,12 @@ const en = {
       marcadorcito: "Scoreboard",
       perfil: "Profile",
     },
+    apk: {
+      hayNueva: "A new version of Padelito is out",
+      detalle: "Tap Update and confirm on your phone screen. You keep everything.",
+      actualizar: "Update",
+      cerrar: "Close",
+    },
     avisos: {
       ofrecerTitulo: "Get alerts on your phone?",
       ofrecerTexto: "When your match starts, someone invites you or sends you a message, you get a notification even with the app closed.",

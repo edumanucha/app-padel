@@ -6,6 +6,7 @@ import PageTransition from "@/components/PageTransition";
 import RegistrarServiceWorker from "@/components/RegistrarServiceWorker";
 import Analitica from "@/components/Analitica";
 import AnimacionInicio from "@/components/AnimacionInicio";
+import ActualizarApk from "@/components/ActualizarApk";
 import { LocaleProvider } from "@/i18n/LocaleContext";
 
 // Archivo (2026-09-12, reemplaza a Barlow Condensed + Inter -- a pedido
@@ -122,6 +123,7 @@ export default function RootLayout({ children }) {
         <Analitica />
         <AnimacionInicio />
         <LocaleProvider>
+          <ActualizarApk />
           <PageTransition><PuertaVisitante>{children}</PuertaVisitante></PageTransition>
           <BottomNav />
         </LocaleProvider>

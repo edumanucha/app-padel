@@ -9,6 +9,12 @@ const pt = {
       marcadorcito: "Placar",
       perfil: "Perfil",
     },
+    apk: {
+      hayNueva: "Tem uma versão nova do Padelito",
+      detalle: "Toque em Atualizar e confirme na tela do celular. Você não perde nada.",
+      actualizar: "Atualizar",
+      cerrar: "Fechar",
+    },
     avisos: {
       ofrecerTitulo: "Quer avisos no celular?",
       ofrecerTexto: "Quando sua partida começar, te convidarem ou te mandarem mensagem, chega uma notificação mesmo com o app fechado.",
