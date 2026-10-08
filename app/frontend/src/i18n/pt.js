@@ -9,6 +9,17 @@ const pt = {
       marcadorcito: "Placar",
       perfil: "Perfil",
     },
+    avisos: {
+      ofrecerTitulo: "Quer avisos no celular?",
+      ofrecerTexto: "Quando sua partida começar, te convidarem ou te mandarem mensagem, chega uma notificação mesmo com o app fechado.",
+      activar: "Ativar avisos",
+      ahoraNo: "Agora não",
+      alCelu: "Avisos no celular",
+      detalle: "Partida ao vivo, convites, mensagens e resultados.",
+      bloqueados: "Os avisos estão bloqueados neste celular: habilite nas configurações do navegador.",
+      sinSoporte: "Para receber avisos, instale o app no seu celular.",
+      noSePudo: "Não foi possível ativar. Tente de novo mais tarde.",
+    },
     config: {
       titulo: "Configurações",
       volver: "Voltar",

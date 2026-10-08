@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 import InstalarApp from "@/components/InstalarApp";
+import { InterruptorAvisos } from "@/components/AvisosCelu";
 import { useLocale } from "@/i18n/LocaleContext";
 import { LOCALES } from "@/i18n/config";
 import { IconoChevron } from "@/components/Icons";
@@ -101,6 +102,11 @@ export default function ConfiguracionForm() {
             ))}
           </div>
         </div>
+      </section>
+
+      <section className="flex flex-col">
+        <span className={etiqueta}>{t("avisos.alCelu")}</span>
+        <InterruptorAvisos fila={fila} />
       </section>
 
       <InstalarApp />

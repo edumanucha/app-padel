@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
+import { OfrecerAvisos } from "@/components/AvisosCelu";
 import { IconoPelota, IconoCompartir, IconoRepetir, IconoBilletera, IconoTelefono, IconoChevron } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
@@ -355,6 +356,8 @@ export default function DetallePartidoForm({ partidoId }) {
       </div>
 
       {error && <p className="text-red-600 text-sm col-completa">{error}</p>}
+
+      {usuarioId && <OfrecerAvisos />}
 
       {/* Rediseño Cartel (2026-10-01): sin la tarjeta grande -- arriba la
           protagonista verde tablero (fecha amarilla, cancha y cupo, como el

@@ -9,6 +9,17 @@ const en = {
       marcadorcito: "Scoreboard",
       perfil: "Profile",
     },
+    avisos: {
+      ofrecerTitulo: "Get alerts on your phone?",
+      ofrecerTexto: "When your match starts, someone invites you or sends you a message, you get a notification even with the app closed.",
+      activar: "Turn on alerts",
+      ahoraNo: "Not now",
+      alCelu: "Phone alerts",
+      detalle: "Live match, invitations, messages and results.",
+      bloqueados: "Alerts are blocked on this phone: enable them in your browser settings.",
+      sinSoporte: "To get alerts, install the app on your phone.",
+      noSePudo: "Could not turn them on. Try again later.",
+    },
     config: {
       titulo: "Settings",
       volver: "Back",

@@ -131,3 +131,40 @@ self.addEventListener("fetch", (event) => {
     );
   }
 });
+
+// Notificaciones push (2026-10-07, SQL 084 + /api/push): muestra el aviso
+// aunque la app esté cerrada y, al tocarlo, abre la pantalla que corresponde
+// (reusa una ventana de Padelito si ya hay una abierta).
+self.addEventListener("push", (event) => {
+  let datos = {};
+  try {
+    datos = event.data ? event.data.json() : {};
+  } catch {
+    datos = { titulo: "Padelito", cuerpo: event.data ? event.data.text() : "" };
+  }
+  event.waitUntil(
+    self.registration.showNotification(datos.titulo || "Padelito", {
+      body: datos.cuerpo || "",
+      icon: "/pwa-icon?size=192",
+      badge: "/pwa-icon?size=192",
+      tag: datos.etiqueta || undefined,
+      renotify: !!datos.etiqueta,
+      data: { url: datos.url || "/" },
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const destino = new URL(event.notification.data?.url || "/", self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((ventanas) => {
+      for (const v of ventanas) {
+        if (new URL(v.url).origin === self.location.origin && "navigate" in v) {
+          return v.focus().then(() => v.navigate(destino));
+        }
+      }
+      return self.clients.openWindow(destino);
+    })
+  );
+});

@@ -9,6 +9,17 @@ const es = {
       marcadorcito: "Marcadorcito",
       perfil: "Perfil",
     },
+    avisos: {
+      ofrecerTitulo: "¿Te avisamos al celu?",
+      ofrecerTexto: "Cuando empiece tu partido, te inviten a jugar o te escriban, te llega una notificación aunque tengas la app cerrada.",
+      activar: "Activar avisos",
+      ahoraNo: "Ahora no",
+      alCelu: "Avisos al celu",
+      detalle: "Partido en juego, invitaciones, mensajes y resultados.",
+      bloqueados: "Los avisos están bloqueados en este celu: habilitalos desde los ajustes del navegador.",
+      sinSoporte: "Para recibir avisos, instalá la app en tu celu.",
+      noSePudo: "No se pudieron activar. Probá de nuevo en un rato.",
+    },
     config: {
       titulo: "Configuración",
       volver: "Volver",

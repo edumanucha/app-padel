@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 import { sincronizarTodo } from "@/lib/marcadorOffline";
+import { supabase } from "@/lib/supabaseClient";
+import { permisoPush, activarPush } from "@/lib/push";
 
 // Registra el service worker de la PWA (public/sw.js) apenas carga la
 // app -- sin esto, el archivo existe pero el navegador nunca lo usa.
@@ -17,6 +19,14 @@ export default function RegistrarServiceWorker() {
         // Si falla el registro (ej. navegador viejo sin soporte), la app
         // sigue funcionando normal -- este service worker es solo un
         // extra, nunca algo de lo que dependa una pantalla real.
+      });
+    }
+
+    // Avisos al celu (2026-10-07): si este celu ya dio permiso, se vuelve a
+    // guardar la suscripción con la cuenta abierta (sin preguntar nada).
+    if (permisoPush() === "granted") {
+      supabase.auth.getSession().then(({ data }) => {
+        if (data?.session) activarPush();
       });
     }
 
