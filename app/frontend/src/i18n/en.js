@@ -19,6 +19,7 @@ const en = {
       bloqueados: "Alerts are blocked on this phone: enable them in your browser settings.",
       sinSoporte: "To get alerts, install the app on your phone.",
       noSePudo: "Could not turn them on. Try again later.",
+      sinCampana: "Turn on the notifications above first.",
     },
     config: {
       titulo: "Settings",

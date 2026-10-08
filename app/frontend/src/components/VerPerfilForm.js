@@ -13,6 +13,7 @@ import DestacadosPerfil from "@/components/DestacadosPerfil";
 import { calcularDestacados } from "@/lib/destacadosPerfil";
 import BarraEstadistica from "@/components/BarraEstadistica";
 import Toggle from "@/components/Toggle";
+import { InterruptorAvisos } from "@/components/AvisosCelu";
 import { calcularResumenEstadisticas, calcularPuntosRanking } from "@/lib/estadisticasMarcadorcito";
 import { IconoTelefono, IconoPersona, IconoMapa, IconoPin, IconoMano, IconoPelota, IconoCampana, IconoMensaje, IconoOjo, IconoOjoTachado, IconoTrofeo, IconoChevron, IconoEstrella } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
@@ -933,6 +934,8 @@ export default function VerPerfilForm() {
             </span>
             <Toggle checked={perfil.notificaciones_activas} onChange={handleToggleNotificaciones} />
           </div>
+
+          <InterruptorAvisos campana={perfil.notificaciones_activas} />
 
           <div className="flex items-center justify-between gap-2 py-3 border-b border-ink/10">
             <span className="font-semibold text-sm flex items-center gap-2">

@@ -19,6 +19,7 @@ const es = {
       bloqueados: "Los avisos están bloqueados en este celu: habilitalos desde los ajustes del navegador.",
       sinSoporte: "Para recibir avisos, instalá la app en tu celu.",
       noSePudo: "No se pudieron activar. Probá de nuevo en un rato.",
+      sinCampana: "Primero activá las notificaciones de arriba.",
     },
     config: {
       titulo: "Configuración",

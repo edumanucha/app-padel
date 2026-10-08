@@ -19,6 +19,7 @@ const pt = {
       bloqueados: "Os avisos estão bloqueados neste celular: habilite nas configurações do navegador.",
       sinSoporte: "Para receber avisos, instale o app no seu celular.",
       noSePudo: "Não foi possível ativar. Tente de novo mais tarde.",
+      sinCampana: "Primeiro ative as notificações acima.",
     },
     config: {
       titulo: "Configurações",
