@@ -168,6 +168,7 @@ export default function HomeForm() {
   const [error, setError] = useState("");
   const [notificaciones, setNotificaciones] = useState([]);
   const [mostrarNotificaciones, setMostrarNotificaciones] = useState(false);
+  const [confirmarBorrarTodas, setConfirmarBorrarTodas] = useState(false);
   const [proximamenteTocado, setProximamenteTocado] = useState(null);
   const [mostrarMas, setMostrarMas] = useState(false);
   const [partidoEnCurso, setPartidoEnCurso] = useState(null);
@@ -349,6 +350,19 @@ export default function HomeForm() {
     setNotificaciones((prev) => prev.map((n) => ({ ...n, leida: true })));
   }
 
+  // Borrar notificaciones (2026-10-08, SQL 085: cada uno borra las suyas).
+  async function handleBorrarNotificacion(id) {
+    setNotificaciones((prev) => prev.filter((x) => x.id !== id));
+    await supabase.from("notificaciones").delete().eq("id", id);
+  }
+
+  async function handleBorrarTodas() {
+    const ids = notificaciones.map((x) => x.id);
+    setNotificaciones([]);
+    setConfirmarBorrarTodas(false);
+    if (ids.length) await supabase.from("notificaciones").delete().in("id", ids);
+  }
+
   async function handleClickNotificacion(n) {
     if (!n.leida) {
       await supabase.from("notificaciones").update({ leida: true }).eq("id", n.id);
@@ -509,23 +523,59 @@ export default function HomeForm() {
           onCerrar={() => setMostrarNotificaciones(false)}
           textoCerrar={t("home.cerrar")}
         >
-          {noLeidas > 0 && (
-            <button onClick={handleMarcarTodasLeidas} className="self-end text-xs text-muted underline cursor-pointer -mt-2">
-              {t("home.marcarTodasLeidas")}
-            </button>
+          {/* Acciones en su propia fila (2026-10-08: antes "Marcar todas
+              leídas" quedaba metido debajo del título y casi no se veía). */}
+          {notificaciones.length > 0 && (
+            confirmarBorrarTodas ? (
+              <div className="flex items-center justify-between gap-2 border-y border-ink/10 py-2">
+                <span className="text-sm font-semibold">{t("home.borrarTodasPregunta")}</span>
+                <span className="flex gap-2 flex-shrink-0">
+                  <button onClick={handleBorrarTodas} className="text-sm font-semibold px-3 py-1.5 rounded-[6px] bg-ink text-bg cursor-pointer">
+                    {t("home.borrarSi")}
+                  </button>
+                  <button onClick={() => setConfirmarBorrarTodas(false)} className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 cursor-pointer">
+                    {t("home.borrarNo")}
+                  </button>
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-2 border-y border-ink/10 py-2">
+                {noLeidas > 0 ? (
+                  <button onClick={handleMarcarTodasLeidas} className="text-sm font-semibold cursor-pointer">
+                    {t("home.marcarTodasLeidas")}
+                  </button>
+                ) : (
+                  <span />
+                )}
+                <button onClick={() => setConfirmarBorrarTodas(true)} className="text-sm font-semibold text-muted cursor-pointer">
+                  {t("home.borrarTodas")}
+                </button>
+              </div>
+            )
           )}
           {notificaciones.length === 0 && (
             <span className="text-sm text-muted">{t("home.sinNotificaciones")}</span>
           )}
           {notificaciones.map((n) => (
-            <button
+            <div
               key={n.id}
-              onClick={() => handleClickNotificacion(n)}
-              className={`text-left rounded-[6px] p-2 flex flex-col gap-0.5 cursor-pointer ${ n.leida ? "bg-bg" : "bg-accent/20" }`}
+              className={`rounded-[6px] flex items-start ${ n.leida ? "bg-bg" : "bg-accent/20" }`}
             >
-              <span className="text-sm">{n.mensaje}</span>
-              <span className="text-xs text-muted">{new Date(n.creado_en).toLocaleString("es-AR")}</span>
-            </button>
+              <button
+                onClick={() => handleClickNotificacion(n)}
+                className="flex-1 min-w-0 text-left p-2 flex flex-col gap-0.5 cursor-pointer"
+              >
+                <span className="text-sm">{n.mensaje}</span>
+                <span className="text-xs text-muted">{new Date(n.creado_en).toLocaleString("es-AR")}</span>
+              </button>
+              <button
+                onClick={() => handleBorrarNotificacion(n.id)}
+                aria-label={t("home.borrarUna")}
+                className="text-muted text-lg leading-none px-3 py-2 cursor-pointer flex-shrink-0"
+              >
+                ×
+              </button>
+            </div>
           ))}
         </HojaAbajo>
       )}
