@@ -21,6 +21,7 @@ const PUBLICAS = [
   "/p/",
   "/g/",
   "/offline",
+  "/nueva-contrasena",
 ];
 
 const AVISOS = [
