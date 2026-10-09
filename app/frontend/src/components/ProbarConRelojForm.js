@@ -142,6 +142,10 @@ export default function ProbarConRelojForm() {
       audio2Ref.current.loop = true;
       await audio.play();
       sonandoRef.current = audio;
+      // El marcador sale en el reloj apenas se activa, como en el Marcadorcito
+      // (2026-10-08: antes recién se mandaba después de cambiar de audio, y si
+      // eso fallaba el reloj quedaba sin puntaje).
+      publicarEnReloj(estadoRef.current, 0);
       const acciones = {
         nexttrack: () => accionRef.current("A"),
         previoustrack: () => accionRef.current("B"),
@@ -190,32 +194,45 @@ export default function ProbarConRelojForm() {
     setRelojActivo(false);
   }
 
-  // Manda el marcador al reloj (alternando dos audios en silencio, como el Marcadorcito).
+  // Publica el marcador en el reloj. Igual que el Marcadorcito: el renglón de
+  // abajo alterna en cada envío (el reloj a veces ignora un texto idéntico al
+  // anterior) y se publica primero, sin esperar al cambio de audio.
+  function publicarEnReloj(est, n) {
+    try {
+      const { titulo, subtitulo } = textoReloj(est);
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: titulo,
+        artist: n % 2 === 0 ? subtitulo : "Probá Padelito · Marcadorcito",
+        album: "Padelito",
+      });
+      navigator.mediaSession.playbackState = "playing";
+      navigator.mediaSession.setPositionState?.({ duration: 4 * 60 * 60, playbackRate: 1, position: 1 });
+    } catch {
+      // nada
+    }
+  }
+
+  // En cada cambio y cada 3 s: publicar y alternar entre los dos audios en
+  // silencio (eso hace que el sistema refresque el reloj).
   useEffect(() => {
     if (!relojActivo) return;
+    publicarEnReloj(estado, pulso);
     const sale = sonandoRef.current;
     const entra = sale === audio1Ref.current ? audio2Ref.current : audio1Ref.current;
     if (!entra) return;
-    const { titulo, subtitulo } = textoReloj(estado);
     entra.currentTime = 0;
     entra
       .play()
       .then(() => {
         if (sale && sale !== entra) sale.pause();
         sonandoRef.current = entra;
-        navigator.mediaSession.metadata = new MediaMetadata({ title: titulo, artist: subtitulo, album: "Padelito" });
-        navigator.mediaSession.playbackState = "playing";
+        publicarEnReloj(estadoRef.current, pulso);
       })
       .catch(() => {});
   }, [estado, relojActivo, pulso]);
   useEffect(() => {
     if (!relojActivo) return;
-    const tiempos = [1500, 4000, 8000, 14000].map((ms) => setTimeout(() => setPulso((n) => n + 1), ms));
-    return () => tiempos.forEach(clearTimeout);
-  }, [relojActivo, estado]);
-  useEffect(() => {
-    if (!relojActivo) return;
-    const id = setInterval(() => setPulso((n) => n + 1), 8000);
+    const id = setInterval(() => setPulso((n) => n + 1), 3000);
     return () => clearInterval(id);
   }, [relojActivo]);
   useEffect(() => () => apagarReloj(), []); // eslint-disable-line react-hooks/exhaustive-deps
