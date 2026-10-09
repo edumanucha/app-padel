@@ -56,6 +56,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-26 | `diseno-26-logo-reloj` | 2026-10-06 | Logo nuevo: reloj con la pelota de esfera y "40-15"; nombre "padelito" con la pelota de punto de la i | Publicado |
 | D-27 | `diseno-27-animacion-inicio` | 2026-10-06 | Animación de entrada: la pelota pica, "40-15", zoom out hasta "padelito" | Publicado |
 | D-28 | `diseno-28-tarjeta-pelota-cancha` | 2026-10-06 | Tarjeta del resultado: dos estilos al azar, "pelota" y "cancha" | Publicado |
+| D-29 | `diseno-29-estadisticas-avanzadas` | 2026-10-08 | Estadísticas avanzadas punto a punto: gráfico del partido, saque, presión, games dados vuelta, ritmo; en el perfil rachas de partidos con niveles, por compañero y cuándo jugás mejor; nivel de racha en el Inicio | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -271,6 +272,20 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Qué cambió:** la tarjeta que se comparte al terminar sale al azar en uno de dos estilos. **Pelota:** fondo amarillo con costuras gigantes, "GANAMOS" enorme, sets en números de tablero, parejas, tiempo y sets ganados, y "padelito" abajo; si se perdió, la misma en verde con "PERDIMOS". **Cancha:** la cancha vista desde arriba, cada pareja en su mitad (la propia arriba), los games de cada set en amarillo si se ganaron y la etiqueta GANAMOS/PERDIMOS sobre la red.
 - **Código:** `lib/tarjetaResultado.js` (`dibujarTarjetaPelota`, `dibujarTarjetaCancha`, `dibujarNombre`); la anterior (`dibujarTarjetaTV`) queda para /pruebas-tarjeta.
 - **Opciones mostradas:** 5 estilos (cartel, tablero, claro, pelota, cancha); el usuario eligió pelota y cancha, al azar.
+
+### D-29 · `diseno-29-estadisticas-avanzadas` — estadísticas avanzadas y rachas de partidos (2026-10-08)
+
+- **Qué cambió:**
+  - **Estadísticas del partido** (`/partido/[id]/estadisticas`): nuevo cartel verde "El partido punto a punto" — gráfico de línea (SVG a mano, sin librería) con la diferencia acumulada de puntos (tu pareja − rival), área amarilla cuando ibas arriba, rayitas finas al final de cada game y líneas marcadas al final de cada set, con "SET 1 · 6-4" arriba de cada tramo; abajo la mayor ventaja tuya y del rival. Después de las barras de siempre, cuatro bloques con título condensado: **Saque** (games ganados con tu saque y con saque rival "X de Y", % de puntos ganados sacando y restando), **Puntos de presión** (% grande + 30-30, iguales/ventaja y punto de oro), **Games dados vuelta** (Remontadas y Te dieron vuelta, "de N games abajo/arriba") y **Ritmo** (game más largo en puntos y tiempo, promedio por game).
+  - **Mi perfil** (dentro del acordeón de estadísticas): **Rachas de partidos** (racha actual con nivel, mejor racha ganando, peor racha perdiendo), **Saque y presión** ("En los puntos clave ganás el 58%", saque retenido y quiebres con la tendencia de los últimos 5 contra los anteriores, remontadas / te dieron vuelta), **Por compañero** (top 3 con 2+ partidos: % saque y % presión), **Cuándo jugás mejor** (por horario de Mendoza, día y cancha, solo grupos con 2+ partidos) y **Partidos a 3 sets**.
+  - **Inicio:** debajo de "Racha ganada", el nivel de la racha en una etiqueta amarilla (En racha 2, Encendido 3, Imparable 4, Leyenda 5+). Si venís perdiendo 2 o más, una línea gris para arriba (Mala racha, A remontar, Toca dar vuelta la historia · N seguidos). Todos con su (?).
+- **Pantallas afectadas:** Estadísticas del partido, Mi perfil (sección Estadísticas), Inicio (número de racha).
+- **Código:** `lib/estadisticasAvanzadas.js` (funciones puras: `analizarPartido`, `calcularAvanzadasPerfil`, `calcularRachas`, `nivelRacha`, `textoRacha`), `components/GraficoPuntoAPunto.js`, `components/EstadisticasAvanzadasPerfil.js`; `InfoEstadistica` acepta `color` para usarse sobre el cartel verde.
+- **Datos:** sin SQL nuevo. Todo sale de `resultados_partido.estado.log` (la RLS ya deja leer los partidos que jugaste); el compañero de cada partido sale de `mis_cruces_partidos` (068). Los partidos sin log (viejos o cargados a mano) cuentan para rachas, horarios, canchas y 3 sets, no para saque/presión.
+- **Por qué:** pedido del usuario: sacarle más jugo al registro punto por punto y sumar rachas de partidos con niveles.
+- **Opciones mostradas (maqueta):** ninguna; se implementó directo para revisión.
+- **Elegida por el usuario:** pendiente.
+- **Notas / qué mirar en la evaluación:** el gráfico a 390 px de ancho (etiquetas de sets cortas cuando el set es angosto), contraste del área amarilla en el cartel verde, largo de "Toca dar vuelta la historia" en la columna angosta del Inicio, que las definiciones de los (?) se entiendan.
 
 <!-- Plantilla para cada cambio nuevo:
 

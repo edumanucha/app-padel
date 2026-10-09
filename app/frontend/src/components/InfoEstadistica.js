@@ -17,7 +17,9 @@ import { IconoAyuda } from "@/components/Icons";
 const ANCHO = 240;
 const MARGEN = 12;
 
-export default function InfoEstadistica({ texto }) {
+// `color` (D-29): para usarlo sobre el cartel verde, donde el gris de
+// siempre casi no se ve.
+export default function InfoEstadistica({ texto, color = "text-muted" }) {
   const [pos, setPos] = useState(null);
   const botonRef = useRef(null);
 
@@ -60,7 +62,7 @@ export default function InfoEstadistica({ texto }) {
         onPointerDown={(e) => e.stopPropagation()}
         aria-label="info"
         aria-expanded={!!pos}
-        className="text-muted cursor-pointer flex items-center opacity-70"
+        className={`${color} cursor-pointer flex items-center opacity-70`}
       >
         <IconoAyuda width={13} height={13} />
       </button>

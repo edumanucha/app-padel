@@ -5,22 +5,43 @@ import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import BarraEstadistica from "@/components/BarraEstadistica";
+import InfoEstadistica from "@/components/InfoEstadistica";
+import GraficoPuntoAPunto from "@/components/GraficoPuntoAPunto";
 import { IconoTrofeo } from "@/components/Icons";
 import BotonCompartirTarjeta from "@/components/BotonCompartirTarjeta";
 import { vanContraRivales } from "@/lib/destacadosPerfil";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
 import { estadisticasDeLado, formatoSets, calcularPuntosRanking } from "@/lib/estadisticasMarcadorcito";
+import { analizarPartido, porcentaje } from "@/lib/estadisticasAvanzadas";
 
 // Rediseño Cartel (2026-10-01): cada dato es un número grande con la
 // etiqueta abajo, sin cajita; los divisores los pone quien lo usa.
-function Dato({ etiqueta, valor, className = "" }) {
+// D-29: `info` agrega el (?) al lado de la etiqueta y `detalle` una línea
+// chica abajo (ej. "Set 2, con 3-2").
+function Dato({ etiqueta, valor, className = "", info, detalle }) {
   return (
     <div className={`flex flex-col gap-1 py-3 ${className}`}>
       <span className="font-numero font-bold text-[2.2rem] leading-none tabular-nums">{valor}</span>
-      <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{etiqueta}</span>
+      <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted flex items-center gap-1">
+        {etiqueta}
+        {info && <InfoEstadistica texto={info} />}
+      </span>
+      {detalle && <span className="text-xs text-muted">{detalle}</span>}
     </div>
   );
+}
+
+// Título de cada bloque de estadísticas avanzadas (D-29): mismo estilo que
+// los bloques de los destacados del perfil.
+function TituloBloque({ children }) {
+  return <h3 className="font-titulo font-black uppercase text-2xl leading-none pb-1.5 border-b-2 border-ink">{children}</h3>;
+}
+
+// "4:05" a partir de segundos.
+function minutosYSegundos(s) {
+  const m = Math.floor(s / 60);
+  return `${m}:${String(Math.round(s % 60)).padStart(2, "0")}`;
 }
 
 // Vista propia para el detalle de UN partido de Marcadorcito (2026-09-13,
@@ -115,6 +136,9 @@ export default function EstadisticasPartidoForm({ partidoId }) {
         cancha: partido.cancha,
         gane,
         sets: formatoSets(partido.resultados_partido?.estado, miEquipo),
+        // D-29: estadísticas sacadas del registro punto por punto (null si
+        // el partido no lo tiene, ej. partidos viejos o cargados a mano).
+        avanzado: analizarPartido(partido.resultados_partido?.estado?.log, miEquipo),
         d: estadisticasDeLado(partido.estadisticas_partido, miEquipo),
         puntosRankingGanados: calcularPuntosRanking(partido.resultados_partido?.estado, miEquipo, gane),
         rivales,
@@ -153,7 +177,10 @@ export default function EstadisticasPartidoForm({ partidoId }) {
     );
   }
 
-  const { d } = datos;
+  const { d, avanzado: av } = datos;
+  // "62% · 31 de 50"
+  const pctDe = (f) => t("avanzadas.pctDe", { p: porcentaje(f) ?? 0, g: f.g, n: f.n });
+  const xDeY = (f) => t("avanzadas.xDeY", { g: f.g, n: f.n });
 
   return (
     <div className="w-full max-w-md flex flex-col gap-4 pantalla-mosaico">
@@ -240,6 +267,8 @@ export default function EstadisticasPartidoForm({ partidoId }) {
         </div>
       )}
 
+      {av && <GraficoPuntoAPunto grafico={av.grafico} />}
+
       {/* Números grandes en grilla de 2 con divisores (líneas, no cajas). */}
       <div className="grid grid-cols-2 border-y border-ink/10">
         <Dato etiqueta={t("estadisticas.duracion")} valor={`${d.duracionMin} min`} className="pr-3" />
@@ -293,6 +322,150 @@ export default function EstadisticasPartidoForm({ partidoId }) {
           info={t("estadisticas.puntosJuegoConcedidosInfo")}
         />
       </div>
+
+      {/* D-29: estadísticas avanzadas, sacadas punto por punto del log
+          (definiciones en lib/estadisticasAvanzadas.js). */}
+      {av && (
+        <>
+          <div className="flex flex-col mt-2">
+            <TituloBloque>{t("avanzadas.saqueTitulo")}</TituloBloque>
+            <div className="flex flex-col [&>*]:py-3 [&>*]:border-b [&>*]:border-ink/10">
+              {av.saque.juegosSacando.n > 0 && (
+                <BarraEstadistica
+                  etiqueta={t("avanzadas.saqueRetenido")}
+                  valor={av.saque.juegosSacando.g}
+                  total={av.saque.juegosSacando.n}
+                  texto={xDeY(av.saque.juegosSacando)}
+                  variante="bien"
+                  info={t("avanzadas.saqueRetenidoInfo")}
+                />
+              )}
+              {av.saque.juegosRestando.n > 0 && (
+                <BarraEstadistica
+                  etiqueta={t("avanzadas.quiebresLogrados")}
+                  valor={av.saque.juegosRestando.g}
+                  total={av.saque.juegosRestando.n}
+                  texto={xDeY(av.saque.juegosRestando)}
+                  variante="bien"
+                  info={t("avanzadas.quiebresLogradosInfo")}
+                />
+              )}
+              {av.saque.puntosSacando.n > 0 && (
+                <BarraEstadistica
+                  etiqueta={t("avanzadas.puntosSacando")}
+                  valor={av.saque.puntosSacando.g}
+                  total={av.saque.puntosSacando.n}
+                  texto={pctDe(av.saque.puntosSacando)}
+                  info={t("avanzadas.puntosSacandoInfo")}
+                />
+              )}
+              {av.saque.puntosRestando.n > 0 && (
+                <BarraEstadistica
+                  etiqueta={t("avanzadas.puntosRestando")}
+                  valor={av.saque.puntosRestando.g}
+                  total={av.saque.puntosRestando.n}
+                  texto={pctDe(av.saque.puntosRestando)}
+                  info={t("avanzadas.puntosRestandoInfo")}
+                />
+              )}
+            </div>
+          </div>
+
+          {av.presion.total.n > 0 && (
+            <div className="flex flex-col">
+              <TituloBloque>{t("avanzadas.presionTitulo")}</TituloBloque>
+              <Dato
+                etiqueta={t("avanzadas.presionGanados")}
+                valor={`${porcentaje(av.presion.total)}%`}
+                info={t("avanzadas.presionInfo")}
+                detalle={xDeY(av.presion.total)}
+                className="border-b border-ink/10"
+              />
+              <div className="flex flex-col [&>*]:py-3 [&>*]:border-b [&>*]:border-ink/10">
+                {av.presion.a3030.n > 0 && (
+                  <BarraEstadistica
+                    etiqueta={t("avanzadas.a3030")}
+                    valor={av.presion.a3030.g}
+                    total={av.presion.a3030.n}
+                    texto={xDeY(av.presion.a3030)}
+                    info={t("avanzadas.a3030Info")}
+                  />
+                )}
+                {av.presion.iguales.n > 0 && (
+                  <BarraEstadistica
+                    etiqueta={t("avanzadas.iguales")}
+                    valor={av.presion.iguales.g}
+                    total={av.presion.iguales.n}
+                    texto={xDeY(av.presion.iguales)}
+                    info={t("avanzadas.igualesInfo")}
+                  />
+                )}
+                {av.presion.oro.n > 0 && (
+                  <BarraEstadistica
+                    etiqueta={t("avanzadas.puntoDeOro")}
+                    valor={av.presion.oro.g}
+                    total={av.presion.oro.n}
+                    texto={xDeY(av.presion.oro)}
+                    info={t("avanzadas.puntoDeOroInfo")}
+                  />
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="flex flex-col">
+            <TituloBloque>{t("avanzadas.vueltasTitulo")}</TituloBloque>
+            <div className="grid grid-cols-2 border-b border-ink/10">
+              <Dato
+                etiqueta={t("avanzadas.remontadas")}
+                valor={av.remontadas.g}
+                info={t("avanzadas.remontadasInfo")}
+                detalle={t("avanzadas.deNAbajo", { n: av.remontadas.n })}
+                className="pr-3"
+              />
+              <Dato
+                etiqueta={t("avanzadas.teDieronVuelta")}
+                valor={av.teDieronVuelta.g}
+                info={t("avanzadas.teDieronVueltaInfo")}
+                detalle={t("avanzadas.deNArriba", { n: av.teDieronVuelta.n })}
+                className="pl-3 border-l border-ink/15"
+              />
+            </div>
+          </div>
+
+          {av.ritmo.masLargo && (
+            <div className="flex flex-col">
+              <TituloBloque>{t("avanzadas.ritmoTitulo")}</TituloBloque>
+              <div className="grid grid-cols-2 border-b border-ink/10">
+                <Dato
+                  etiqueta={t("avanzadas.gameMasLargo")}
+                  valor={t("avanzadas.nPuntos", { n: av.ritmo.masLargo.puntos })}
+                  info={t("avanzadas.gameMasLargoInfo")}
+                  detalle={
+                    av.ritmo.conTiempos
+                      ? t("avanzadas.gameMasLargoDetalleTiempo", {
+                          tiempo: minutosYSegundos(av.ritmo.masLargo.segundos),
+                          set: av.ritmo.masLargo.set,
+                          marcador: av.ritmo.masLargo.marcador,
+                        })
+                      : t("avanzadas.gameMasLargoDetalle", { set: av.ritmo.masLargo.set, marcador: av.ritmo.masLargo.marcador })
+                  }
+                  className="pr-3"
+                />
+                {av.ritmo.promedioS !== null && (
+                  <Dato
+                    etiqueta={t("avanzadas.promedioGame")}
+                    valor={minutosYSegundos(av.ritmo.promedioS)}
+                    info={t("avanzadas.promedioGameInfo")}
+                    detalle={t("avanzadas.nGames", { n: av.ritmo.games })}
+                    className="pl-3 border-l border-ink/15"
+                  />
+                )}
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

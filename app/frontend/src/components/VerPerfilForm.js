@@ -10,7 +10,9 @@ import AvatarUpload from "@/components/AvatarUpload";
 import Logo from "@/components/Logo";
 import InstalarApp from "@/components/InstalarApp";
 import DestacadosPerfil from "@/components/DestacadosPerfil";
-import { calcularDestacados } from "@/lib/destacadosPerfil";
+import { calcularDestacados, agruparPartidos } from "@/lib/destacadosPerfil";
+import EstadisticasAvanzadasPerfil from "@/components/EstadisticasAvanzadasPerfil";
+import { calcularAvanzadasPerfil } from "@/lib/estadisticasAvanzadas";
 import BarraEstadistica from "@/components/BarraEstadistica";
 import Toggle from "@/components/Toggle";
 import { InterruptorAvisos } from "@/components/AvisosCelu";
@@ -102,6 +104,9 @@ export default function VerPerfilForm() {
   // Destacados "Cara a cara" (2026-10-02): null hasta que llegan, o si no
   // hay partidos terminados (o la RPC 068 todavía no se corrió).
   const [destacados, setDestacados] = useState(null);
+  // Estadísticas avanzadas (D-29): rachas de partidos, saque, presión, por
+  // compañero, cuándo jugás mejor. null si no hay partidos terminados.
+  const [avanzadas, setAvanzadas] = useState(null);
   const [cargandoEstadisticas, setCargandoEstadisticas] = useState(true);
   const [mostrarPartidosStats, setMostrarPartidosStats] = useState(false);
   // Colapsado por defecto (2026-09-13, a pedido del usuario: "que
@@ -157,6 +162,7 @@ export default function VerPerfilForm() {
           setCargandoEstadisticas(false);
         }
         if (copia.destacados !== undefined) setDestacados(copia.destacados);
+        if (copia.avanzadas !== undefined) setAvanzadas(copia.avanzadas);
         setCargando(false);
       }
 
@@ -204,16 +210,19 @@ export default function VerPerfilForm() {
     // Destacados del perfil (2026-10-02): nombres de compañeros y rivales
     // vía RPC (la RLS de perfiles no deja leerlos directo). Si la RPC no
     // existe todavía, simplemente no se muestran.
+    // Devuelve las filas (o null) para reusarlas en las estadísticas
+    // avanzadas (compañero de cada partido), sin pedirlas dos veces.
     async function cargarDestacados(jugadorId) {
       const { data, error } = await supabase.rpc("mis_cruces_partidos");
-      if (error) return;
+      if (error) return null;
       const d = calcularDestacados(data);
       setDestacados(d);
       guardarPantalla("perfil", jugadorId, { ...(leerPantalla("perfil", jugadorId) ?? {}), destacados: d });
+      return data;
     }
 
     async function cargarEstadisticas(jugadorId) {
-      cargarDestacados(jugadorId);
+      const crucesPromesa = cargarDestacados(jugadorId);
       const { data: misFilas } = await supabase
         .from("partido_jugadores")
         .select("partido_id, equipo")
@@ -235,7 +244,7 @@ export default function VerPerfilForm() {
       // pedido del usuario), no solo el resumen sumado.
       const { data: partidosData } = await supabase
         .from("partidos")
-        .select("id, fecha_hora, cancha, resultados_partido(ganador, estado), estadisticas_partido(*)")
+        .select("id, fecha_hora, cancha, resultados_partido(ganador, estado, finalizado), estadisticas_partido(*)")
         .in("id", idsPartidos)
         .order("fecha_hora", { ascending: false });
 
@@ -264,6 +273,34 @@ export default function VerPerfilForm() {
         ...(leerPantalla("perfil", jugadorId) ?? {}),
         partidosStats: partidosConStats.length > 0 ? partidosConStats : null,
       });
+
+      // Estadísticas avanzadas (D-29): con los mismos datos de arriba (la RLS
+      // de resultados_partido deja leer los partidos que jugué, así que no
+      // hace falta una RPC). Cuentan todos los partidos TERMINADOS, tengan o
+      // no estadisticas_partido; el compañero de cada partido sale de
+      // mis_cruces_partidos (si la RPC no está, no se muestra "por compañero").
+      const terminados = (partidosData ?? [])
+        .filter((p) => p.resultados_partido?.finalizado && p.resultados_partido?.ganador)
+        .map((p) => {
+          const miEquipo = equipoPorPartido[p.id];
+          return {
+            id: p.id,
+            fechaHora: p.fecha_hora,
+            cancha: p.cancha,
+            miEquipo,
+            gane: p.resultados_partido.ganador === miEquipo,
+            estado: p.resultados_partido.estado,
+          };
+        });
+      const cruces = await crucesPromesa;
+      const companeroPorPartido = {};
+      for (const p of agruparPartidos(cruces ?? [])) {
+        if (p.companeros[0]) companeroPorPartido[p.id] = p.companeros[0];
+      }
+      const av = calcularAvanzadasPerfil(terminados, companeroPorPartido);
+      setAvanzadas(av);
+      // Se guarda el resultado ya calculado (chico), no los logs.
+      guardarPantalla("perfil", jugadorId, { ...(leerPantalla("perfil", jugadorId) ?? {}), avanzadas: av });
     }
 
     cargarPerfil();
@@ -766,7 +803,12 @@ export default function VerPerfilForm() {
               {t("estadisticas.cargando")}
             </div>
           ) : !partidosStats ? (
-            <div className="text-sm text-muted py-4 border-b border-ink/10">{t("estadisticas.sinPartidos")}</div>
+            <>
+              <div className="text-sm text-muted py-4 border-b border-ink/10">{t("estadisticas.sinPartidos")}</div>
+              {/* D-29: rachas, horarios y canchas también salen de partidos
+                  sin estadísticas (ej. cargados a mano). */}
+              <EstadisticasAvanzadasPerfil a={avanzadas} />
+            </>
           ) : (
             <div className="flex flex-col pt-4">
               {/* Resumen general, en barras de progreso (2026-09-13, a pedido
@@ -857,6 +899,9 @@ export default function VerPerfilForm() {
                   </div>
                 );
               })()}
+
+              {/* D-29: estadísticas avanzadas acumuladas. */}
+              <EstadisticasAvanzadasPerfil a={avanzadas} />
 
               {/* Lista de partidos, DENTRO de la misma tarjeta que el resumen
                   (2026-09-13, a pedido del usuario). Tocar un partido ya NO

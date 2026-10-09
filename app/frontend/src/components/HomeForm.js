@@ -20,6 +20,8 @@ import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, Icono
 import HomeVisitante from "@/components/HomeVisitante";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
+import InfoEstadistica from "@/components/InfoEstadistica";
+import { calcularRachas, nivelRacha, textoRacha } from "@/lib/estadisticasAvanzadas";
 
 function formatearFecha(fechaIso, locale) {
   return new Date(fechaIso).toLocaleString(INTL_LOCALE[locale] ?? "es-AR", {
@@ -161,6 +163,9 @@ export default function HomeForm() {
   const { locale, t } = useLocale();
   const [perfil, setPerfil] = useState(null);
   const [resumen, setResumen] = useState(null);
+  // Partidos perdidos seguidos (D-29): resumen_home solo trae la racha
+  // GANADA; si el último partido fue derrota, se cuenta aparte.
+  const [rachaDerrotas, setRachaDerrotas] = useState(0);
   const [cargando, setCargando] = useState(true);
   const [historial, setHistorial] = useState(null);
   const [mostrarHistorial, setMostrarHistorial] = useState(false);
@@ -263,6 +268,7 @@ export default function HomeForm() {
       if (copia) {
         setPerfil(copia.perfil);
         setResumen(copia.resumen);
+        setRachaDerrotas(copia.rachaDerrotas ?? 0);
         setNotificaciones(copia.notificaciones ?? []);
         setCargando(false);
       }
@@ -325,15 +331,40 @@ export default function HomeForm() {
         setResumen(resumenData);
       }
       setNotificaciones(notifData ?? []);
+      const derrotas = resumenError ? 0 : await contarDerrotasSeguidas(user.id, resumenData);
+      setRachaDerrotas(derrotas);
       if (!resumenError) {
         guardarPantalla("home", user.id, {
           perfil: perfilData,
           resumen: resumenData,
           notificaciones: notifData ?? [],
+          rachaDerrotas: derrotas,
         });
       }
 
       setCargando(false);
+    }
+
+    // Racha de derrotas (D-29): solo se pide si el último partido fue una
+    // derrota. Mismo criterio que resumen_home (017): partidos terminados,
+    // del último actualizado para atrás, hasta 20. La RLS de
+    // resultados_partido deja leer los partidos que jugué.
+    async function contarDerrotasSeguidas(jugadorId, resumenData) {
+      if (resumenData?.ultimo_partido?.gano !== false) return 0;
+      const { data, error } = await supabase
+        .from("partido_jugadores")
+        .select("equipo, partidos(resultados_partido(ganador, finalizado, updated_at))")
+        .eq("jugador_id", jugadorId)
+        .not("equipo", "is", null);
+      if (error) return 0;
+      const resultados = (data ?? [])
+        .map((f) => ({ equipo: f.equipo, r: f.partidos?.resultados_partido }))
+        .filter((x) => x.r?.finalizado && x.r.ganador)
+        .sort((a, b) => new Date(b.r.updated_at) - new Date(a.r.updated_at))
+        .slice(0, 20)
+        .map((x) => x.r.ganador === x.equipo);
+      const rachas = calcularRachas(resultados);
+      return rachas && !rachas.actual.gane ? rachas.actual.n : 0;
     }
 
     cargar();
@@ -670,12 +701,30 @@ export default function HomeForm() {
 
       {/* 6/7/8. Números grandes con líneas divisorias, sin tarjetas. */}
       <div data-guia="numeros" className="grid grid-cols-3">
-        <button onClick={handleVerHistorial} className="flex flex-col text-left cursor-pointer py-1">
-          <span className="font-numero font-bold text-[2.6rem] lg:text-6xl leading-none">
-            <ContadorNumero valor={resumen?.racha_actual ?? 0} />
-          </span>
-          <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{t("home.rachaGanada")}</span>
-        </button>
+        <div className="flex flex-col py-1">
+          <button onClick={handleVerHistorial} className="flex flex-col text-left cursor-pointer">
+            <span className="font-numero font-bold text-[2.6rem] lg:text-6xl leading-none">
+              <ContadorNumero valor={resumen?.racha_actual ?? 0} />
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{t("home.rachaGanada")}</span>
+          </button>
+          {/* D-29: nivel de la racha (2 o más partidos seguidos). Ganando, el
+              nombre en amarillo; perdiendo, un texto para arriba en gris. Va
+              afuera del botón para no anidar el (?) (otro botón) adentro. */}
+          {(resumen?.racha_actual ?? 0) >= 2 ? (
+            <span className="flex items-center gap-1 mt-1">
+              <span className="bg-accent text-accent-ink rounded-[4px] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] leading-none">
+                {t(`avanzadas.${nivelRacha(true, resumen.racha_actual)}`)}
+              </span>
+              <InfoEstadistica texto={t("avanzadas.rachaActualInfo")} />
+            </span>
+          ) : rachaDerrotas >= 2 ? (
+            <span className="flex items-start gap-1 mt-1">
+              <span className="text-[11px] font-semibold text-muted leading-tight">{textoRacha(t, false, rachaDerrotas)}</span>
+              <InfoEstadistica texto={t("avanzadas.rachaActualInfo")} />
+            </span>
+          ) : null}
+        </div>
         <button onClick={() => router.push("/jugadores")} className="flex flex-col text-left cursor-pointer py-1 pl-3 border-l border-ink/15">
           <span className="font-numero font-bold text-[2.6rem] lg:text-6xl leading-none">
             {resumen?.posicion_ranking ? <ContadorNumero valor={resumen.posicion_ranking} prefijo="#" /> : "#-"}
