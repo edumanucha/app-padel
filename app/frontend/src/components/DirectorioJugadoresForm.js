@@ -132,9 +132,15 @@ export default function DirectorioJugadoresForm() {
   // parpadeo "salta al valor -> vuelve a 0 -> crece" en vez de crecer
   // derecho desde 0. Este patrón (setState en medio del render cuando
   // cambia una dependencia) es el que React recomienda para date así.
-  const jugadoresAnteriorRef = useRef(jugadores);
-  if (jugadoresAnteriorRef.current !== jugadores) {
-    jugadoresAnteriorRef.current = jugadores;
+  // 2026-10-10 (D-39, "suben dos veces"): se vuelve a animar solo si cambia
+  // lo que se ve -- quiénes están y con cuántos puntos. Antes cualquier
+  // lista nueva reiniciaba: al entrar se mostraba la copia guardada y
+  // animaba, y cuando llegaban del servidor los mismos datos las barras
+  // desaparecían y volvían a subir.
+  const firmaLista = jugadores.map((j) => `${j.id}:${j.puntos_ranking}`).join(",");
+  const firmaAnteriorRef = useRef(firmaLista);
+  if (firmaAnteriorRef.current !== firmaLista) {
+    firmaAnteriorRef.current = firmaLista;
     if (barrasListas) setBarrasListas(false);
   }
   useEffect(() => {
