@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import { useRouter } from "next/navigation";
 import FormularioFeedback from "@/components/FormularioFeedback";
 import Logo from "@/components/Logo";
@@ -24,7 +25,7 @@ export default function QuienesSomosForm() {
           con una línea gruesa abajo del título y los párrafos separados por
           líneas finas, como una nota de diario. */}
       <div className="flex items-center justify-between gap-3 pb-3 border-b-2 border-ink">
-        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("quienesSomos.titulo")}</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{t("quienesSomos.titulo")}</ConPelota></h1>
         <button
           onClick={() => router.push("/menu")}
           className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"

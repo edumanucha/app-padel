@@ -61,6 +61,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-31 | `diseno-31-mis-partidos-y-games` | 2026-10-09 | Perfil: "Mis partidos" como barra de cartel con el último partido visible y tarjetas estilo Inicio (fecha amarilla + cartel verde); el gráfico del partido pasa a "Los games del partido" (cuadraditos verde/rojo por game y racha) | Pendiente de revisión |
 | D-32 | `diseno-32-grupos-en-ranking` | 2026-10-09 | Jugadores: tarjetas de grupo deslizables arriba del ranking (tu puesto en cada grupo y cuánto te falta o le sacás) y cartel "Competí con tus amigos" para quien no tiene grupos | Pendiente de revisión |
 | D-33 | `diseno-33-como-venis-amarilla` | 2026-10-09 | Perfil: la tarjeta "Cómo venís" pasa a amarilla (había exceso de verde con la tarjeta del jugador); el nivel 7ª ya no dice "(mínima)" | Pendiente de revisión |
+| D-34 | `diseno-34-i-con-pelota` | 2026-10-09 | La pelotita amarilla de Padelito como punto de la primera I en el título de cada pantalla (no en títulos con Í acentuada ni en nombres) | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -337,6 +338,16 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** A amarilla, B blanca con borde, C solo líneas, D verde oscuro con franja amarilla.
 - **Elegida por el usuario:** A.
 - **Notas / qué mirar en la evaluación:** contraste del texto oscuro sobre amarillo en modo oscuro; que la tarjeta amarilla no compita con los botones amarillos de acción.
+
+### D-34 · `diseno-34-i-con-pelota` — la i con la pelotita amarilla (2026-10-09)
+
+- **Qué cambió:** en el título principal (h1) de cada pantalla, la primera I lleva arriba la pelotita amarilla de Padelito, como la i del logo. Una sola por título. No se pone si el título tiene una Í acentuada (Estadísticas…), ni en títulos que son nombres (cancha, grupo, torneo, conversación), ni en las pantallas de prueba.
+- **Pantallas afectadas:** todas las que tienen título con I (Mis partidos, Privacidad, Invitaciones, Iniciar sesión, Grupos, Configuración, etc.).
+- **Código:** `components/ConPelota.js` (nuevo), clase `.i-pelota` en `globals.css`, h1 envueltos en `<ConPelota>` (36 archivos).
+- **Por qué:** pedido del usuario: un detalle de marca, "en algunos, no todos".
+- **Opciones mostradas (maqueta):** A pelotita sobre la I de los títulos, B solo en la i minúscula de textos destacados, C solo la marca y festejos.
+- **Elegida por el usuario:** A ("me parece prudente").
+- **Notas / qué mirar en la evaluación:** títulos de 2 líneas (que la pelotita no toque la línea de arriba), títulos sobre cartel verde (login), modo oscuro.
 
 <!-- Plantilla para cada cambio nuevo:
 

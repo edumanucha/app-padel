@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import { useRouter } from "next/navigation";
 
 // Página pública /reloj (2026-10-05, para el MVP): cómo llevar el marcador
@@ -17,7 +18,7 @@ export default function RelojInfoForm() {
   return (
     <div className="w-full max-w-md text-ink flex flex-col gap-5">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">El marcador en tu reloj</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{"El marcador en tu reloj"}</ConPelota></h1>
         <button onClick={() => router.push("/")} className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 cursor-pointer">
           Volver
         </button>

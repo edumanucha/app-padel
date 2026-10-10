@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import Link from "next/link";
 import LoginGoogleForm from "@/components/LoginGoogleForm";
 import LoginEmailForm from "@/components/LoginEmailForm";
@@ -23,7 +24,7 @@ export default function LoginForm() {
           tablero como protagonista y las formas de entrar quedan abajo, sin
           tarjeta. Los botones viven en LoginGoogleForm/LoginEmailForm. */}
       <div className="rounded-[6px] bg-[#154139] text-[#eaf4f0] px-4 py-5 flex flex-col gap-2">
-        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("login.titulo")}</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{t("login.titulo")}</ConPelota></h1>
         <p className="text-sm text-[#c4dad3]">{t("login.subtitulo")}</p>
       </div>
 

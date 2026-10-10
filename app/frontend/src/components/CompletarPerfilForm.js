@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
@@ -161,7 +162,7 @@ export default function CompletarPerfilForm() {
     >
       {/* Rediseño Cartel (2026-10-01): formulario sin tarjeta y un solo botón
           amarillo grande al final. */}
-      <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("completarPerfil.titulo")}</h1>
+      <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{t("completarPerfil.titulo")}</ConPelota></h1>
       <p className="text-muted text-sm -mt-3">{t("completarPerfil.subtitulo")}</p>
 
       <label className="flex flex-col gap-1">

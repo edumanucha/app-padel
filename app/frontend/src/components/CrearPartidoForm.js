@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
@@ -196,7 +197,7 @@ export default function CrearPartidoForm() {
       {/* Rediseño Cartel (2026-10-01): formulario sin tarjeta, etiquetas
           chicas en mayúscula y un solo botón amarillo grande al final. */}
       <div className="flex items-start justify-between gap-3">
-        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("home.crearPartido")}</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{t("home.crearPartido")}</ConPelota></h1>
         <button
           type="button"
           onClick={() => router.push("/")}

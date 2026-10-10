@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
@@ -557,7 +558,7 @@ export default function VerPerfilForm() {
       >
         {/* Rediseño Cartel (2026-10-01): sin tarjeta contenedora; título con
             línea gruesa abajo, guardar es el único botón amarillo. */}
-        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95] pb-3 border-b-2 border-ink">{t("verPerfil.editarPerfil")}</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95] pb-3 border-b-2 border-ink"><ConPelota>{t("verPerfil.editarPerfil")}</ConPelota></h1>
 
         <AvatarUpload
           userId={perfil.id}
@@ -707,7 +708,7 @@ export default function VerPerfilForm() {
   return (
     <div className="w-full max-w-md flex flex-col gap-6 pantalla-mosaico text-ink">
       <div className="flex items-center justify-between gap-3 col-completa">
-        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("verPerfil.titulo")}</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{t("verPerfil.titulo")}</ConPelota></h1>
         <button
           onClick={() => router.push("/")}
           className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"

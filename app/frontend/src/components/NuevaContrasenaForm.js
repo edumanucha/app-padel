@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
@@ -77,7 +78,7 @@ export default function NuevaContrasenaForm() {
 
   return (
     <div className="w-full max-w-md flex flex-col gap-5 text-ink">
-      <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("nuevaClave.titulo")}</h1>
+      <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{t("nuevaClave.titulo")}</ConPelota></h1>
 
       {estado === "verificando" && (
         <p className="text-sm text-muted inline-flex items-center gap-2">

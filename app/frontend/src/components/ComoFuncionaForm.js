@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import GuiaCelular from "@/components/GuiaCelular";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/i18n/LocaleContext";
@@ -35,7 +36,7 @@ export default function ComoFuncionaForm() {
           iguales -- cada función es un bloque numerado separado por líneas,
           con el título en la tipografía de cartel. */}
       <div className="flex items-center justify-between gap-3">
-        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("comoFunciona.titulo")}</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{t("comoFunciona.titulo")}</ConPelota></h1>
         <button
           onClick={() => router.push("/menu")}
           className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"

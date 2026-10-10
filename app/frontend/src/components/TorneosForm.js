@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
@@ -62,7 +63,7 @@ export default function TorneosForm() {
   return (
     <div className="w-full max-w-md flex flex-col gap-5 text-ink">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">Torneos</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{"Torneos"}</ConPelota></h1>
         <button onClick={() => router.push("/")} className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 cursor-pointer">
           Volver
         </button>

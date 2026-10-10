@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import MarcaPadelito from "@/components/MarcaPadelito";
@@ -27,7 +28,7 @@ export default function HomeVisitante() {
         <MarcaPadelito className="text-[38px]" />
       </div>
       <div className="flex flex-col gap-2">
-        <h1 className="font-titulo text-5xl font-black uppercase leading-[0.92]">Armá partidos y llevá el marcador</h1>
+        <h1 className="font-titulo text-5xl font-black uppercase leading-[0.92]"><ConPelota>{"Armá partidos y llevá el marcador"}</ConPelota></h1>
         <p className="text-base text-muted">Organizá partidos de pádel con amigos, llevá el puntaje con tu voz o desde el reloj, y guardá tus estadísticas.</p>
       </div>
       <div className="flex flex-col gap-2">

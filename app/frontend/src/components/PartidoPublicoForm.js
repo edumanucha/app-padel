@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
@@ -82,7 +83,7 @@ export default function PartidoPublicoForm({ partidoId }) {
   // Inicio) y abajo un solo botón amarillo (Sumarme o Iniciá sesión).
   return (
     <div className="w-full max-w-sm flex flex-col gap-4">
-      <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("partidoPublico.titulo")}</h1>
+      <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{t("partidoPublico.titulo")}</ConPelota></h1>
       {(() => {
         const fecha = new Date(partido.fecha_hora);
         const intl = INTL_LOCALE[locale] ?? "es-AR";

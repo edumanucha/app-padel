@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import { IconoSinConexion } from "@/components/Icons";
 
 // Pantalla de respaldo sin conexión (2026-09-13, PWA -- "modo sin
@@ -14,7 +15,7 @@ export default function OfflinePage() {
       <span className="w-16 h-16 rounded-full border border-ink/15 flex items-center justify-center text-muted">
         <IconoSinConexion width={32} height={32} />
       </span>
-      <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">Sin conexión</h1>
+      <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{"Sin conexión"}</ConPelota></h1>
       <p className="text-muted text-sm">
         Padelito necesita internet para cargar tus partidos y tu perfil. Revisá tu conexión y volvé a intentar.
       </p>

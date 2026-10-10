@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
@@ -100,7 +101,7 @@ export default function MisPartidosForm() {
   return (
     <div className="w-full max-w-md flex flex-col gap-4 pantalla-grilla">
       <div className="flex items-center justify-between col-completa">
-        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("misPartidos.titulo")}</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{t("misPartidos.titulo")}</ConPelota></h1>
         <button
           onClick={() => router.push("/")}
           className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"

@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
@@ -169,7 +170,7 @@ export default function CargarPartidoForm() {
   return (
     <div className="w-full max-w-md flex flex-col gap-5 text-ink">
       <div className="flex items-start justify-between gap-3">
-        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">Cargar un partido jugado</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{"Cargar un partido jugado"}</ConPelota></h1>
         <button onClick={() => router.back()} className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 cursor-pointer flex-shrink-0">
           Volver
         </button>

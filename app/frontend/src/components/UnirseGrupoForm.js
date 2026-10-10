@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
@@ -74,7 +75,7 @@ export default function UnirseGrupoForm({ codigo }) {
   if (!grupo) {
     return (
       <div className="w-full max-w-md flex flex-col gap-4 text-ink">
-        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{t("grupos.titulo")}</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{t("grupos.titulo")}</ConPelota></h1>
         <p className="text-sm text-muted border-y border-ink/10 py-3">{t("grupos.codigoInvalido")}</p>
         <button onClick={() => router.replace("/grupos")} className="rounded-[6px] border border-ink/15 font-semibold py-2.5 cursor-pointer">
           {t("grupos.volver")}

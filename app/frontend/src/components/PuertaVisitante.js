@@ -1,5 +1,6 @@
 "use client";
 
+import ConPelota from "@/components/ConPelota";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
@@ -75,7 +76,7 @@ export default function PuertaVisitante({ children }) {
     <main className="min-h-[70vh] flex justify-center p-6">
       <div className="w-full max-w-md flex flex-col gap-5 text-ink pt-10">
         <Logo size={44} />
-        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">{titulo}</h1>
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{titulo}</ConPelota></h1>
         <p className="text-base text-muted">{texto}</p>
         <button onClick={irALogin} className="rounded-[6px] bg-accent text-accent-ink font-titulo font-black uppercase text-xl py-2.5 cursor-pointer">
           Crear mi cuenta o entrar

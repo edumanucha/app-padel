@@ -684,3 +684,21 @@ button:not(:disabled):active {
 .sin-anillo {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* La pelotita amarilla arriba de la primera I de los títulos (D-34, ver
+   components/ConPelota.js). Mismo amarillo en modo claro y oscuro. */
+.i-pelota {
+  position: relative;
+  display: inline-block;
+}
+.i-pelota::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -0.3em;
+  width: 0.24em;
+  height: 0.24em;
+  border-radius: 50%;
+  background: #f2c53d;
+  transform: translateX(-50%);
+}
