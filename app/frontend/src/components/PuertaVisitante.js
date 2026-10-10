@@ -16,6 +16,7 @@ const PUBLICAS = [
   "/como-funciona",
   "/privacidad",
   "/pruebas",
+  "/torneos/probar",
   "/marcador-libre/demo",
   "/probar",
   "/reloj",

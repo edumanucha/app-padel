@@ -7,6 +7,13 @@ const nextConfig = {
   outputFileTracingExcludes: {
     "*": ["node_modules/@img/**", "node_modules/sharp/**"],
   },
+  async redirects() {
+    return [
+      // La vista previa de torneos se mudó de /pruebas-torneos a
+      // /torneos/probar (2026-10-10): los links viejos siguen andando.
+      { source: "/pruebas-torneos", destination: "/torneos/probar", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

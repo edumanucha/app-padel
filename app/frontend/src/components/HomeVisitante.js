@@ -12,7 +12,7 @@ import { IconoChevron } from "@/components/Icons";
 const LINKS = [
   ["Probá el Marcadorcito", "El de verdad, con tu reloj y sin cuenta", "/probar"],
   ["Llevá el marcador desde tu reloj", "Cómo se conecta y hasta dónde llega", "/reloj"],
-  ["Probá un torneo", "Americano, mexicano, liga o eliminación", "/pruebas-torneos"],
+  ["Probá un torneo", "Americano, mexicano, liga o eliminación", "/torneos/probar"],
   ["Consejos de pádel", "Más de 160 para jugar mejor", "/consejos"],
   ["Cómo funciona", "Todo lo que hace Padelito", "/como-funciona"],
   ["Quiénes somos", "Quién arma la app y cómo apoyarla", "/quienes-somos"],

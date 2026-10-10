@@ -23,7 +23,7 @@ const ADEMAS = [
   ["Compartí el resultado", "Una tarjeta lista para mandar por WhatsApp o subir a Instagram", "/como-funciona"],
   ["Armá partidos y encontrá con quién jugar", "Por nivel, zona y horario", "/como-funciona"],
   ["Ranking y grupos con tus amigos", "Quién va primero y el cara a cara", "/como-funciona"],
-  ["Torneos entre amigos", "Americano, mexicano, liga o eliminación. Probalo sin cuenta", "/pruebas-torneos"],
+  ["Torneos entre amigos", "Americano, mexicano, liga o eliminación. Probalo sin cuenta", "/torneos/probar"],
   ["Consejos de pádel", "Más de 160 para jugar mejor", "/consejos"],
 ];
 
