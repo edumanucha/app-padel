@@ -119,9 +119,23 @@ export function nivelConfianza(d) {
 // Un consejo que la persona marcó "No me sirve" no vuelve a aparecer; uno
 // que marcó "Me sirvió" pesa más al elegir.
 function ajustarPorValoracion(candidatos, valoraciones) {
+  const versiones = (clave) => Array.from({ length: VARIANTES }, (_, i) => valoraciones[`tip.${clave}.${i}`]);
   return candidatos
-    .filter((c) => valoraciones[`tip.${c.clave}`] !== false)
-    .map((c) => (valoraciones[`tip.${c.clave}`] === true ? { ...c, peso: c.peso * 1.5 } : c));
+    .filter((c) => versiones(c.clave).some((v) => v !== false))
+    .map((c) => (versiones(c.clave).some((v) => v === true) ? { ...c, peso: c.peso * 1.5 } : c));
+}
+
+// 70 consejos (2026-10-10, pedido del usuario: "de 10 a 50 me parece poco,
+// que pase a 70"): 7 versiones por cada problema (tuJuego.tip.<clave>[0..6]).
+// `vuelta` cambia con cada partido, así el mismo problema no repite texto
+// en partidos seguidos; las versiones marcadas "No me sirve" se saltean.
+export const VARIANTES = 7;
+
+function tipDe(clave, vuelta, valoraciones) {
+  const libres = Array.from({ length: VARIANTES }, (_, i) => i).filter((i) => valoraciones[`tip.${clave}.${i}`] !== false);
+  if (libres.length === 0) return null;
+  const v = libres[vuelta % libres.length];
+  return { clave: `tip.${clave}.${v}`, texto: `${clave}.${v}` };
 }
 
 function elMasPesado(lista) {
@@ -138,6 +152,9 @@ export function consejosDePartido(d, partidoId) {
   const actual = d?.conStats.find((p) => p.id === partidoId);
   if (!actual) return null;
   const previos = d.conStats.filter((p) => p.id !== partidoId);
+  // Cuántos partidos con Marcadorcito hubo antes de este (están del más
+  // nuevo al más viejo): cada partido usa otra versión del consejo.
+  const vuelta = d.conStats.length - 1 - d.conStats.indexOf(actual);
   const propio = previos.length >= PARTIDOS_PARA_COMPARAR;
   const ref = propio ? promedio(previos) : { ...d.media, puntos: 50, sufridos: null };
   const m = actual.m;
@@ -220,7 +237,8 @@ export function consejosDePartido(d, partidoId) {
   const tips = unicos(ajustarPorValoracion(mejorar.filter((c) => CON_TIP.has(c.clave)), d.valoraciones))
     .sort(porPeso)
     .slice(0, 2)
-    .map((c) => ({ clave: `tip.${c.clave}`, texto: c.clave }));
+    .map((c) => tipDe(c.clave, vuelta, d.valoraciones))
+    .filter(Boolean);
   return {
     gane: actual.gane,
     bien: unicos(bien).slice(0, 5),
@@ -297,7 +315,7 @@ export function tuJuego(d) {
     titular: fuerte && fuerte.valor > fuerte.media ? fuerte.clave : "enCamino",
     medidores,
     patrones: pats,
-    tip: tip ? { clave: `tip.${tip.clave}`, texto: tip.clave } : null,
+    tip: tip ? tipDe(tip.clave, d.partidos.length, d.valoraciones) : null,
   };
 }
 
