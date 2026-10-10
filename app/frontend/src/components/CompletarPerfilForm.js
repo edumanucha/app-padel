@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import { useLocale } from "@/i18n/LocaleContext";
+import { zonasDe, OTRA_ZONA_VALOR } from "@/lib/zonasPorProvincia";
 
 // Provincia (2026-09-05): se agrega ahora para dejar el terreno preparado
 // para cuando el directorio de canchas cubra más de una provincia -- por
@@ -18,15 +19,6 @@ const PROVINCIAS = [
   "Santiago del Estero", "Tierra del Fuego", "Tucumán",
 ].map((nombre) => ({ valor: nombre.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "_"), etiqueta: nombre }));
 
-const ZONAS = [
-  { valor: "ciudad_de_mendoza", etiqueta: "Ciudad de Mendoza" },
-  { valor: "godoy_cruz", etiqueta: "Godoy Cruz" },
-  { valor: "guaymallen", etiqueta: "Guaymallén" },
-  { valor: "las_heras", etiqueta: "Las Heras" },
-  { valor: "lujan_de_cuyo", etiqueta: "Luján de Cuyo" },
-  { valor: "maipu", etiqueta: "Maipú" },
-];
-const OTRA_ZONA_VALOR = "otra_zona";
 
 // Niveles 1 a 7. Se aclara "(máxima)" y "(mínima)" en los extremos porque
 // en pádel la categoría 1ª es la MÁS ALTA -- al revés de lo intuitivo
@@ -207,7 +199,10 @@ export default function CompletarPerfilForm() {
         <span className={etiquetaClass}>{t("completarPerfil.provincia")}</span>
         <select
           value={provincia}
-          onChange={(e) => setProvincia(e.target.value)}
+          onChange={(e) => {
+            setProvincia(e.target.value);
+            setZona("");
+          }}
           required
           className={inputClass}
         >
@@ -230,7 +225,7 @@ export default function CompletarPerfilForm() {
           <option value="" disabled>
             {t("completarPerfil.elegiUnaOpcion")}
           </option>
-          {ZONAS.map((z) => (
+          {zonasDe(provincia).map((z) => (
             <option key={z.valor} value={z.valor}>
               {z.etiqueta}
             </option>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { useEffect, useState } from "react";
+import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import { useLocale } from "@/i18n/LocaleContext";
 
 const inputClass = "rounded-[6px] border border-ink/15 bg-surface px-3 py-2 text-ink";
@@ -22,6 +22,28 @@ const inputClass = "rounded-[6px] border border-ink/15 bg-surface px-3 py-2 text
 export default function CampoCancha({ value, onChange, onElegir }) {
   const { t } = useLocale();
   const [resultados, setResultados] = useState([]);
+  // Solo canchas de tu provincia (2026-10-10, pedido del usuario: "si sos un
+  // jugador de Mendoza que te muestre canchas de Mendoza"), ahora que hay
+  // canchas de todo el país. Sin perfil cargado todavía, busca en todas.
+  const [provincia, setProvincia] = useState(null);
+
+  useEffect(() => {
+    let vivo = true;
+    usuarioRapido().then(({ data: { user } }) => {
+      if (!user) return;
+      supabase
+        .from("perfiles")
+        .select("provincia")
+        .eq("id", user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (vivo && data?.provincia) setProvincia(data.provincia);
+        });
+    });
+    return () => {
+      vivo = false;
+    };
+  }, []);
 
   async function handleChange(texto) {
     onChange(texto);
@@ -30,12 +52,9 @@ export default function CampoCancha({ value, onChange, onElegir }) {
       setResultados([]);
       return;
     }
-    const { data } = await supabase
-      .from("canchas")
-      .select("id, nombre, zona")
-      .ilike("nombre", `%${texto.trim()}%`)
-      .order("nombre", { ascending: true })
-      .limit(6);
+    let consulta = supabase.from("canchas").select("id, nombre, zona").ilike("nombre", `%${texto.trim()}%`);
+    if (provincia) consulta = consulta.eq("provincia", provincia);
+    const { data } = await consulta.order("nombre", { ascending: true }).limit(6);
     setResultados(data ?? []);
   }
 

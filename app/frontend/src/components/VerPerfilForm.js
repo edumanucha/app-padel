@@ -24,6 +24,7 @@ import { calcularResumenEstadisticas, calcularPuntosRanking } from "@/lib/estadi
 import { IconoTelefono, IconoPersona, IconoMapa, IconoPin, IconoMano, IconoPelota, IconoCampana, IconoMensaje, IconoOjo, IconoOjoTachado, IconoTrofeo, IconoChevron, IconoEstrella } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
+import { zonasDe, etiquetaZona } from "@/lib/zonasPorProvincia";
 
 const PROVINCIAS = [
   "Buenos Aires", "Ciudad Autónoma de Buenos Aires", "Catamarca", "Chaco",
@@ -33,14 +34,6 @@ const PROVINCIAS = [
   "Santiago del Estero", "Tierra del Fuego", "Tucumán",
 ].map((nombre) => ({ valor: nombre.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "_"), etiqueta: nombre }));
 
-const ZONAS = [
-  { valor: "ciudad_de_mendoza", etiqueta: "Ciudad de Mendoza" },
-  { valor: "godoy_cruz", etiqueta: "Godoy Cruz" },
-  { valor: "guaymallen", etiqueta: "Guaymallén" },
-  { valor: "las_heras", etiqueta: "Las Heras" },
-  { valor: "lujan_de_cuyo", etiqueta: "Luján de Cuyo" },
-  { valor: "maipu", etiqueta: "Maipú" },
-];
 
 const NIVELES_VALORES = [1, 2, 3, 4, 5, 6, 7];
 
@@ -51,8 +44,8 @@ function etiquetaNivel(n, t) {
 }
 
 function zonaLabel(valor, t) {
-  const z = ZONAS.find((z) => z.valor === valor);
-  if (z) return z.etiqueta;
+  const etiqueta = etiquetaZona(valor);
+  if (etiqueta) return etiqueta;
   if (valor === "otra_zona") return t("completarPerfil.otraZona");
   return valor;
 }
@@ -604,7 +597,10 @@ export default function VerPerfilForm() {
           <span className={etiquetaCampo}>{t("verPerfil.provincia")}</span>
           <select
             value={provincia}
-            onChange={(e) => setProvincia(e.target.value)}
+            onChange={(e) => {
+              setProvincia(e.target.value);
+              setZona("");
+            }}
             required
             className={inputClass}
           >
@@ -624,7 +620,10 @@ export default function VerPerfilForm() {
             required
             className={inputClass}
           >
-            {ZONAS.map((z) => (
+            <option value="" disabled>
+              {t("completarPerfil.elegiUnaOpcion")}
+            </option>
+            {zonasDe(provincia).map((z) => (
               <option key={z.valor} value={z.valor}>
                 {z.etiqueta}
               </option>
