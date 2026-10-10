@@ -113,6 +113,7 @@ const pt = {
       footerDespues: "em Mendoza",
     },
     directorio: {
+      ejemplo: "Exemplo",
       cargando: "Carregando...",
       titulo: "Jogadores",
       volver: "Voltar",
@@ -373,6 +374,7 @@ const pt = {
       rechazar: "Recusar",
     },
     perfilJugador: {
+      ejemploAviso: "Jogador de exemplo para mostrar como o Padelito funciona. Não é uma pessoa real: não dá para convidá-lo nem mandar mensagens.",
       cargando: "Carregando...",
       noSePudoCargar: "Não foi possível carregar o perfil: {mensaje}",
       titulo: "Perfil",

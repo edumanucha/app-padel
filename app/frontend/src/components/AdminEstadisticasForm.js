@@ -4,6 +4,7 @@ import ConPelota from "@/components/ConPelota";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
+import { PROVINCIAS, etiquetaZona } from "@/lib/zonasPorProvincia";
 
 const etiquetaClass = "text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted";
 
@@ -44,6 +45,92 @@ function Fila({ izq, der, fuerte }) {
   );
 }
 
+const SEXO = { masculino: "Hombre", femenino: "Mujer" };
+const MANO = { diestro: "Diestro", zurdo: "Zurdo" };
+const POSICION = { drive: "Drive", reves: "Revés", indistinto: "Indistinto" };
+const provincia = (v) => PROVINCIAS.find((p) => p.valor === v)?.etiqueta ?? v ?? "–";
+
+// Ficha de un usuario (2026-10-10, pedido del usuario: "poder seleccionar
+// cada usuario que se unió y tener la mayor cantidad de info posible
+// respetando la privacidad"): todo lo que hace en la app, sin nombre, mail,
+// teléfono ni lo que escribe (SQL 094, estadisticas_usuario_admin).
+function FichaUsuario({ f }) {
+  const pe = f.perfil ?? {};
+  const pa = f.partidos ?? {};
+  const porDia = f.por_dia ?? [];
+  const maxDia = Math.max(1, ...porDia.map((d) => d.minutos));
+  return (
+    <div className="flex flex-col gap-3 bg-[#154139] text-[#eaf4f0] rounded-[8px] p-3.5 my-1.5">
+      <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
+        <span className="text-[#8fb6ae]">Provincia</span><span>{provincia(pe.provincia)}</span>
+        <span className="text-[#8fb6ae]">Zona</span><span>{pe.zona ? etiquetaZona(pe.zona) : "–"}</span>
+        <span className="text-[#8fb6ae]">Género</span><span>{SEXO[pe.sexo] ?? pe.sexo ?? "–"}</span>
+        <span className="text-[#8fb6ae]">Nivel</span><span>{pe.nivel ?? "–"}</span>
+        <span className="text-[#8fb6ae]">Mano · posición</span><span>{MANO[pe.mano_habil] ?? pe.mano_habil ?? "–"} · {POSICION[pe.posicion] ?? pe.posicion ?? "–"}</span>
+        <span className="text-[#8fb6ae]">Foto de perfil</span><span>{pe.con_foto ? "Sí" : "No"}</span>
+        <span className="text-[#8fb6ae]">Busca compañero</span><span>{pe.busca_companero ? "Sí" : "No"}</span>
+        <span className="text-[#8fb6ae]">Notificaciones</span><span>{pe.notificaciones ? "Activadas" : "Apagadas"}</span>
+        <span className="text-[#8fb6ae]">Llegó por /probar</span><span>{f.vino_de_probar ? "Sí" : "No"}</span>
+      </div>
+      <div className="grid grid-cols-4 gap-2 border-t border-[#eaf4f0]/15 pt-3">
+        {[
+          [dia(f.alta), "Alta"],
+          [dia(f.ultima), "Última vez"],
+          [f.dias_activos ?? 0, "Días activos"],
+          [`${f.minutos ?? 0}'`, "Minutos"],
+        ].map(([v, t]) => (
+          <div key={t} className="flex flex-col">
+            <span className="font-numero text-xl leading-none">{v}</span>
+            <span className="text-[9.5px] font-bold uppercase tracking-[0.1em] text-[#8fb6ae] mt-1">{t}</span>
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-col gap-1">
+        <span className="text-[9.5px] font-bold uppercase tracking-[0.1em] text-[#8fb6ae]">Minutos por día · 30 días</span>
+        <div className="flex items-end gap-[2px] h-10">
+          {porDia.map((d) => (
+            <div key={d.dia} title={`${dia(d.dia)}: ${d.minutos}'`} className="flex-1 bg-accent rounded-t-[1px]" style={{ height: `${Math.max(d.minutos > 0 ? 10 : 3, (d.minutos / maxDia) * 100)}%`, opacity: d.minutos > 0 ? 1 : 0.2 }} />
+          ))}
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-sm border-t border-[#eaf4f0]/15 pt-3">
+        <span className="text-[#8fb6ae]">Partidos terminados</span><span>{pa.terminados ?? 0} ({pa.ganados ?? 0} ganados)</span>
+        <span className="text-[#8fb6ae]">Con el Marcadorcito</span><span>{pa.con_marcadorcito ?? 0}</span>
+        <span className="text-[#8fb6ae]">Cargados a mano</span><span>{pa.a_mano ?? 0}</span>
+        <span className="text-[#8fb6ae]">Partidos que organizó</span><span>{f.organizo ?? 0}</span>
+        <span className="text-[#8fb6ae]">Grupos</span><span>{f.grupos ?? 0}</span>
+        <span className="text-[#8fb6ae]">Torneos que armó</span><span>{f.torneos ?? 0}</span>
+        <span className="text-[#8fb6ae]">Mensajes enviados</span><span>{f.mensajes_enviados ?? 0}</span>
+        <span className="text-[#8fb6ae]">Jugadores frecuentes</span><span>{f.frecuentes ?? 0}</span>
+        <span className="text-[#8fb6ae]">Fallas</span><span>{f.fallas ?? 0}</span>
+      </div>
+      {(f.modos ?? []).length > 0 && (
+        <div className="text-sm border-t border-[#eaf4f0]/15 pt-3">
+          <span className="text-[#8fb6ae]">Cómo lleva los puntos: </span>
+          {f.modos.map((m) => `${NOMBRE_MODO[m.modo] ?? m.modo} ${m.n}`).join(" · ")}
+        </div>
+      )}
+      {(f.pantallas ?? []).length > 0 && (
+        <div className="flex flex-col text-sm border-t border-[#eaf4f0]/15 pt-3">
+          <span className="text-[9.5px] font-bold uppercase tracking-[0.1em] text-[#8fb6ae] mb-1">Lo que más abre</span>
+          {f.pantallas.map((x) => (
+            <div key={x.pantalla} className="flex justify-between gap-3 py-0.5">
+              <span className="min-w-0 break-words">{x.pantalla}</span>
+              <span className="font-numero">{x.n}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {(f.dispositivos ?? []).length > 0 && (
+        <div className="text-sm border-t border-[#eaf4f0]/15 pt-3">
+          <span className="text-[#8fb6ae]">Dispositivos: </span>
+          {f.dispositivos.join(" · ")}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Numero({ valor, titulo }) {
   return (
     <div className="flex flex-col">
@@ -60,6 +147,20 @@ export default function AdminEstadisticasForm() {
   const [datos, setDatos] = useState(null);
   const [partidos, setPartidos] = useState(null); // SQL 083 (si todavía no se corrió, queda en null)
   const [error, setError] = useState("");
+  const [quienes, setQuienes] = useState(null); // SQL 094 (null si todavía no se corrió)
+  const [abierto, setAbierto] = useState(null); // número de usuario con la ficha abierta
+  const [fichas, setFichas] = useState({});
+
+  async function abrirFicha(n) {
+    if (abierto === n) {
+      setAbierto(null);
+      return;
+    }
+    setAbierto(n);
+    if (fichas[n]) return;
+    const { data } = await supabase.rpc("estadisticas_usuario_admin", { p_n: n });
+    if (data) setFichas((f) => ({ ...f, [n]: data }));
+  }
 
   async function cargar() {
     setError("");
@@ -70,11 +171,14 @@ export default function AdminEstadisticasForm() {
       router.replace("/login");
       return;
     }
-    const [{ data, error: rpcError }, { data: dataPartidos }] = await Promise.all([
+    const [{ data, error: rpcError }, { data: dataPartidos }, { data: dataQuienes }] = await Promise.all([
       supabase.rpc("estadisticas_admin"),
       supabase.rpc("estadisticas_partidos_admin"),
+      supabase.rpc("estadisticas_quienes_admin"),
     ]);
     setPartidos(dataPartidos ?? null);
+    setQuienes(dataQuienes ?? null);
+    setFichas({});
     if (rpcError) {
       if (/no_permitido/.test(rpcError.message ?? "")) {
         router.replace("/");
@@ -137,6 +241,47 @@ export default function AdminEstadisticasForm() {
         <Numero valor={`${minutos7}'`} titulo="Uso 7 días" />
         <Numero valor={`${minPorActivo}'`} titulo="Por activo" />
       </div>
+
+      {quienes && (
+        <Seccion titulo="Quiénes son" nota="Usuarios reales por provincia, género y nivel.">
+          {(quienes.por_provincia ?? []).map((x) => (
+            <Fila key={x.provincia} izq={provincia(x.provincia)} der={x.n} />
+          ))}
+          {(() => {
+            const total = (quienes.por_sexo ?? []).reduce((a, x) => a + x.n, 0);
+            return total > 0 ? (
+              <div className="flex h-7 rounded-[6px] overflow-hidden mt-2 text-xs font-bold">
+                {quienes.por_sexo.map((x, i) => (
+                  <div
+                    key={x.sexo}
+                    className={`flex items-center px-2 whitespace-nowrap overflow-hidden ${i === 0 ? "bg-[#154139] text-[#eaf4f0]" : "bg-accent text-accent-ink"}`}
+                    style={{ width: `${(x.n / total) * 100}%` }}
+                  >
+                    {SEXO[x.sexo] ?? x.sexo} {x.n} · {pct(x.n, total)}
+                  </div>
+                ))}
+              </div>
+            ) : null;
+          })()}
+          {(quienes.por_nivel ?? []).length > 0 && (
+            <div className="flex flex-col gap-1 mt-2">
+              <span className="text-xs text-muted">Por nivel</span>
+              <div className="flex items-end gap-1 h-14">
+                {quienes.por_nivel.map((x) => (
+                  <div key={x.nivel} className="flex-1 flex flex-col items-center justify-end h-full gap-0.5">
+                    <div
+                      className="w-full bg-[#154139] rounded-t-[2px]"
+                      style={{ height: `${Math.max(8, (x.n / Math.max(1, ...quienes.por_nivel.map((y) => y.n))) * 100)}%` }}
+                      title={`Nivel ${x.nivel}: ${x.n}`}
+                    />
+                    <span className="text-[10.5px] text-muted">{x.nivel}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </Seccion>
+      )}
 
       {partidos && (
         <Seccion titulo="Partidos terminados" nota="Llevados con el Marcadorcito vs. cargados a mano después de jugarlos (sin estadísticas de puntos).">
@@ -224,17 +369,30 @@ export default function AdminEstadisticasForm() {
         )}
       </Seccion>
 
-      <Seccion titulo="Usuarios" nota="Por orden de alta. Alta · última vez · días activos · minutos · partidos terminados.">
+      <Seccion titulo="Usuarios" nota="Por orden de alta. Tocá uno para ver su ficha. Alta · última vez · días activos · minutos · partidos terminados.">
         {(datos.usuarios ?? []).length === 0 ? (
           <p className="text-sm text-muted">Todavía no hay usuarios.</p>
         ) : (
-          datos.usuarios.map((u) => (
-            <Fila
-              key={u.n}
-              izq={`Usuario ${u.n}`}
-              der={`${dia(u.alta)} · ${dia(u.ultima)} · ${u.dias_activos ?? 0} d · ${u.minutos ?? 0}' · ${u.partidos ?? 0} p`}
-            />
-          ))
+          datos.usuarios.map((u) => {
+            const q = (quienes?.usuarios ?? []).find((x) => x.n === u.n);
+            return (
+              <div key={u.n}>
+                <button type="button" onClick={() => abrirFicha(u.n)} className="w-full text-left cursor-pointer" aria-expanded={abierto === u.n}>
+                  <Fila
+                    izq={
+                      <>
+                        <span className="font-bold">Usuario {u.n}</span>
+                        {q && <span className="text-muted"> · {provincia(q.provincia)} · {SEXO[q.sexo] ?? q.sexo}</span>}
+                      </>
+                    }
+                    der={`${dia(u.alta)} · ${dia(u.ultima)} · ${u.dias_activos ?? 0} d · ${u.minutos ?? 0}' · ${u.partidos ?? 0} p`}
+                  />
+                </button>
+                {abierto === u.n &&
+                  (fichas[u.n] ? <FichaUsuario f={fichas[u.n]} /> : <p className="text-sm text-muted py-2">Cargando ficha…</p>)}
+              </div>
+            );
+          })
         )}
       </Seccion>
 

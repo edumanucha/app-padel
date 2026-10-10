@@ -52,6 +52,21 @@ const MEDALLAS = [
   { color: "#c98a4b", texto: "#3a2408" }, // 3°
 ];
 
+// Jugadores de ejemplo (es_demo, 2026-10-10, pedido del usuario: "dejemos
+// los usuarios de demo con alguna marquita"): etiqueta "Ejemplo" al lado del
+// nombre, así nadie los confunde con gente real.
+function EtiquetaEjemplo({ t, oscuro = false }) {
+  return (
+    <span
+      className={`inline-block align-middle ml-1.5 rounded-full border px-1.5 text-[9.5px] font-bold uppercase tracking-[0.1em] ${
+        oscuro ? "border-[#eaf4f0]/35 text-[#8fb6ae]" : "border-ink/30 text-muted"
+      }`}
+    >
+      {t("directorio.ejemplo")}
+    </span>
+  );
+}
+
 function ColumnaPodio({ jugador, puesto, maxPuntos, animar, onClick, t }) {
   const medalla = MEDALLAS[puesto - 1];
   if (!jugador) return <div className="flex-1" />;
@@ -71,6 +86,7 @@ function ColumnaPodio({ jugador, puesto, maxPuntos, animar, onClick, t }) {
   return (
     <button type="button" onClick={onClick} className="flex-1 min-w-0 flex flex-col items-center gap-1 cursor-pointer">
       <span className="text-xs font-semibold text-[#c4dad3] truncate max-w-full px-1">{jugador.nombre}</span>
+      {jugador.es_demo && <EtiquetaEjemplo t={t} oscuro />}
       <span
         className={`font-numero font-bold leading-none inline-block ${esPrimero ? "text-[2.6rem]" : "text-[2.2rem]"} ${esPrimero && animar ? "podio-pop" : ""}`}
       >
@@ -440,7 +456,10 @@ export default function DirectorioJugadoresForm() {
                   {i + 4}
                 </span>
                 <div className="flex flex-col flex-1 min-w-0">
-                  <span className="font-semibold truncate">{j.nombre}</span>
+                  <span className="font-semibold truncate">
+                    {j.nombre}
+                    {j.es_demo && <EtiquetaEjemplo t={t} />}
+                  </span>
                   {j.esGrupo ? (
                     <span className="text-xs text-muted">
                       {j.partidos_jugados > 0 ? t("grupos.ganadosPerdidos", { g: j.pg, p: j.pp }) : t("directorio.sinPartidosJugados")}

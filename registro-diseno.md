@@ -72,6 +72,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-42 | `diseno-42-filtro-canchas` | 2026-10-10 | Canchas: cambiar de provincia, pastillas por localidad con cantidad de clubes y buscador; en Buenos Aires, primero regiones | Pendiente de revisión |
 | D-43 | `diseno-43-canchas-cabecera-verde` | 2026-10-10 | Canchas: bloque verde con la provincia, "Cambiar" amarillo, buscador y cuántos clubes y localidades; filas con la cantidad de canchas a la derecha | Pendiente de revisión |
 | D-44 | `diseno-44-cancha-sin-resenas` | 2026-10-10 | Ficha del club: sin reseñas; botón amarillo Ver en Google Maps | Pendiente de revisión |
+| D-45 | `diseno-45-jugadores-ejemplo-y-ficha-usuario` | 2026-10-10 | Jugadores de ejemplo con etiqueta "Ejemplo" (directorio, ranking, perfil) y estadísticas con "Quiénes son" y ficha por usuario | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -480,6 +481,19 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** ninguna; pedido directo.
 - **Elegida por el usuario:** sacar las reseñas.
 - **Notas / qué mirar en la evaluación:** que el botón abra el club correcto en canchas de otras provincias.
+
+### D-45 · `diseno-45-jugadores-ejemplo-y-ficha-usuario` — Jugadores de ejemplo y ficha por usuario (2026-10-10)
+
+- **Qué cambió:**
+  - Los jugadores demo vuelven al directorio, el ranking y su perfil con una etiqueta chica gris "Ejemplo" al lado del nombre (en el podio, versión clara sobre el verde).
+  - En el perfil de un jugador de ejemplo: la etiqueta, la aclaración "Jugador de ejemplo para mostrar cómo funciona Padelito. No es una persona real…", y sin botones de mensaje, frecuente, felicitar ni invitar.
+  - No aparecen en buscadores, invitaciones, compañero fijo, grupos ni sugerencias (siguen inactivos en la base).
+  - Estadísticas (/admin/estadisticas, solo superusuario): sección "Quiénes son" (por provincia, barra de género con %, barras por nivel) y en la lista de usuarios, provincia y género; tocando un usuario se abre su ficha (perfil, alta, última vez, días activos, minutos, minutos por día, partidos, grupos, torneos, mensajes enviados, frecuentes, fallas, modo de marcador, pantallas más abiertas, dispositivos, si llegó por /probar). Siguen siendo "Usuario N", sin nombre, mail ni teléfono, como dice la política de privacidad.
+- **Código:** `DirectorioJugadoresForm.js` (`EtiquetaEjemplo`), `PerfilJugadorForm.js`, `AdminEstadisticasForm.js` (`FichaUsuario`), textos `directorio.ejemplo` y `perfilJugador.ejemploAviso` en es/pt/en; SQL 094.
+- **Por qué:** sin los demo la app quedaba vacía ("no me gusta que quede tan vacío"), pero sin engañar a nadie; y el usuario quiere conocer a cada persona que se une.
+- **Opciones mostradas (maqueta):** `docs/maquetas/maquetas-marca-demo.html`: X etiqueta "Ejemplo", Y nombre en gris y cursiva, Z etiqueta y sin puesto; y la maqueta de estadísticas.
+- **Elegida por el usuario:** X ("dejá lo del ejemplo") + la aclaración en el perfil.
+- **Notas / qué mirar en la evaluación:** que la etiqueta no corte nombres largos en el podio; que la ficha se lea bien en el celu.
 
 <!-- Plantilla para cada cambio nuevo:
 

@@ -190,7 +190,15 @@ export default function PerfilJugadorForm({ jugadorId }) {
             </div>
             <span className="font-titulo font-black uppercase text-[2.6rem] leading-[0.9] flex-1 min-w-0 break-words">
               {jugador.nombre}
+              {jugador.es_demo && (
+                <span className="inline-block align-middle ml-2 rounded-full border border-ink/30 px-2 py-0.5 text-[11px] font-bold tracking-[0.1em] text-muted font-sans">
+                  {t("directorio.ejemplo")}
+                </span>
+              )}
             </span>
+            {/* Jugadores de ejemplo (2026-10-10): sin mensajes, frecuentes,
+                felicitaciones ni invitaciones -- no hay nadie del otro lado. */}
+            {!jugador.es_demo && (
             <div className="flex items-center gap-1 flex-shrink-0">
               <button
                 onClick={handleToggleFrecuente}
@@ -207,7 +215,10 @@ export default function PerfilJugadorForm({ jugadorId }) {
                 <IconoMensaje width={16} height={16} />
               </button>
             </div>
+            )}
           </div>
+
+          {jugador.es_demo && <p className="text-sm text-muted -mt-1">{t("perfilJugador.ejemploAviso")}</p>}
 
           {/* Números grandes con divisores, como en el Inicio. */}
           <div className="grid grid-cols-3">
@@ -319,6 +330,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
                       </span>
                       <span className="flex items-center gap-2 flex-shrink-0">
                         <span className="font-titulo font-black text-xl leading-none">+{p.puntos_ranking} pts</span>
+                        {!jugador.es_demo && (
                         <button
                           type="button"
                           onClick={() => handleToggleKudos(p.partido_id)}
@@ -328,6 +340,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
                           <IconoPulgar width={13} height={13} />
                           {p.kudos_count > 0 ? p.kudos_count : ""}
                         </button>
+                        )}
                       </span>
                     </div>
                   ))}
@@ -339,7 +352,7 @@ export default function PerfilJugadorForm({ jugadorId }) {
           <p className="text-xs text-muted">{t("perfilJugador.telefonoAviso")}</p>
 
           {/* Invitar: el único botón amarillo de la pantalla. */}
-          {misPartidosAbiertos.length > 0 && (
+          {!jugador.es_demo && misPartidosAbiertos.length > 0 && (
             <div className="flex flex-col gap-2 pt-3 border-t border-ink/10">
               <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{t("perfilJugador.invitarAUno")}</span>
               <select
