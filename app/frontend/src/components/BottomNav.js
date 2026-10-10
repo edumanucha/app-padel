@@ -118,7 +118,7 @@ export default function BottomNav() {
     </header>
     <nav
       data-guia="navegacion"
-      className="lg:hidden fixed bottom-4 left-4 right-4 max-w-md mx-auto flex items-center justify-around py-2.5 rounded-[8px] z-40"
+      className="lg:hidden fixed bottom-4 left-4 right-4 max-w-md mx-auto flex items-center gap-1 px-1.5 py-2.5 rounded-[8px] z-40"
       /* Barra oscura tipo cartel (rediseño paso C, 2026-10-01). */
       style={{ background: "#10201a", boxShadow: "0 4px 16px rgba(20,38,31,0.22)" }}
     >
@@ -128,12 +128,15 @@ export default function BottomNav() {
           <button
             key={href}
             onClick={() => router.push(href)}
-            className={`flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-[6px] cursor-pointer ${ activa ? "bg-accent text-accent-ink" : "text-[#8fb6ae]" }`}
+            /* Los 4 botones del mismo ancho (flex-1), 2026-10-10, a pedido del
+               usuario: antes medían según la palabra y "Marcadorcito" quedaba
+               más ancho que "Inicio", con la marca amarilla de distinto tamaño. */
+            className={`flex-1 min-w-0 flex flex-col items-center gap-0.5 px-1 py-1.5 rounded-[6px] cursor-pointer ${ activa ? "bg-accent text-accent-ink" : "text-[#8fb6ae]" }`}
           >
             <span>
               <Icono />
             </span>
-            <span className="text-[10px] font-heading font-semibold">{t(`nav.${key}`)}</span>
+            <span className="text-[10px] font-heading font-semibold max-w-full truncate">{t(`nav.${key}`)}</span>
           </button>
         );
       })}

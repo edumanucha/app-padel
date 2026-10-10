@@ -64,6 +64,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-34 | `diseno-34-i-con-pelota` | 2026-10-09 | La pelotita amarilla de Padelito como punto de la primera I en el título de cada pantalla (no en títulos con Í acentuada ni en nombres) | Pendiente de revisión |
 | D-35 | `diseno-35-celu-cerca` | 2026-10-09 | Marcadorcito: al elegir el modo, consejo con canchita para dejar el celu cerca, del lado donde jugás | Pendiente de revisión |
 | D-36 | `diseno-36-pelotita-cada-pantalla` | 2026-10-10 | La pelotita de la i en al menos un texto de cada pantalla principal (Inicio, Jugadores, Perfil, Marcadorcito) y en la imagen para compartir | Pendiente de revisión |
+| D-37 | `diseno-37-barra-botones-iguales` | 2026-10-10 | Barra de abajo: los 4 botones del mismo ancho, la marca amarilla siempre del mismo tamaño | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -373,6 +374,15 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Por qué:** pedido del usuario: "que haya al menos uno por pantalla", en lugares que ya existen, sin crear vistas nuevas.
 - **Elegida por el usuario:** sí (los tres propuestos, más al menos uno en Inicio y Jugadores).
 - **Notas / qué mirar en la evaluación:** la pelotita verde sobre el botón amarillo del Inicio; "Ranking" más grande en Jugadores; la imagen para compartir en WhatsApp.
+
+### D-37 · `diseno-37-barra-botones-iguales` — botones de la barra de abajo del mismo ancho (2026-10-10)
+
+- **Qué cambió:** los 4 botones de la barra de abajo del celu (Home, Jugadores, Marcadorcito, Perfil) ahora miden lo mismo. Antes cada uno medía según su palabra, y la marca amarilla de la pantalla activa cambiaba de tamaño ("Marcadorcito" más ancho que "Home").
+- **Código:** `components/BottomNav.js` (botones `flex-1`, texto con `truncate`).
+- **Por qué:** pedido del usuario: "me parece que tienen distinto tamaño".
+- **Opciones mostradas (maqueta):** antes / después.
+- **Elegida por el usuario:** después ("dale aplica").
+- **Notas / qué mirar en la evaluación:** en celus angostos, que "Marcadorcito" entre sin cortarse.
 
 <!-- Plantilla para cada cambio nuevo:
 
