@@ -7,6 +7,7 @@ import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import HojaAbajo from "@/components/HojaAbajo";
 import PelotaLoader from "@/components/PelotaLoader";
+import CargandoPantalla from "@/components/CargandoPantalla";
 import AvatarUpload from "@/components/AvatarUpload";
 import Logo from "@/components/Logo";
 import InstalarApp from "@/components/InstalarApp";
@@ -495,12 +496,7 @@ export default function VerPerfilForm() {
   }
 
   if (cargando) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-2 text-muted">
-        <PelotaLoader />
-        <p>{t("verPerfil.cargando")}</p>
-      </div>
-    );
+    return <CargandoPantalla texto={t("verPerfil.cargando")} />;
   }
 
   if (perfilInactivo) {

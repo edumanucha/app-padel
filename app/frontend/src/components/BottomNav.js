@@ -60,6 +60,17 @@ export default function BottomNav() {
   const router = useRouter();
   const { t } = useLocale();
   const [conSesion, setConSesion] = useState(false);
+  // Fluidez (2026-10-10, pedido del usuario: "lo veo poco fluido"):
+  // - la pestaña tocada se marca al instante, sin esperar a que cargue la
+  //   pantalla nueva (antes parecía que el toque no había entrado);
+  // - las 4 pantallas se precargan apenas aparece la barra, así al tocar
+  //   no hay que esperar a bajar su código.
+  const [tocada, setTocada] = useState(null);
+  const [pathAnterior, setPathAnterior] = useState(pathname);
+  if (pathAnterior !== pathname) {
+    setPathAnterior(pathname);
+    setTocada(null);
+  }
 
   useEffect(() => {
     let activo = true;
@@ -70,6 +81,17 @@ export default function BottomNav() {
       activo = false;
     };
   }, [pathname]);
+
+  useEffect(() => {
+    if (!conSesion) return;
+    TABS_COMPU.forEach(({ href }) => router.prefetch(href));
+    router.prefetch("/perfil");
+  }, [conSesion, router]);
+
+  function ir(href) {
+    setTocada(href);
+    router.push(href);
+  }
 
   if (!conSesion || debeOcultarse(pathname)) return null;
 
@@ -86,11 +108,11 @@ export default function BottomNav() {
         <MarcaPadelito className="text-[28px] text-[#eaf4f0]" />
       </button>
       {TABS_COMPU.map(({ href, texto, Icono }) => {
-        const activa = href === "/" ? pathname === "/" : pathname.startsWith(href);
+        const activa = tocada ? tocada === href : href === "/" ? pathname === "/" : pathname.startsWith(href);
         return (
           <button
             key={href}
-            onClick={() => router.push(href)}
+            onClick={() => ir(href)}
             className={`flex items-center gap-2 px-3 py-2 rounded-[6px] text-sm font-heading font-semibold cursor-pointer ${ activa ? "bg-accent text-accent-ink" : "text-[#8fb6ae] hover:bg-white/10 hover:text-[#eaf4f0]" }`}
           >
             <Icono width={18} height={18} />
@@ -123,11 +145,11 @@ export default function BottomNav() {
       style={{ background: "#10201a", boxShadow: "0 4px 16px rgba(20,38,31,0.22)" }}
     >
       {TABS.map(({ href, key, Icono }) => {
-        const activa = pathname === href;
+        const activa = tocada ? tocada === href : pathname === href;
         return (
           <button
             key={href}
-            onClick={() => router.push(href)}
+            onClick={() => ir(href)}
             /* Los 4 botones del mismo ancho (flex-1), 2026-10-10, a pedido del
                usuario: antes medían según la palabra y "Marcadorcito" quedaba
                más ancho que "Inicio", con la marca amarilla de distinto tamaño. */

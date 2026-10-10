@@ -6,6 +6,7 @@ import ConPelota from "@/components/ConPelota";
 import { supabase } from "@/lib/supabaseClient";
 import { usuarioActual, sinConexion } from "@/lib/marcadorOffline";
 import PelotaLoader from "@/components/PelotaLoader";
+import CargandoPantalla from "@/components/CargandoPantalla";
 import Logo from "@/components/Logo";
 import DotDigit from "@/components/DotDigit";
 import IlustracionCancha from "@/components/IlustracionCancha";
@@ -429,12 +430,7 @@ export default function HomeForm() {
   if (visitante) return <HomeVisitante />;
 
   if (cargando) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-2 text-muted">
-        <PelotaLoader />
-        <p>{t("home.cargando")}</p>
-      </div>
-    );
+    return <CargandoPantalla texto={t("home.cargando")} />;
   }
 
   if (homeSinSenal) {

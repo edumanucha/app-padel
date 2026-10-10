@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
+import CargandoPantalla from "@/components/CargandoPantalla";
 import Toggle from "@/components/Toggle";
 import CampoCancha from "@/components/CampoCancha";
 import { IconoPlay, IconoPelota } from "@/components/Icons";
@@ -292,12 +293,7 @@ export default function MarcadorLibreForm() {
   }
 
   if (verificandoSesion) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-2 text-muted">
-        <PelotaLoader />
-        <p>Cargando...</p>
-      </div>
-    );
+    return <CargandoPantalla texto={"Cargando..."} />;
   }
 
   return (
