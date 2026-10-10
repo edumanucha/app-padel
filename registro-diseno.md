@@ -69,6 +69,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-39 | `diseno-39-podio-escalones` | 2026-10-10 | Podio del ranking: las barras suben una por una desde abajo sin estirar el cartel y el 1° hace un pop amarillo | Pendiente de revisión |
 | D-40 | `diseno-40-duelo-grupo-inicio` | 2026-10-10 | Inicio: cartel VS con vos contra el que tenés arriba en tu grupo (no aparece sin grupo) | Pendiente de revisión |
 | D-41 | `diseno-41-demo-modos-elegibles` | 2026-10-10 | Demo del Marcadorcito: los modos se pueden tocar y van en orden Reloj, Cámara, Voz, Botones | Pendiente de revisión |
+| D-42 | `diseno-42-filtro-canchas` | 2026-10-10 | Canchas: cambiar de provincia, pastillas por localidad con cantidad de clubes y buscador; en Buenos Aires, primero regiones | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -436,6 +437,20 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Por qué:** pedido del usuario: "que se puedan seleccionar los botones de cámara, voz, reloj o botones, que si marco uno me muestre cómo se juega", "que el orden sea reloj, cámara, voz y botones".
 - **Opciones mostradas:** ninguna, el pedido era puntual.
 - **Notas / qué mirar en la evaluación:** el modo elegido queda resaltado (`aria-pressed`).
+
+### D-42 · `diseno-42-filtro-canchas` — Canchas: provincia, pastillas y buscador (2026-10-10)
+
+- **Qué cambió:**
+  - Debajo del título va la provincia en grande con "cambiar" al lado (abre la lista de provincias del celu). Arranca en la de tu perfil.
+  - Hay un buscador por nombre, localidad o dirección.
+  - Abajo, pastillas deslizables: "Todas" y cada localidad con cuántos clubes tiene, de más a menos.
+  - En Buenos Aires hay primero pastillas verdes de región (Zona Norte, Oeste, Sur, La Plata, Costa, Interior) y, al elegir una, las de sus partidos.
+  - Un renglón cuenta los clubes ("14 clubes en Maipú").
+- **Código:** `CanchasListadoForm.js`, `lib/zonasPorProvincia.js` (`PROVINCIAS`, `regionDe`), textos `canchas.*` en es/pt/en.
+- **Por qué:** ahora hay canchas de todo el país (088 ATC, 089 OpenStreetMap) y la pantalla solo mostraba las de tu provincia, sin filtro.
+- **Opciones mostradas (maqueta):** `docs/maquetas/maquetas-filtro-canchas.html`: A dos desplegables, B pastillas con cantidad, C cerca mío + buscador.
+- **Elegida por el usuario:** B + el buscador de C.
+- **Notas / qué mirar en la evaluación:** en CABA el nombre de la provincia es largo y puede ocupar dos renglones.
 
 <!-- Plantilla para cada cambio nuevo:
 

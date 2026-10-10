@@ -53,3 +53,32 @@ export function etiquetaZona(valor) {
   }
   return null;
 }
+
+// Las 24 provincias para los selects, mismo valor que perfiles.provincia.
+export const PROVINCIAS = [
+  "Buenos Aires", "Ciudad Autónoma de Buenos Aires", "Catamarca", "Chaco",
+  "Chubut", "Córdoba", "Corrientes", "Entre Ríos", "Formosa", "Jujuy",
+  "La Pampa", "La Rioja", "Mendoza", "Misiones", "Neuquén", "Río Negro",
+  "Salta", "San Juan", "San Luis", "Santa Cruz", "Santa Fe",
+  "Santiago del Estero", "Tierra del Fuego", "Tucumán",
+].map((etiqueta) => ({ valor: slugZona(etiqueta), etiqueta }));
+
+// Regiones de la provincia de Buenos Aires para agrupar sus 135 partidos en
+// la pantalla Canchas (2026-10-10, opción B de las maquetas). Lo que no está
+// en ninguna lista cae en "Interior".
+const REGIONES_BUENOS_AIRES = {
+  "Zona Norte": ["Vicente López", "San Isidro", "San Fernando", "Tigre", "General San Martín", "San Miguel", "Malvinas Argentinas", "José C. Paz", "Pilar", "Escobar", "Campana", "Zárate"],
+  "Zona Oeste": ["Tres de Febrero", "Hurlingham", "Ituzaingó", "Morón", "Merlo", "Moreno", "La Matanza", "General Rodríguez", "Marcos Paz", "Luján"],
+  "Zona Sur": ["Avellaneda", "Lanús", "Lomas de Zamora", "Quilmes", "Berazategui", "Florencio Varela", "Almirante Brown", "Esteban Echeverría", "Ezeiza", "Presidente Perón", "San Vicente", "Cañuelas"],
+  "La Plata": ["La Plata", "Berisso", "Ensenada"],
+  "Costa": ["General Pueyrredón", "La Costa", "Pinamar", "Villa Gesell", "Mar Chiquita", "General Alvarado", "Necochea", "Monte Hermoso", "General Lavalle"],
+};
+
+export const ORDEN_REGIONES = [...Object.keys(REGIONES_BUENOS_AIRES), "Interior"];
+
+export function regionDe(zona) {
+  for (const [region, partidos] of Object.entries(REGIONES_BUENOS_AIRES)) {
+    if (partidos.includes(zona)) return region;
+  }
+  return "Interior";
+}
