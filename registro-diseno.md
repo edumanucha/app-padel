@@ -237,7 +237,7 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 ### D-23 · `diseno-23-link-reloj` — link compartible (2026-10-05)
 
 - **Qué cambió:** imagen de vista previa y textos al compartir el link (`opengraph-image.js`, metadatos del layout); `/probar` redirige al Marcadorcito de ejemplo; `/reloj` explica el modo reloj; guía del celu con el alcance real (reloj casi 9 m, voz menos de 2 m).
-- **Link:** `padelito-app.vercel.app` (el viejo `frontend-ten-theta-89.vercel.app` sigue andando).
+- **Link:** `padelitoapp.com.ar` desde 2026-10-09 (antes `padelito-app.vercel.app`; los viejos `padelito-app.vercel.app` y `frontend-ten-theta-89.vercel.app` siguen andando).
 
 ### D-24 · `diseno-24-cerrar-y-eliminar` — cerrar partidos abiertos y eliminar la cuenta (2026-10-05)
 

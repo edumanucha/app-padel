@@ -18,7 +18,7 @@ const puppeteer = require("puppeteer-core");
 const { YO, id, tablas, rpcs } = require("./datos-demo");
 
 const RAIZ = path.resolve(__dirname, "..", "..");
-const BASE = process.env.BASE || "https://frontend-ten-theta-89.vercel.app";
+const BASE = process.env.BASE || "https://padelitoapp.com.ar";
 const CARPETA = process.env.CARPETA || "actual";
 const SOLO = process.env.SOLO ? process.env.SOLO.split(",") : null;
 const SALIDA = path.join(RAIZ, "docs", "libro-diseno", "img", CARPETA);
