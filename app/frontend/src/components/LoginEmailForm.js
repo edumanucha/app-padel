@@ -53,9 +53,14 @@ export default function LoginEmailForm() {
     // /nueva-contrasena. Se muestra el mismo mensaje exista o no la cuenta,
     // así no se puede averiguar qué mails están registrados.
     if (modo === "recuperar") {
-      await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${window.location.origin}/nueva-contrasena`,
-      });
+      // Con tope de 10 s: si el envío del mail tarda, no se deja la pantalla
+      // girando para siempre (el pedido sigue su curso del lado del servidor).
+      await Promise.race([
+        supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: `${window.location.origin}/nueva-contrasena`,
+        }),
+        new Promise((r) => setTimeout(r, 10000)),
+      ]);
       setCargando(false);
       setLinkEnviado(true);
       return;
