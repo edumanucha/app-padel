@@ -338,7 +338,7 @@ const es = {
       olvideClave: "¿Te olvidaste la contraseña?",
       recuperarExplicacion: "Poné el mail de tu cuenta y te mandamos un link para elegir una contraseña nueva.",
       mandarLink: "Mandarme el link",
-      linkEnviado: "Listo: si ese mail tiene una cuenta en Padelito, te llega un link para elegir una contraseña nueva. Revisá también la carpeta de spam.",
+      linkEnviado: "Listo: si ese mail tiene una cuenta en Padelito, te llega un link para elegir una contraseña nueva. Revisá también la carpeta de spam. Si te registraste con Google, no necesitás contraseña: entrá con el botón de Google.",
     },
     nuevaClave: {
       titulo: "Nueva contraseña",

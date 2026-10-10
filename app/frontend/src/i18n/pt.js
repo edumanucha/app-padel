@@ -338,7 +338,7 @@ const pt = {
       olvideClave: "Esqueceu a senha?",
       recuperarExplicacion: "Coloque o email da sua conta e enviamos um link para escolher uma senha nova.",
       mandarLink: "Enviar o link",
-      linkEnviado: "Pronto: se esse email tiver uma conta no Padelito, chega um link para escolher uma senha nova. Confira também o spam.",
+      linkEnviado: "Pronto: se esse email tiver uma conta no Padelito, chega um link para escolher uma senha nova. Confira também o spam. Se você se cadastrou com o Google, não precisa de senha: entre com o botão do Google.",
     },
     nuevaClave: {
       titulo: "Nova senha",

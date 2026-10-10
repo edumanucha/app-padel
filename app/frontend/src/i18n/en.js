@@ -338,7 +338,7 @@ const en = {
       olvideClave: "Forgot your password?",
       recuperarExplicacion: "Enter your account email and we'll send you a link to choose a new password.",
       mandarLink: "Send me the link",
-      linkEnviado: "Done: if that email has a Padelito account, you'll get a link to choose a new password. Check your spam folder too.",
+      linkEnviado: "Done: if that email has a Padelito account, you'll get a link to choose a new password. Check your spam folder too. If you signed up with Google, you don't need a password: use the Google button.",
     },
     nuevaClave: {
       titulo: "New password",
