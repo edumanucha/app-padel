@@ -964,7 +964,7 @@ const en = {
       seDesbloquea: "Unlocks with 10 matches",
       sinPatrones: "Nothing repeats yet. Keep playing.",
       medidor: {
-        salvados: "Serve held (breaks saved)",
+        salvados: "Serve defended",
         quiebres: "Breaks converted",
         cierre: "Game points closed",
         puntos: "Points won",

@@ -74,6 +74,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-44 | `diseno-44-cancha-sin-resenas` | 2026-10-10 | Ficha del club: sin reseñas; botón amarillo Ver en Google Maps | Pendiente de revisión |
 | D-45 | `diseno-45-jugadores-ejemplo-y-ficha-usuario` | 2026-10-10 | Jugadores de ejemplo con etiqueta "Ejemplo" (directorio, ranking, perfil) y estadísticas con "Quiénes son" y ficha por usuario | Pendiente de revisión |
 | D-46 | `diseno-46-consejos-personalizados` | 2026-10-10 | Consejos personalizados según tus partidos: por qué ganaste o perdiste, Tu juego en el perfil, antes de jugar y en la Home | Pendiente de revisión |
+| D-47 | `diseno-47-home-anillos-tu-juego` | 2026-10-10 | Home: tus números de Marcadorcito en 4 anillos (verde arriba de la media, naranja abajo) + consejo; porcentajes concretos en vez de horario/duración | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -508,6 +509,18 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** `docs/maquetas/maquetas-consejos.html`: A al terminar, B Tu juego, C antes de jugar.
 - **Elegida por el usuario:** las tres + la Home.
 - **Notas / qué mirar en la evaluación:** que con pocos partidos no diga cosas raras; que los consejos no se repitan entre la Home y el partido.
+
+### D-47 · `diseno-47-home-anillos-tu-juego` — Tu juego en números con anillos (2026-10-10)
+
+- **Qué cambió:**
+  - Home: "Tu juego en números" con 4 anillos (quiebres convertidos, saque defendido, puntos de juego cerrados, puntos ganados) de todos tus partidos con Marcadorcito; verde si estás en la media de Padelito o arriba, naranja si estás abajo. Abajo el consejo y "Ver tu juego / Ver el partido". Aparece siempre que haya al menos un partido con Marcadorcito.
+  - Consejos del partido: fuera los datos de horario, duración, punto más largo y deuce; en su lugar los 4 porcentajes con conteo y tu promedio. "Compartir tarjeta" queda arriba de "Por qué ganaron / perdieron".
+  - Antes de jugar: el historial con cada persona en porcentaje; sin horario.
+- **Código:** `ConsejosPersonalizados.js` (`Anillo`, `Numeros`), `lib/consejosPersonalizados.js` (`numerosDe`), `EstadisticasPartidoForm.js`, textos `tuJuego.*`.
+- **Por qué:** "la parte de dato me parece inútil… deberían ser cosas tangibles como porcentajes de saque", "en la home no veo nada", "algo más visual".
+- **Opciones mostradas (maqueta):** `docs/maquetas/maquetas-home-tu-juego.html`: A anillos, B tablero verde, C tendencia.
+- **Elegida por el usuario:** A ("el a me gustó").
+- **Notas / qué mirar en la evaluación:** que los 4 anillos entren en el ancho del celu sin cortar las etiquetas.
 
 <!-- Plantilla para cada cambio nuevo:
 

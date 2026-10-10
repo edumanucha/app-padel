@@ -306,7 +306,15 @@ export function tuJuego(d) {
 // último partido si fue hace poco o, si no, el de tu juego en general.
 export function consejoHome(d) {
   if (!d || d.conStats.length === 0) return null;
-  const numeros = numerosDe(d.conStats);
+  // Cada número con la media de Padelito para pintarlo (verde arriba,
+  // naranja abajo); sin media, queda verde.
+  const media = {
+    quiebres: d.media.quiebres,
+    salvados: d.media.quiebres != null ? 100 - d.media.quiebres : null,
+    cierre: d.media.cierre,
+    puntos: 50,
+  };
+  const numeros = numerosDe(d.conStats).map((x) => ({ ...x, media: media[x.clave] ?? null }));
   const ultimo = d.conStats[0];
   const reciente = Date.now() - ultimo.fecha.getTime() < 4 * 24 * 60 * 60 * 1000;
   let tip = null;

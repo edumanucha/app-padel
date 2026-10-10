@@ -301,6 +301,37 @@ export function ConsejoAntesDeJugar({ otros }) {
   );
 }
 
+// Anillo de la Home (D-47, opción A de maquetas-home-tu-juego.html): el
+// porcentaje en el medio, verde si estás en la media de Padelito o arriba,
+// naranja si estás abajo.
+function Anillo({ n }) {
+  const { t } = useLocale();
+  const abajo = n.media != null && n.valor < n.media;
+  return (
+    <div className="flex flex-col items-center gap-1 text-center">
+      <svg viewBox="0 0 36 36" className="w-[68px] h-[68px]" role="img" aria-label={`${t(`tuJuego.medidor.${n.clave}`)}: ${n.valor}%`}>
+        <circle cx="18" cy="18" r="15.5" fill="none" stroke="currentColor" strokeOpacity="0.1" strokeWidth="4" />
+        <circle
+          cx="18"
+          cy="18"
+          r="15.5"
+          fill="none"
+          stroke={abajo ? "#a8551d" : "#1f7a4c"}
+          strokeWidth="4"
+          strokeDasharray={`${Math.max(n.valor, 1)} 100`}
+          pathLength="100"
+          transform="rotate(-90 18 18)"
+          strokeLinecap="round"
+        />
+        <text x="18" y="21.5" textAnchor="middle" className="font-numero" fontWeight="700" fontSize="10" fill="currentColor">
+          {n.valor}%
+        </text>
+      </svg>
+      <span className="text-[10.5px] font-semibold leading-tight text-muted">{t(`tuJuego.medidor.${n.clave}`)}</span>
+    </div>
+  );
+}
+
 // Home ---------------------------------------------------------------------
 export function ConsejoHome() {
   const { t } = useLocale();
@@ -313,7 +344,11 @@ export function ConsejoHome() {
         <span className="font-titulo font-extrabold uppercase text-xl leading-none">{t("tuJuego.home.titulo")}</span>
         <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{t("tuJuego.nPartidos", { n: c.partidos })}</span>
       </div>
-      <Numeros numeros={c.numeros} />
+      <div className="grid grid-cols-4 gap-1.5 mt-2.5">
+        {c.numeros.map((n) => (
+          <Anillo key={n.clave} n={n} />
+        ))}
+      </div>
       {c.tip && (
         <Fila tipo="consejo" etiqueta={t("tuJuego.consejo")}>
           {t(`tuJuego.tip.${c.tip.texto}`)}
