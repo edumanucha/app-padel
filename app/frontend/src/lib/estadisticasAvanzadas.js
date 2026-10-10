@@ -112,6 +112,9 @@ export function analizarPartido(log, miEquipo) {
   const finesDeGame = []; // índice (en difs) donde terminó cada game
   const sets = []; // { desde, hasta, mios, rival, superTiebreak }
   const games = []; // games normales: { puntos, segundos, gane, set, marcador }
+  // Todos los games en orden, tie-breaks incluidos (cada uno cuenta como 1):
+  // { set, gane, tiebreak } -- para el dibujo "game por game".
+  const secuencia = [];
 
   let setIdx = 0;
   let desdeSet = 0;
@@ -158,6 +161,7 @@ export function analizarPartido(log, miEquipo) {
         finesDeGame.push(i);
         const esSuper = tiebreakHasta === 10;
         const gane = pY > pR;
+        secuencia.push({ set: setIdx + 1, gane, tiebreak: true });
         cerrarSet(i, esSuper ? pY : gane ? gY + 1 : gY, esSuper ? pR : gane ? gR : gR + 1, esSuper);
         enTiebreak = false;
         pY = 0;
@@ -200,6 +204,7 @@ export function analizarPartido(log, miEquipo) {
       if (juego.abajo) sumarA(remontadas, yoGane);
       if (juego.arriba) sumarA(teDieronVuelta, !yoGane);
       games.push({ puntos: juego.puntos, segundos: juego.segundos, gane: yoGane, set: juego.set, marcador: juego.marcador });
+      secuencia.push({ set: juego.set, gane: yoGane, tiebreak: false });
       juego = null;
       pY = 0;
       pR = 0;
@@ -230,7 +235,7 @@ export function analizarPartido(log, miEquipo) {
   }
 
   return {
-    grafico: { difs, finesDeGame, sets, maxVentaja, maxDesventaja },
+    grafico: { difs, finesDeGame, sets, maxVentaja, maxDesventaja, secuencia },
     saque,
     presion,
     remontadas,

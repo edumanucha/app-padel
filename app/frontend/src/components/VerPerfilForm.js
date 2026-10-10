@@ -13,6 +13,7 @@ import DestacadosPerfil from "@/components/DestacadosPerfil";
 import { calcularDestacados, agruparPartidos } from "@/lib/destacadosPerfil";
 import EstadisticasAvanzadasPerfil from "@/components/EstadisticasAvanzadasPerfil";
 import HeroEstadisticasPerfil from "@/components/HeroEstadisticasPerfil";
+import TarjetaPartidoPerfil from "@/components/TarjetaPartidoPerfil";
 import { calcularAvanzadasPerfil } from "@/lib/estadisticasAvanzadas";
 import BarraEstadistica from "@/components/BarraEstadistica";
 import Toggle from "@/components/Toggle";
@@ -937,61 +938,52 @@ export default function VerPerfilForm() {
 
               {/* D-29: estadísticas avanzadas acumuladas. */}
               <EstadisticasAvanzadasPerfil a={avanzadas} />
+            </div>
+          ))}
 
-              {/* Lista de partidos, DENTRO de la misma tarjeta que el resumen
-                  (2026-09-13, a pedido del usuario). Tocar un partido ya NO
-                  despliega el detalle ahí mismo -- lleva a su propia vista
-                  (2026-09-13: "que vaya a una nueva vista, ese [expandir
-                  inline] quedó horrendo"). */}
+        {/* D-30 (perfil B): "Mis partidos" como barra de cartel con la cantidad
+            en amarillo, el último partido siempre a la vista y "Ver todos". Las
+            tarjetas usan el estilo de "Tu próximo partido" del Inicio. Tocar
+            una lleva a su propia vista (2026-09-13: "que vaya a una nueva
+            vista"). */}
+        {partidosStats && !cargandoEstadisticas && (
+          <div className="flex flex-col gap-2 mt-4">
+            <button
+              type="button"
+              onClick={() => setMostrarPartidosStats((v) => !v)}
+              className="w-full flex items-center justify-between gap-2 py-2 border-y-[3px] border-ink cursor-pointer"
+            >
+              <span className="font-titulo font-black uppercase text-2xl leading-none">{t("estadisticas.misPartidosTitulo")}</span>
+              <span className="flex items-center gap-1.5 bg-accent text-accent-ink rounded-[6px] px-2.5 py-1 font-titulo font-black text-lg leading-none">
+                {partidosStats.length}
+                <IconoChevron width={16} height={16} className={`transition-transform ${mostrarPartidosStats ? "rotate-180" : "-rotate-90"}`} />
+              </span>
+            </button>
+
+            {(mostrarPartidosStats ? partidosStats : partidosStats.slice(0, 1)).map((p, i) => (
+              <TarjetaPartidoPerfil
+                key={p.id}
+                p={p}
+                cruce={cruceDePartido[p.id]}
+                locale={locale}
+                t={t}
+                delay={i * 35}
+                etiqueta={i === 0 && !mostrarPartidosStats ? t("estadisticas.ultimoPartido") : null}
+                onClick={() => router.push(`/partido/${p.id}/estadisticas`)}
+              />
+            ))}
+
+            {partidosStats.length > 1 && (
               <button
                 type="button"
                 onClick={() => setMostrarPartidosStats((v) => !v)}
-                className="text-sm font-semibold text-accent-2-ink underline cursor-pointer self-start mt-4"
+                className="text-sm font-semibold underline cursor-pointer self-start"
               >
-                {mostrarPartidosStats ? t("estadisticas.verMenosPartidos") : t("estadisticas.verMasPartidos")}
+                {mostrarPartidosStats ? t("estadisticas.verMenosPartidos") : t("estadisticas.verTodosPartidos")}
               </button>
-
-              {mostrarPartidosStats && (
-                <div className="flex flex-col mt-2 border-t border-ink/10">
-                  {partidosStats.map((p, i) => (
-                    <button
-                      key={p.id}
-                      type="button"
-                      onClick={() => router.push(`/partido/${p.id}/estadisticas`)}
-                      className="lista-item-entra w-full text-left flex items-center justify-between gap-2 cursor-pointer py-3 border-b border-ink/10"
-                      style={{ animationDelay: `${i * 35}ms` }}
-                    >
-                      <span className="flex flex-col min-w-0">
-                        {/* D-30 (lista A): contra quién jugaste, en negrita. */}
-                        {cruceDePartido[p.id]?.rivales?.length > 0 && (
-                          <span className="text-[0.95rem] font-extrabold leading-tight break-words">
-                            {t("estadisticas.vsRivales", { rivales: cruceDePartido[p.id].rivales.join(t("estadisticas.yRival")) })}
-                          </span>
-                        )}
-                        <span className="text-sm font-semibold text-muted">
-                          {new Date(p.fechaHora).toLocaleDateString(INTL_LOCALE[locale] ?? "es-AR")} · {p.cancha}
-                          {cruceDePartido[p.id]?.sets ? ` · ${cruceDePartido[p.id].sets}` : ""}
-                        </span>
-                        {p.puntosRankingGanados !== null && (
-                          <span className="text-xs font-semibold text-[#16a34a]">
-                            +{p.puntosRankingGanados} pts de ranking
-                          </span>
-                        )}
-                      </span>
-                      <span className="flex items-center gap-2 flex-shrink-0">
-                        <span
-                          className={`text-xs font-bold uppercase tracking-[0.06em] px-2 py-0.5 rounded-[6px] ${ p.gane ? "bg-[#22c55e]/20 text-[#16a34a]" : "bg-[#ef4444]/20 text-[#dc2626]" }`}
-                        >
-                          {p.gane ? t("home.ganaste") : t("home.perdiste")}
-                        </span>
-                        <IconoChevron width={16} height={16} className="-rotate-90 text-muted" />
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+            )}
+          </div>
+        )}
       </div>
 
       {/* Rediseño Cartel (2026-10-01): los datos son filas etiqueta/valor

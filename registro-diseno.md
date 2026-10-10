@@ -58,6 +58,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-28 | `diseno-28-tarjeta-pelota-cancha` | 2026-10-06 | Tarjeta del resultado: dos estilos al azar, "pelota" y "cancha" | Publicado |
 | D-29 | `diseno-29-estadisticas-avanzadas` | 2026-10-08 | Estadísticas avanzadas punto a punto: gráfico del partido, saque, presión, games dados vuelta, ritmo; en el perfil rachas de partidos con niveles, por compañero y cuándo jugás mejor; nivel de racha en el Inicio | Pendiente de revisión |
 | D-30 | `diseno-30-tablero-estadisticas` | 2026-10-09 | Tablero de estadio en el perfil (cartel verde siempre visible con % ganados, racha y quiebres), partidos de la lista con "vs rivales", gráfico punto a punto más claro; se sacan "Cuándo jugás mejor" y "Tu cancha" | Pendiente de revisión |
+| D-31 | `diseno-31-mis-partidos-y-games` | 2026-10-09 | Perfil: "Mis partidos" como barra de cartel con el último partido visible y tarjetas estilo Inicio (fecha amarilla + cartel verde); el gráfico del partido pasa a "Los games del partido" (cuadraditos verde/rojo por game y racha) | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -302,6 +303,18 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** perfil A tablero / B forma reciente / C pantalla propia; lista A rivales en negrita / B marcador de TV / C resultado grande; encabezado del detalle y gráfico claro.
 - **Elegida por el usuario:** perfil A, lista A, gráfico claro. Encabezado del detalle con los cuatro jugadores: sin definir (no se hizo).
 - **Notas / qué mirar en la evaluación:** el cartel a 390 px, nombres de rivales largos en la lista, el gráfico con partidos muy parejos o muy pasados, que no quede repetido el resumen viejo al abrir "Ver todas".
+
+### D-31 · `diseno-31-mis-partidos-y-games` — Mis partidos destacado y gráfico game por game (2026-10-09)
+
+- **Qué cambió:**
+  - **Mi perfil:** el link chico "Ver partidos" (no llamaba la atención) pasa a una barra de cartel "MIS PARTIDOS" con la cantidad en amarillo; el último partido queda siempre visible y "Ver todos" despliega el resto. Cada partido es una tarjeta como la de "Tu próximo partido" del Inicio: día en bloque amarillo, cartel verde con cancha, G/P, contra quién jugaste en negrita, sets en amarillo y puntos de ranking.
+  - **Estadísticas del partido:** el gráfico de línea "Quién iba ganando" (D-30) no se entendía; se reemplaza por "Los games del partido": un cuadradito por game separados por set (verde = lo ganaste, rojo = lo ganó el rival, borde amarillo = tie-break) y tu mejor racha de games contra la del rival.
+- **Pantallas afectadas:** Mi perfil, Estadísticas del partido.
+- **Código:** `components/TarjetaPartidoPerfil.js` (nuevo), `VerPerfilForm.js`, `GraficoPuntoAPunto.js` (reescrito; conserva el nombre), `lib/estadisticasAvanzadas.js` (`grafico.secuencia`), i18n es/en/pt.
+- **Datos:** sin SQL nuevo.
+- **Opciones mostradas (maqueta):** gráfico A con escala / B set por set / C game por game; partidos A fecha amarilla + tarjeta verde / B tarjeta por resultado / C récord + filtros; perfil A botón amarillo / B barra de cartel / C últimos 3 + botón.
+- **Elegida por el usuario:** gráfico C, perfil B (la pantalla Mis partidos aparte quedó sin cambios).
+- **Notas / qué mirar en la evaluación:** partidos con muchos games (3 sets) a 390 px, tie-breaks y súper tie-break, nombres de rivales largos en la tarjeta.
 
 <!-- Plantilla para cada cambio nuevo:
 
