@@ -1,9 +1,7 @@
 "use client";
 
-import BarraEstadistica from "@/components/BarraEstadistica";
 import InfoEstadistica from "@/components/InfoEstadistica";
 import { useLocale } from "@/i18n/LocaleContext";
-import { INTL_LOCALE } from "@/i18n/config";
 import { textoRacha, porcentaje } from "@/lib/estadisticasAvanzadas";
 
 // Estadísticas avanzadas del perfil (D-29, 2026-10-08), acumuladas sobre
@@ -38,12 +36,10 @@ function Numero({ valor, etiqueta, info, detalle, className = "" }) {
 }
 
 export default function EstadisticasAvanzadasPerfil({ a }) {
-  const { t, locale } = useLocale();
+  const { t } = useLocale();
   if (!a) return null;
   const xDeY = (f) => t("avanzadas.xDeY", { g: f.g, n: f.n });
   const pct = (f) => `${porcentaje(f) ?? 0}%`;
-  const nombreDia = (dia) =>
-    new Date(2026, 0, 4 + dia).toLocaleDateString(INTL_LOCALE[locale] ?? "es-AR", { weekday: "long" });
   const tendencia = (delta) => {
     if (delta === null || delta === undefined) return null;
     if (delta === 0) return t("avanzadas.tendenciaIgual");
@@ -52,7 +48,6 @@ export default function EstadisticasAvanzadasPerfil({ a }) {
   const colorTendencia = (delta) => (delta > 0 ? "text-[#16a34a]" : delta < 0 ? "text-[#dc2626]" : "text-muted");
 
   const r = a.rachas;
-  const hayCuando = a.cuando.franjas.length + a.cuando.dias.length + a.cuando.canchas.length > 0;
 
   return (
     <div className="flex flex-col gap-5 pt-5">
@@ -171,36 +166,6 @@ export default function EstadisticasAvanzadasPerfil({ a }) {
               </span>
             </div>
           ))}
-        </div>
-      )}
-
-      {/* Cuándo jugás mejor: % de partidos ganados por franja, día y cancha. */}
-      {hayCuando && (
-        <div className="flex flex-col">
-          <Titulo info={t("avanzadas.cuandoInfo")}>{t("avanzadas.cuandoTitulo")}</Titulo>
-          {[
-            { titulo: t("avanzadas.porHorario"), filas: a.cuando.franjas.map((f) => ({ ...f, nombre: t(`avanzadas.franja_${f.clave}`) })) },
-            { titulo: t("avanzadas.porDia"), filas: a.cuando.dias.map((f) => ({ ...f, nombre: nombreDia(f.dia) })) },
-            { titulo: t("avanzadas.porCancha"), filas: a.cuando.canchas },
-          ]
-            .filter((g) => g.filas.length > 0)
-            .map((g) => (
-              <div key={g.titulo} className="flex flex-col pt-3">
-                <span className={etiquetaChica}>{g.titulo}</span>
-                <div className="flex flex-col [&>*]:py-2.5 [&>*]:border-b [&>*]:border-ink/10">
-                  {g.filas.map((f) => (
-                    <BarraEstadistica
-                      key={f.nombre}
-                      etiqueta={<span className="inline-block first-letter:uppercase">{f.nombre}</span>}
-                      valor={f.g}
-                      total={f.pj}
-                      texto={t("avanzadas.pctDe", { p: Math.round((f.g / f.pj) * 100), g: f.g, n: f.pj })}
-                      variante="bien"
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
         </div>
       )}
 

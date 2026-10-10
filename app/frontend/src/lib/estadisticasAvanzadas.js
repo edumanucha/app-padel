@@ -408,6 +408,7 @@ export function calcularAvanzadasPerfil(partidos, companeroPorPartido = {}) {
 
   return {
     partidos: lista.length,
+    ganados: lista.filter((p) => p.gane).length,
     partidosConLog: conLog.length,
     rachas,
     saque: { sacando: total.sacando, restando: total.restando, tendencia },

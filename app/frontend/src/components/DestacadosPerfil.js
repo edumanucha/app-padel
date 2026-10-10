@@ -6,7 +6,7 @@ import { INTL_LOCALE } from "@/i18n/config";
 // Destacados del perfil, opción C "Cara a cara" (2026-10-02, elegida por el
 // usuario entre 3 maquetas): una frase de cómo venís en el cartel verde,
 // y después las personas primero -- tu mejor dupla, tu cuenta pendiente
-// y tu cancha. Los datos los calcula lib/destacadosPerfil.js.
+// (la "cancha" salió en D-30). Los datos los calcula lib/destacadosPerfil.js.
 export default function DestacadosPerfil({ destacados: d }) {
   const { t, locale } = useLocale();
   if (!d) return null;
@@ -64,16 +64,6 @@ export default function DestacadosPerfil({ destacados: d }) {
               sets: pendiente.ultimo.sets,
               fecha: fecha(pendiente.ultimo.fechaHora),
             })}
-          />
-        </Bloque>
-      )}
-
-      {d.cancha && (
-        <Bloque titulo={t("destacados.tuCancha")}>
-          <Fila
-            quien={d.cancha.nombre}
-            cuanto={t("destacados.deN", { g: d.cancha.g, n: d.cancha.pj })}
-            extra={d.otraCancha ? t("destacados.enOtra", { cancha: d.otraCancha.nombre, g: d.otraCancha.g, n: d.otraCancha.pj }) : null}
           />
         </Bloque>
       )}

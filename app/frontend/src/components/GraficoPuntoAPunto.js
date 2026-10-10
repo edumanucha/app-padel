@@ -39,6 +39,8 @@ export default function GraficoPuntoAPunto({ grafico }) {
   const area = `${linea}L${ANCHO},${y0.toFixed(1)}L0,${y0.toFixed(1)}Z`;
   const finesDeSet = new Set(sets.filter((s) => !s.abierto).map((s) => s.hasta));
   const ultimo = difs[n];
+  const iMejor = difs.indexOf(Math.max(...difs));
+  const iPeor = difs.indexOf(Math.min(...difs));
 
   return (
     <div className="rounded-[6px] bg-[#154139] text-[#eaf4f0] px-4 pt-4 pb-3 flex flex-col gap-2">
@@ -66,6 +68,10 @@ export default function GraficoPuntoAPunto({ grafico }) {
             <rect x="0" y={y0} width={ANCHO} height={ALTO - y0} />
           </clipPath>
         </defs>
+
+        {/* Zonas (D-30): verde = ibas ganando, rojo = iba ganando el rival. */}
+        <rect x="0" y={ARRIBA - 4} width={ANCHO} height={Math.max(0, y0 - ARRIBA + 4)} fill="#22c55e" opacity="0.1" />
+        <rect x="0" y={y0} width={ANCHO} height={Math.max(0, ALTO - y0)} fill="#ef4444" opacity="0.1" />
 
         {/* Un set sí, otro no, con un fondo apenas más claro. */}
         {sets.map((s, i) =>
@@ -110,18 +116,42 @@ export default function GraficoPuntoAPunto({ grafico }) {
 
         {/* Línea del cero: a partir de acá, arriba ganás vos y abajo el rival. */}
         <line x1="0" x2={ANCHO} y1={y0} y2={y0} stroke={VERDE_CLARO} strokeOpacity="0.7" strokeWidth="1" strokeDasharray="3 3" />
-        <text x="3" y={y0 - 4} fontSize="8" fontWeight="700" letterSpacing="0.1em" fill={VERDE_CLARO}>
-          {t("avanzadas.graficoVos").toUpperCase()}
+        <text x="3" y={y0 - 4} fontSize="9" fontWeight="700" letterSpacing="0.06em" fill="#9fd9b5">
+          {t("avanzadas.graficoVas").toUpperCase()}
         </text>
-        <text x="3" y={y0 + 11} fontSize="8" fontWeight="700" letterSpacing="0.1em" fill={VERDE_CLARO}>
-          {t("avanzadas.graficoRival").toUpperCase()}
+        <text x="3" y={y0 + 12} fontSize="9" fontWeight="700" letterSpacing="0.06em" fill="#f0a3a3">
+          {t("avanzadas.graficoVaRival").toUpperCase()}
         </text>
 
         <path d={area} fill={AMARILLO} fillOpacity="0.26" clipPath="url(#grafico-arriba)" />
         <path d={area} fill={TINTA} fillOpacity="0.12" clipPath="url(#grafico-abajo)" />
         <path d={linea} fill="none" stroke={AMARILLO} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
         <circle cx={x(n)} cy={y(ultimo)} r="3.5" fill={AMARILLO} stroke="#154139" strokeWidth="1.5" />
+
+        {/* Mejor y peor momento (D-30): marcados con un punto y su ventaja. */}
+        {[
+          { i: iMejor, d: maxVentaja, color: "#22c55e", texto: t("avanzadas.graficoMejorN", { n: maxVentaja }), mostrar: maxVentaja > 0 },
+          { i: iPeor, d: maxDesventaja, color: "#ef4444", texto: t("avanzadas.graficoPeorN", { n: -maxDesventaja }), mostrar: maxDesventaja < 0 },
+        ]
+          .filter((m) => m.mostrar)
+          .map((m) => (
+            <g key={m.texto}>
+              <circle cx={x(m.i)} cy={y(m.d)} r="4" fill={m.color} stroke="#154139" strokeWidth="1.5" />
+              <text
+                x={x(m.i)}
+                y={y(m.d) - 8}
+                textAnchor={m.i > n * 0.7 ? "end" : m.i < n * 0.3 ? "start" : "middle"}
+                fontSize="9"
+                fontWeight="700"
+                fill={TINTA}
+              >
+                {m.texto.toUpperCase()}
+              </text>
+            </g>
+          ))}
       </svg>
+
+      <span className="text-xs text-[#c4dad3]">{t("avanzadas.graficoLeyenda")}</span>
 
       <div className="grid grid-cols-2 border-t border-[#eaf4f0]/15 pt-2">
         <div className="flex flex-col gap-0.5">

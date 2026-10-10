@@ -57,6 +57,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-27 | `diseno-27-animacion-inicio` | 2026-10-06 | Animación de entrada: la pelota pica, "40-15", zoom out hasta "padelito" | Publicado |
 | D-28 | `diseno-28-tarjeta-pelota-cancha` | 2026-10-06 | Tarjeta del resultado: dos estilos al azar, "pelota" y "cancha" | Publicado |
 | D-29 | `diseno-29-estadisticas-avanzadas` | 2026-10-08 | Estadísticas avanzadas punto a punto: gráfico del partido, saque, presión, games dados vuelta, ritmo; en el perfil rachas de partidos con niveles, por compañero y cuándo jugás mejor; nivel de racha en el Inicio | Pendiente de revisión |
+| D-30 | `diseno-30-tablero-estadisticas` | 2026-10-09 | Tablero de estadio en el perfil (cartel verde siempre visible con % ganados, racha y quiebres), partidos de la lista con "vs rivales", gráfico punto a punto más claro; se sacan "Cuándo jugás mejor" y "Tu cancha" | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -286,6 +287,21 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** ninguna; se implementó directo para revisión.
 - **Elegida por el usuario:** pendiente.
 - **Notas / qué mirar en la evaluación:** el gráfico a 390 px de ancho (etiquetas de sets cortas cuando el set es angosto), contraste del área amarilla en el cartel verde, largo de "Toca dar vuelta la historia" en la columna angosta del Inicio, que las definiciones de los (?) se entiendan.
+
+### D-30 · `diseno-30-tablero-estadisticas` — tablero de estadio, rivales en la lista y gráfico más claro (2026-10-09)
+
+- **Qué cambió:**
+  - **Mi perfil:** el resumen de estadísticas deja de ser un acordeón cerrado y pasa a ser un cartel verde siempre visible (opción A): % de partidos ganados en grande y amarillo, etiqueta de racha (solo ganando, desde 2 seguidos), ganados / perdidos / mejor racha y las barras de quiebres. "Ver todas las estadísticas" abre el detalle de antes. Sin partidos terminados queda el acordeón de siempre.
+  - **Lista de partidos del perfil** ("Ver partidos"): cada fila dice contra quién jugaste ("vs Pérez y Gómez", en negrita), con fecha, cancha y sets debajo (lista A).
+  - **Gráfico "Quién iba ganando"** (antes "El partido punto a punto"): zonas verde (vas ganando) y roja (va ganando el rival) con cartel, puntos de mejor y peor momento y una línea que explica cómo leerlo.
+  - **Sacado a pedido del usuario:** el bloque "Cuándo jugás mejor" (horario, día, cancha) del perfil y el destacado "Tu cancha" ("no sirve de nada, llena la pantalla").
+- **Pantallas afectadas:** Mi perfil, Estadísticas del partido.
+- **Código:** `components/HeroEstadisticasPerfil.js` (nuevo), `VerPerfilForm.js` (hero, rivales por partido desde `mis_cruces_partidos`), `GraficoPuntoAPunto.js`, `EstadisticasAvanzadasPerfil.js`, `DestacadosPerfil.js`, `lib/estadisticasAvanzadas.js` (`ganados`), i18n es/en/pt.
+- **Datos:** sin SQL nuevo.
+- **Por qué:** pedido del usuario: darle más importancia a las estadísticas en el perfil y que la lista diga contra quién se jugó.
+- **Opciones mostradas (maqueta):** perfil A tablero / B forma reciente / C pantalla propia; lista A rivales en negrita / B marcador de TV / C resultado grande; encabezado del detalle y gráfico claro.
+- **Elegida por el usuario:** perfil A, lista A, gráfico claro. Encabezado del detalle con los cuatro jugadores: sin definir (no se hizo).
+- **Notas / qué mirar en la evaluación:** el cartel a 390 px, nombres de rivales largos en la lista, el gráfico con partidos muy parejos o muy pasados, que no quede repetido el resumen viejo al abrir "Ver todas".
 
 <!-- Plantilla para cada cambio nuevo:
 

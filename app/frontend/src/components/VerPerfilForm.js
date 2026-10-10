@@ -12,6 +12,7 @@ import InstalarApp from "@/components/InstalarApp";
 import DestacadosPerfil from "@/components/DestacadosPerfil";
 import { calcularDestacados, agruparPartidos } from "@/lib/destacadosPerfil";
 import EstadisticasAvanzadasPerfil from "@/components/EstadisticasAvanzadasPerfil";
+import HeroEstadisticasPerfil from "@/components/HeroEstadisticasPerfil";
 import { calcularAvanzadasPerfil } from "@/lib/estadisticasAvanzadas";
 import BarraEstadistica from "@/components/BarraEstadistica";
 import Toggle from "@/components/Toggle";
@@ -107,6 +108,9 @@ export default function VerPerfilForm() {
   // Estadísticas avanzadas (D-29): rachas de partidos, saque, presión, por
   // compañero, cuándo jugás mejor. null si no hay partidos terminados.
   const [avanzadas, setAvanzadas] = useState(null);
+  // Contra quién jugaste en cada partido de la lista (D-30):
+  // { [partidoId]: { rivales: [nombre], sets } }.
+  const [cruceDePartido, setCruceDePartido] = useState({});
   const [cargandoEstadisticas, setCargandoEstadisticas] = useState(true);
   const [mostrarPartidosStats, setMostrarPartidosStats] = useState(false);
   // Colapsado por defecto (2026-09-13, a pedido del usuario: "que
@@ -163,6 +167,7 @@ export default function VerPerfilForm() {
         }
         if (copia.destacados !== undefined) setDestacados(copia.destacados);
         if (copia.avanzadas !== undefined) setAvanzadas(copia.avanzadas);
+        if (copia.cruceDePartido !== undefined) setCruceDePartido(copia.cruceDePartido);
         setCargando(false);
       }
 
@@ -294,13 +299,16 @@ export default function VerPerfilForm() {
         });
       const cruces = await crucesPromesa;
       const companeroPorPartido = {};
+      const cruceNuevo = {};
       for (const p of agruparPartidos(cruces ?? [])) {
         if (p.companeros[0]) companeroPorPartido[p.id] = p.companeros[0];
+        cruceNuevo[p.id] = { rivales: p.rivales.map((r) => r.nombre).filter(Boolean), sets: p.sets };
       }
+      setCruceDePartido(cruceNuevo);
       const av = calcularAvanzadasPerfil(terminados, companeroPorPartido);
       setAvanzadas(av);
       // Se guarda el resultado ya calculado (chico), no los logs.
-      guardarPantalla("perfil", jugadorId, { ...(leerPantalla("perfil", jugadorId) ?? {}), avanzadas: av });
+      guardarPantalla("perfil", jugadorId, { ...(leerPantalla("perfil", jugadorId) ?? {}), avanzadas: av, cruceDePartido: cruceNuevo });
     }
 
     cargarPerfil();
@@ -783,18 +791,45 @@ export default function VerPerfilForm() {
             todo el título es tocable, como los items del menú).
             Rediseño Cartel (2026-10-01): el acordeón es una fila con línea
             gruesa arriba y abajo, y el contenido va suelto, sin tarjeta. */}
-        <button
-          type="button"
-          onClick={() => setMostrarEstadisticas((v) => !v)}
-          className="w-full text-left flex items-center justify-between gap-2 cursor-pointer py-3 border-y-2 border-ink"
-        >
-          <span className="font-titulo font-extrabold uppercase text-2xl leading-none">{t("estadisticas.titulo")}</span>
-          <IconoChevron
-            width={20}
-            height={20}
-            className={`transition-transform flex-shrink-0 ${mostrarEstadisticas ? "rotate-180" : ""}`}
-          />
-        </button>
+        {(() => {
+          // D-30 (opción A, "tablero de estadio"): con partidos terminados el
+          // resumen es un cartel siempre visible; sin ellos queda el
+          // acordeón de antes.
+          const rHero = partidosStats ? calcularResumenEstadisticas(partidosStats) : null;
+          const total = avanzadas?.partidos ?? rHero?.partidos ?? 0;
+          const ganados = avanzadas?.ganados ?? rHero?.partidosGanados ?? 0;
+          if (total > 0 && (avanzadas?.ganados !== undefined || rHero)) {
+            return (
+              <HeroEstadisticasPerfil
+                ganados={ganados}
+                perdidos={total - ganados}
+                mejorRacha={avanzadas?.rachas?.mejorGanando ?? rHero?.rachaMaxima ?? 0}
+                racha={avanzadas?.rachas?.actual ?? null}
+                quiebres={
+                  rHero
+                    ? { favor: rHero.quiebresFavor, opFavor: rHero.quiebresOpFavor, contra: rHero.quiebresContra, opContra: rHero.quiebresOpContra }
+                    : null
+                }
+                abierto={mostrarEstadisticas}
+                onToggle={() => setMostrarEstadisticas((v) => !v)}
+              />
+            );
+          }
+          return (
+            <button
+              type="button"
+              onClick={() => setMostrarEstadisticas((v) => !v)}
+              className="w-full text-left flex items-center justify-between gap-2 cursor-pointer py-3 border-y-2 border-ink"
+            >
+              <span className="font-titulo font-extrabold uppercase text-2xl leading-none">{t("estadisticas.titulo")}</span>
+              <IconoChevron
+                width={20}
+                height={20}
+                className={`transition-transform flex-shrink-0 ${mostrarEstadisticas ? "rotate-180" : ""}`}
+              />
+            </button>
+          );
+        })()}
 
         {mostrarEstadisticas &&
           (cargandoEstadisticas ? (
@@ -926,9 +961,16 @@ export default function VerPerfilForm() {
                       className="lista-item-entra w-full text-left flex items-center justify-between gap-2 cursor-pointer py-3 border-b border-ink/10"
                       style={{ animationDelay: `${i * 35}ms` }}
                     >
-                      <span className="flex flex-col">
-                        <span className="text-sm font-semibold">
+                      <span className="flex flex-col min-w-0">
+                        {/* D-30 (lista A): contra quién jugaste, en negrita. */}
+                        {cruceDePartido[p.id]?.rivales?.length > 0 && (
+                          <span className="text-[0.95rem] font-extrabold leading-tight break-words">
+                            {t("estadisticas.vsRivales", { rivales: cruceDePartido[p.id].rivales.join(t("estadisticas.yRival")) })}
+                          </span>
+                        )}
+                        <span className="text-sm font-semibold text-muted">
                           {new Date(p.fechaHora).toLocaleDateString(INTL_LOCALE[locale] ?? "es-AR")} · {p.cancha}
+                          {cruceDePartido[p.id]?.sets ? ` · ${cruceDePartido[p.id].sets}` : ""}
                         </span>
                         {p.puntosRankingGanados !== null && (
                           <span className="text-xs font-semibold text-[#16a34a]">
