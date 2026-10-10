@@ -66,6 +66,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-36 | `diseno-36-pelotita-cada-pantalla` | 2026-10-10 | La pelotita de la i en al menos un texto de cada pantalla principal (Inicio, Jugadores, Perfil, Marcadorcito) y en la imagen para compartir | Pendiente de revisión |
 | D-37 | `diseno-37-barra-botones-iguales` | 2026-10-10 | Barra de abajo: los 4 botones del mismo ancho, la marca amarilla siempre del mismo tamaño | Pendiente de revisión |
 | D-38 | `diseno-38-marcadorcito-cartel-vs` | 2026-10-10 | Formulario del Marcadorcito: menos texto, parejas en cartel verde con VS, punto de oro como interruptor, "Cargar un partido ya jugado" al final | Pendiente de revisión |
+| D-39 | `diseno-39-podio-escalones` | 2026-10-10 | Podio del ranking: las barras suben una por una desde abajo sin estirar el cartel y el 1° hace un pop amarillo | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -399,6 +400,18 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** A la cancha vista desde arriba, B cartel VS, C tablero de TV con 0-0.
 - **Elegida por el usuario:** B.
 - **Notas / qué mirar en la evaluación:** la lista de sugerencias de nombres al escribir, arriba del cartel verde; nombres largos en "<nombre> y"; modo oscuro.
+
+### D-39 · `diseno-39-podio-escalones` — podio del ranking: escalones + festejo (2026-10-10)
+
+- **Qué cambió:**
+  - Las barras del podio de Jugadores ya tienen su altura real desde el principio. Antes crecía la altura y estiraba todo el cartel verde, con los nombres y los números saltando.
+  - Ahora suben desde abajo una por una (3°, 2°, 1°), en unos 0,6 s en total. El número del 1° hace un "pop" amarillo al final.
+  - Los puntos cuentan más rápido (0,45 s).
+- **Código:** `DirectorioJugadoresForm.js` (`ColumnaPodio`), `.podio-pop` en `globals.css`.
+- **Por qué:** pedido del usuario: "se ve re choto la animación… que se vea animado pero más rápido".
+- **Opciones mostradas (maqueta animada):** A resorte, B escalones + festejo, C aparición sobria.
+- **Elegida por el usuario:** B.
+- **Notas / qué mirar en la evaluación:** cambiar de período o de grupo tiene que volver a animar sin que se vea bajar.
 
 <!-- Plantilla para cada cambio nuevo:
 

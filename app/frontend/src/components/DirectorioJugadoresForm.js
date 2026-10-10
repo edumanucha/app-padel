@@ -7,6 +7,7 @@ import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import HojaAbajo from "@/components/HojaAbajo";
 import PelotaLoader from "@/components/PelotaLoader";
+import CargandoPantalla from "@/components/CargandoPantalla";
 import { useLocale } from "@/i18n/LocaleContext";
 import ContadorNumero from "@/components/ContadorNumero";
 import InfoEstadistica from "@/components/InfoEstadistica";
@@ -59,16 +60,30 @@ function ColumnaPodio({ jugador, puesto, maxPuntos, animar, onClick, t }) {
   // puntos van en número grande y la barra del 1° en amarillo; la medalla
   // queda como un puntito de color al lado del puesto.
   const esPrimero = puesto === 1;
+  // D-39 (2026-10-10, opción B "Escalones + festejo" elegida por el
+  // usuario: la de antes "se ve re choto"): la barra ya tiene su altura
+  // real desde el principio -- antes crecía el `height` y estiraba todo el
+  // cartel verde, con nombres y números saltando. Ahora sube desde abajo
+  // con `transform` (más liviano), uno por uno: 3°, 2° y al final el 1°,
+  // cuyo número hace un "pop" amarillo (clase .podio-pop en globals.css).
+  // Al volver a 0 no hay transición, para que no se vea bajar.
+  const retraso = { 3: 0, 2: 120, 1: 240 }[puesto];
   return (
     <button type="button" onClick={onClick} className="flex-1 min-w-0 flex flex-col items-center gap-1 cursor-pointer">
       <span className="text-xs font-semibold text-[#c4dad3] truncate max-w-full px-1">{jugador.nombre}</span>
-      <span className={`font-numero font-bold leading-none ${esPrimero ? "text-[2.6rem]" : "text-[2.2rem]"}`}>
-        <ContadorNumero valor={jugador.puntos_ranking} />
+      <span
+        className={`font-numero font-bold leading-none inline-block ${esPrimero ? "text-[2.6rem]" : "text-[2.2rem]"} ${esPrimero && animar ? "podio-pop" : ""}`}
+      >
+        <ContadorNumero valor={jugador.puntos_ranking} duracionMs={450} />
       </span>
       <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#8fb6ae]">{t("directorio.pts")}</span>
       <div
-        className={`w-full rounded-t-[6px] flex items-start justify-center pt-2 transition-all duration-700 ease-out overflow-hidden ${ esPrimero ? "bg-accent text-accent-ink" : "bg-[#0f2e29] text-[#eaf4f0]" }`}
-        style={{ height: animar ? `${alturaPx}px` : "0px" }}
+        className={`w-full rounded-t-[6px] flex items-start justify-center pt-2 overflow-hidden ${ esPrimero ? "bg-accent text-accent-ink" : "bg-[#0f2e29] text-[#eaf4f0]" }`}
+        style={{
+          height: `${alturaPx}px`,
+          transform: animar ? "translateY(0)" : "translateY(100%)",
+          transition: animar ? `transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1) ${retraso}ms` : "none",
+        }}
       >
         <span className="font-numero font-bold text-2xl leading-none flex items-center gap-1">
           <span className="w-2 h-2 rounded-full" style={{ background: medalla.color }} aria-hidden />
@@ -234,12 +249,7 @@ export default function DirectorioJugadoresForm() {
   }
 
   if (verificandoSesion) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-2 text-muted">
-        <PelotaLoader />
-        <p>{t("directorio.cargando")}</p>
-      </div>
-    );
+    return <CargandoPantalla texto={t("directorio.cargando")} />;
   }
 
   return (
