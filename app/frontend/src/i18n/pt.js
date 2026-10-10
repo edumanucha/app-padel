@@ -933,6 +933,8 @@ const pt = {
       buscarCancha: "Buscar quadra...",
     },
     tuJuego: {
+      deTotal: "{de} de {total}",
+      promedioCorto: "sua méd. {n}%",
       porQuePerdieron: "Por que perderam",
       porQueGanaron: "Por que ganharam",
       titulo: "Seu jogo",
@@ -964,6 +966,7 @@ const pt = {
       seDesbloquea: "Desbloqueia com 10 partidas",
       sinPatrones: "Por enquanto nada se repete. Continue jogando.",
       medidor: {
+        salvados: "Saque defendido",
         quiebres: "Quebras convertidas",
         cierre: "Game points fechados",
         puntos: "Pontos ganhos",
@@ -1020,12 +1023,12 @@ const pt = {
       },
       antes: {
         titulo: "Para esta partida",
-        conCompanero: "Com {nombre} você jogou {n} partidas: ganharam {g}.",
-        contraRival: "Contra {nombre} você jogou {n}: ganhou {g}.",
-        contraRivalDificil: "Contra {nombre} você jogou {n} e ganhou {g}: comecem forte e não entreguem o primeiro set.",
+        conCompanero: "Com {nombre} vocês ganham {pct}% ({g} de {n}).",
+        contraRival: "Contra {nombre} você ganha {pct}% ({g} de {n}).",
+        contraRivalDificil: "Contra {nombre} você ganha {pct}% ({g} de {n}): comecem forte e não entreguem o primeiro set.",
       },
       home: {
-        titulo: "Sua dica",
+        titulo: "Seu jogo em números",
         delUltimo: "Da sua última partida",
         general: "Pelas suas partidas",
         verMas: "Ver seu jogo",

@@ -931,6 +931,8 @@ const en = {
       buscarCancha: "Search court...",
     },
     tuJuego: {
+      deTotal: "{de} of {total}",
+      promedioCorto: "your avg {n}%",
       porQuePerdieron: "Why you lost",
       porQueGanaron: "Why you won",
       titulo: "Your game",
@@ -962,6 +964,7 @@ const en = {
       seDesbloquea: "Unlocks with 10 matches",
       sinPatrones: "Nothing repeats yet. Keep playing.",
       medidor: {
+        salvados: "Serve held (breaks saved)",
         quiebres: "Breaks converted",
         cierre: "Game points closed",
         puntos: "Points won",
@@ -1018,12 +1021,12 @@ const en = {
       },
       antes: {
         titulo: "For this match",
-        conCompanero: "With {nombre} you've played {n} matches: won {g}.",
-        contraRival: "Against {nombre} you've played {n}: won {g}.",
-        contraRivalDificil: "Against {nombre} you've played {n} and won {g}: start strong and don't give away the first set.",
+        conCompanero: "With {nombre} you win {pct}% ({g} of {n}).",
+        contraRival: "Against {nombre} you win {pct}% ({g} of {n}).",
+        contraRivalDificil: "Against {nombre} you win {pct}% ({g} of {n}): start strong and don't give away the first set.",
       },
       home: {
-        titulo: "Your tip",
+        titulo: "Your game in numbers",
         delUltimo: "From your last match",
         general: "Based on your matches",
         verMas: "See your game",

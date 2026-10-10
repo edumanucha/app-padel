@@ -3,7 +3,7 @@
 // Reglas propias, sin IA externa: cada partido se compara con tu propio
 // promedio (desde 3 partidos con Marcadorcito; antes, con la media de
 // Padelito) y con 10 partidos terminados aparecen los patrones (mejor
-// dupla, segundo set, horario, remontadas). Los datos vienen de la RPC
+// dupla, segundo set, remontadas). Los datos vienen de la RPC
 // datos_consejos() (099_consejos_personalizados.sql). Los textos son claves
 // de i18n (tuJuego.*) con sus variables, los arma el componente.
 
@@ -38,8 +38,6 @@ function normalizar(p) {
           pjcConv: s[`puntos_juego_conv_${rival}`],
           pjcOp: s[`puntos_juego_op_${rival}`],
           deuce: s.games_en_deuce,
-          duracionMin: Math.round((s.duracion_ms ?? 0) / 60000),
-          puntoLargo: s.punto_mas_largo_s ?? 0,
           pjConv: s[`puntos_juego_conv_${mio}`],
           pjOp: s[`puntos_juego_op_${mio}`],
           ptsMios: s[`puntos_totales_${mio}`],
@@ -63,11 +61,12 @@ export function prepararDatos(datos) {
 }
 
 function promedio(lista) {
-  const suma = { qConv: 0, qOp: 0, qcConv: 0, pjConv: 0, pjOp: 0, ptsMios: 0, ptsTot: 0 };
+  const suma = { qConv: 0, qOp: 0, qcConv: 0, qcOp: 0, pjConv: 0, pjOp: 0, ptsMios: 0, ptsTot: 0 };
   for (const p of lista) {
     suma.qConv += p.m.qConv;
     suma.qOp += p.m.qOp;
     suma.qcConv += p.m.qcConv;
+    suma.qcOp += p.m.qcOp;
     suma.pjConv += p.m.pjConv;
     suma.pjOp += p.m.pjOp;
     suma.ptsMios += p.m.ptsMios;
@@ -75,10 +74,35 @@ function promedio(lista) {
   }
   return {
     quiebres: pct(suma.qConv, suma.qOp),
+    salvados: pct(suma.qcOp - suma.qcConv, suma.qcOp),
     cierre: pct(suma.pjConv, suma.pjOp),
     puntos: pct(suma.ptsMios, suma.ptsTot),
     sufridos: lista.length ? suma.qcConv / lista.length : null,
   };
+}
+
+// Los números concretos (2026-10-10: "cosas tangibles como porcentajes de
+// saque", no datos de horario o cancha): quiebres convertidos, saque
+// defendido (quiebres en contra salvados), puntos de juego cerrados y
+// puntos ganados, con el conteo de cada uno.
+function numerosDe(lista) {
+  const s = { qConv: 0, qOp: 0, qcConv: 0, qcOp: 0, pjConv: 0, pjOp: 0, ptsMios: 0, ptsTot: 0 };
+  for (const p of lista) {
+    s.qConv += p.m.qConv;
+    s.qOp += p.m.qOp;
+    s.qcConv += p.m.qcConv;
+    s.qcOp += p.m.qcOp;
+    s.pjConv += p.m.pjConv;
+    s.pjOp += p.m.pjOp;
+    s.ptsMios += p.m.ptsMios;
+    s.ptsTot += p.m.ptsMios + p.m.ptsRival;
+  }
+  return [
+    { clave: "quiebres", valor: pct(s.qConv, s.qOp), de: s.qConv, total: s.qOp },
+    { clave: "salvados", valor: pct(s.qcOp - s.qcConv, s.qcOp), de: s.qcOp - s.qcConv, total: s.qcOp },
+    { clave: "cierre", valor: pct(s.pjConv, s.pjOp), de: s.pjConv, total: s.pjOp },
+    { clave: "puntos", valor: pct(s.ptsMios, s.ptsTot), de: s.ptsMios, total: s.ptsTot },
+  ].filter((x) => x.valor != null);
 }
 
 // Cuánto te conoce Padelito: partidos terminados, de 0 a 10.
@@ -119,7 +143,6 @@ export function consejosDePartido(d, partidoId) {
   const m = actual.m;
   const bien = [];
   const mejorar = [];
-  const datos = [];
 
   function comparar(clave, conv, op, minimo) {
     if (op < minimo) return;
@@ -183,10 +206,9 @@ export function consejosDePartido(d, partidoId) {
   const paliza = sets.find(([a, b]) => b >= 6 && a <= 1);
   if (paliza) mejorar.push({ clave: "arranque", texto: "setPaliza", vars: { a: paliza[0], b: paliza[1] }, peso: 15 });
 
-  // Datos del partido (sin bueno ni malo).
-  if (m.deuce >= 4) datos.push({ clave: "deuce", texto: "muchosDeuce", vars: { n: m.deuce } });
-  if (m.duracionMin >= 5) datos.push({ clave: "duracion", texto: "duracion", vars: { n: m.duracionMin } });
-  if (m.puntoLargo >= 20) datos.push({ clave: "puntoLargo", texto: "puntoLargo", vars: { n: m.puntoLargo } });
+  // Los números del partido, con tu promedio al lado si ya hay con qué.
+  const refNum = previos.length >= PARTIDOS_PARA_COMPARAR ? Object.fromEntries(numerosDe(previos).map((x) => [x.clave, x.valor])) : {};
+  const numeros = numerosDe([actual]).map((x) => ({ ...x, promedio: refNum[x.clave] ?? null }));
 
   if (bien.length === 0 && actual.gane) bien.push({ clave: "ganaron", texto: "ganaron", vars: {}, peso: 1 });
 
@@ -203,7 +225,7 @@ export function consejosDePartido(d, partidoId) {
     gane: actual.gane,
     bien: unicos(bien).slice(0, 5),
     mejorar: unicos(mejorar).slice(0, 5),
-    datos,
+    numeros,
     tips,
     propio,
     nivel: nivelConfianza(d),
@@ -212,10 +234,6 @@ export function consejosDePartido(d, partidoId) {
 
 function ganadosDe(lista) {
   return lista.filter((p) => p.gane).length;
-}
-
-function esNoche(fecha) {
-  return fecha.getHours() >= 19 || fecha.getHours() < 5;
 }
 
 // Patrones sobre todos los partidos terminados (desde 10).
@@ -246,20 +264,6 @@ function patrones(d) {
     else if (s2 >= s1 + 15) salida.push({ clave: "arranqueLento", tipo: "mejorar", vars: { s1, s2 }, peso: s2 - s1 });
   }
 
-  const noche = lista.filter((p) => esNoche(p.fecha));
-  const dia = lista.filter((p) => !esNoche(p.fecha));
-  if (noche.length >= 3 && dia.length >= 3) {
-    const pn = pct(ganadosDe(noche), noche.length);
-    const pd = pct(ganadosDe(dia), dia.length);
-    if (Math.abs(pn - pd) >= 15) {
-      salida.push(
-        pn > pd
-          ? { clave: "horarioNoche", tipo: "dato", vars: { mejor: pn, peor: pd }, peso: pn - pd }
-          : { clave: "horarioDia", tipo: "dato", vars: { mejor: pd, peor: pn }, peso: pd - pn }
-      );
-    }
-  }
-
   const remontadas = conDos.filter((p) => p.gane && p.sets[0][0] < p.sets[0][1]).length;
   if (remontadas >= 2) salida.push({ clave: "remontadas", tipo: "bien", vars: { n: remontadas }, peso: remontadas * 5 });
 
@@ -274,11 +278,12 @@ export function tuJuego(d) {
   const medidores = prom
     ? [
         { clave: "quiebres", valor: prom.quiebres, media: d.media.quiebres },
+        { clave: "salvados", valor: prom.salvados, media: d.media.quiebres != null ? 100 - d.media.quiebres : null },
         { clave: "cierre", valor: prom.cierre, media: d.media.cierre },
         { clave: "puntos", valor: prom.puntos, media: 50 },
-      ].filter((x) => x.valor != null && x.media != null)
+      ].filter((x) => x.valor != null)
     : [];
-  const ordenados = [...medidores].sort((a, b) => b.valor - b.media - (a.valor - a.media));
+  const ordenados = medidores.filter((x) => x.media != null).sort((a, b) => b.valor - b.media - (a.valor - a.media));
   const fuerte = ordenados[0];
   const flojo = ordenados[ordenados.length - 1];
   const pats = patrones(d);
@@ -296,24 +301,35 @@ export function tuJuego(d) {
   };
 }
 
-// Home: el consejo de tu último partido si fue hace poco; si no, el de tu
-// juego en general.
+// Home (2026-10-10: "en la home no veo nada"): tus números de todos los
+// partidos con Marcadorcito siempre que haya alguno, y abajo el consejo del
+// último partido si fue hace poco o, si no, el de tu juego en general.
 export function consejoHome(d) {
   if (!d || d.conStats.length === 0) return null;
+  const numeros = numerosDe(d.conStats);
   const ultimo = d.conStats[0];
   const reciente = Date.now() - ultimo.fecha.getTime() < 4 * 24 * 60 * 60 * 1000;
+  let tip = null;
+  let origen = null;
   if (reciente) {
     const c = consejosDePartido(d, ultimo.id);
-    if (c?.tips.length) return { tip: c.tips[0], origen: "ultimo", partidoId: ultimo.id };
+    if (c?.tips.length) {
+      tip = c.tips[0];
+      origen = "ultimo";
+    }
   }
-  const j = tuJuego(d);
-  if (j?.tip) return { tip: j.tip, origen: "general" };
-  return null;
+  if (!tip) {
+    const j = tuJuego(d);
+    if (j?.tip) {
+      tip = j.tip;
+      origen = "general";
+    }
+  }
+  return { numeros, partidos: d.conStats.length, tip, origen, partidoId: origen === "ultimo" ? ultimo.id : null };
 }
 
-// C · Antes de jugar: tu historial con la gente anotada en este partido y,
-// con patrones, cómo te va a esa hora.
-export function consejoAntesDeJugar(d, otros, fechaHora) {
+// C · Antes de jugar: tu historial con la gente anotada en este partido.
+export function consejoAntesDeJugar(d, otros) {
   if (!d || d.partidos.length === 0) return [];
   const items = [];
   for (const o of otros) {
@@ -326,9 +342,5 @@ export function consejoAntesDeJugar(d, otros, fechaHora) {
       items.push({ clave: g * 2 < contra.length ? "contraRivalDificil" : "contraRival", tipo: "dato", vars: { nombre: o.nombre, n: contra.length, g }, peso: contra.length + 1 });
     }
   }
-  const pats = patrones(d);
-  const noche = esNoche(new Date(fechaHora));
-  const horario = pats.find((p) => p.clave === (noche ? "horarioNoche" : "horarioDia") || p.clave === (noche ? "horarioDia" : "horarioNoche"));
-  if (horario) items.push({ ...horario, peso: 0 });
   return items.sort((a, b) => b.peso - a.peso).slice(0, 2);
 }

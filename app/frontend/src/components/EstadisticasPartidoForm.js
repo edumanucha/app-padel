@@ -236,9 +236,6 @@ export default function EstadisticasPartidoForm({ partidoId }) {
         )}
       </div>
 
-      {/* D-46: "Lo que te dejó este partido" (consejos personalizados, opción A). */}
-      <ConsejosDelPartido partidoId={partidoId} />
-
       {datos.nombresMios.length > 0 && datos.nombresRivales.length > 0 && (
         <BotonCompartirTarjeta
           gane={datos.gane}
@@ -251,6 +248,10 @@ export default function EstadisticasPartidoForm({ partidoId }) {
           van={datos.van}
         />
       )}
+
+      {/* D-46: "Lo que te dejó este partido" (consejos personalizados,
+          opción A), debajo de compartir la tarjeta (pedido del usuario). */}
+      <ConsejosDelPartido partidoId={partidoId} />
 
       {datos.rivales.length > 0 && (
         <div className="flex flex-col">

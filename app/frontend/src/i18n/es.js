@@ -933,6 +933,8 @@ const es = {
       buscarCancha: "Buscar cancha...",
     },
     tuJuego: {
+      deTotal: "{de} de {total}",
+      promedioCorto: "tu prom. {n}%",
       porQuePerdieron: "Por qué perdieron",
       porQueGanaron: "Por qué ganaron",
       titulo: "Tu juego",
@@ -964,6 +966,7 @@ const es = {
       seDesbloquea: "Se desbloquea con 10 partidos",
       sinPatrones: "Por ahora no hay nada que se repita. Seguí jugando.",
       medidor: {
+        salvados: "Saque defendido",
         quiebres: "Quiebres convertidos",
         cierre: "Puntos de juego cerrados",
         puntos: "Puntos ganados",
@@ -1020,12 +1023,12 @@ const es = {
       },
       antes: {
         titulo: "Para este partido",
-        conCompanero: "Con {nombre} jugaste {n} partidos: ganaron {g}.",
-        contraRival: "Contra {nombre} jugaste {n}: ganaste {g}.",
-        contraRivalDificil: "Contra {nombre} jugaste {n} y ganaste {g}: arranquen fuerte y no le regalen el primer set.",
+        conCompanero: "Con {nombre} ganan el {pct}% ({g} de {n}).",
+        contraRival: "Contra {nombre} ganás el {pct}% ({g} de {n}).",
+        contraRivalDificil: "Contra {nombre} ganás el {pct}% ({g} de {n}): arranquen fuerte y no le regalen el primer set.",
       },
       home: {
-        titulo: "Tu consejo",
+        titulo: "Tu juego en números",
         delUltimo: "De tu último partido",
         general: "Según tus partidos",
         verMas: "Ver tu juego",

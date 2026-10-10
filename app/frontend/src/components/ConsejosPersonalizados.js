@@ -19,7 +19,6 @@ import {
   tuJuego,
   consejoHome,
   consejoAntesDeJugar,
-  nivelConfianza,
   PARTIDOS_PARA_COMPARAR,
   PARTIDOS_PARA_PATRONES,
 } from "@/lib/consejosPersonalizados";
@@ -137,6 +136,26 @@ function BarraConfianza({ nivel, oscuro = true }) {
   );
 }
 
+// Porcentajes concretos en grilla de 2: valor grande, conteo y, si hay,
+// tu promedio.
+function Numeros({ numeros, conPromedio }) {
+  const { t } = useLocale();
+  return (
+    <div className="grid grid-cols-2 gap-x-4 border-t border-ink/10 mt-1">
+      {numeros.map((n) => (
+        <div key={n.clave} className="flex flex-col py-2.5 border-b border-ink/10">
+          <span className="text-[10.5px] font-bold uppercase tracking-[0.1em] text-muted">{t(`tuJuego.medidor.${n.clave}`)}</span>
+          <span className="font-numero font-bold text-[1.7rem] leading-none mt-1">{n.valor}%</span>
+          <span className="text-xs text-muted mt-0.5">
+            {t("tuJuego.deTotal", { de: n.de, total: n.total })}
+            {conPromedio && n.promedio != null ? ` · ${t("tuJuego.promedioCorto", { n: n.promedio })}` : ""}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // A ------------------------------------------------------------------------
 export function ConsejosDelPartido({ partidoId }) {
   const { t } = useLocale();
@@ -170,11 +189,7 @@ export function ConsejosDelPartido({ partidoId }) {
           </Fila>
         ))
       )}
-      {c.datos.map((x) => (
-        <Fila key={x.clave} tipo="dato" etiqueta={t("tuJuego.dato")}>
-          {t(`tuJuego.hecho.${x.texto}`, x.vars)}
-        </Fila>
-      ))}
+      {c.numeros.length > 0 && <Numeros numeros={c.numeros} conPromedio={c.propio} />}
       {c.tips.map((tip) => (
         <div key={tip.clave}>
           <Fila tipo="consejo" etiqueta={t("tuJuego.consejo")}>
@@ -202,7 +217,7 @@ function Medidor({ m }) {
       <div className="flex items-center gap-2 mt-1.5">
         <div className="relative flex-1 h-[5px] rounded bg-ink/10">
           <i className="absolute inset-y-0 left-0 rounded bg-[#154139]" style={{ width: `${Math.min(100, m.valor)}%` }} />
-          <em className="absolute -top-[3px] w-[2px] h-[11px] bg-ink/50" style={{ left: `${Math.min(100, m.media)}%` }} />
+          {m.media != null && <em className="absolute -top-[3px] w-[2px] h-[11px] bg-ink/50" style={{ left: `${Math.min(100, m.media)}%` }} />}
         </div>
         <span className="font-numero font-bold text-[13px] min-w-[38px] text-right">{m.valor}%</span>
       </div>
@@ -269,17 +284,17 @@ export function TuJuego() {
 }
 
 // C ------------------------------------------------------------------------
-export function ConsejoAntesDeJugar({ otros, fechaHora }) {
+export function ConsejoAntesDeJugar({ otros }) {
   const { t } = useLocale();
   const datos = useDatosConsejos();
-  const items = consejoAntesDeJugar(datos, otros, fechaHora);
+  const items = consejoAntesDeJugar(datos, otros);
   if (items.length === 0) return null;
   return (
     <section className="flex flex-col">
       <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{t("tuJuego.antes.titulo")}</span>
       {items.map((it) => (
         <Fila key={it.clave + (it.vars.nombre ?? "")} tipo="dato" etiqueta={t("tuJuego.dato")}>
-          {t(it.clave.startsWith("horario") ? `tuJuego.patron.${it.clave}` : `tuJuego.antes.${it.clave}`, it.vars)}
+          {t(`tuJuego.antes.${it.clave}`, { ...it.vars, pct: Math.round((100 * it.vars.g) / it.vars.n) })}
         </Fila>
       ))}
     </section>
@@ -292,24 +307,21 @@ export function ConsejoHome() {
   const datos = useDatosConsejos();
   const c = consejoHome(datos);
   if (!c) return null;
-  const nivel = nivelConfianza(datos);
   return (
-    <section className="flex flex-col py-3 border-b border-ink/10">
+    <section className="flex flex-col">
       <div className="flex items-baseline justify-between gap-2">
         <span className="font-titulo font-extrabold uppercase text-xl leading-none">{t("tuJuego.home.titulo")}</span>
-        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">
-          {t(c.origen === "ultimo" ? "tuJuego.home.delUltimo" : "tuJuego.home.general")}
-        </span>
+        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{t("tuJuego.nPartidos", { n: c.partidos })}</span>
       </div>
-      <p className="text-sm leading-snug mt-2">{t(`tuJuego.tip.${c.tip.texto}`)}</p>
-      <div className="flex items-center justify-between gap-2 mt-2">
-        <span className="text-xs text-muted">
-          {nivel.n < PARTIDOS_PARA_PATRONES ? t("tuJuego.nDeDiez", { n: nivel.n }) : t(`tuJuego.nivel.${nivel.clave}`)}
-        </span>
-        <Link href={c.partidoId ? `/partido/${c.partidoId}` : "/perfil"} className="text-[13px] font-semibold underline underline-offset-2">
-          {t(c.partidoId ? "tuJuego.home.verPartido" : "tuJuego.home.verMas")}
-        </Link>
-      </div>
+      <Numeros numeros={c.numeros} />
+      {c.tip && (
+        <Fila tipo="consejo" etiqueta={t("tuJuego.consejo")}>
+          {t(`tuJuego.tip.${c.tip.texto}`)}
+        </Fila>
+      )}
+      <Link href={c.partidoId ? `/partido/${c.partidoId}` : "/perfil"} className="text-[13px] font-semibold underline underline-offset-2 self-end mt-1">
+        {t(c.partidoId ? "tuJuego.home.verPartido" : "tuJuego.home.verMas")}
+      </Link>
     </section>
   );
 }

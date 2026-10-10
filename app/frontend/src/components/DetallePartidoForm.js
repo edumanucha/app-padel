@@ -426,7 +426,6 @@ export default function DetallePartidoForm({ partidoId }) {
         {miParticipacion && (partido.estado === "abierto" || partido.estado === "completo") && (
           <ConsejoAntesDeJugar
             otros={participantes.filter((p) => p.jugador_id && p.jugador_id !== usuarioId).map((p) => ({ id: p.jugador_id, nombre: p.nombre }))}
-            fechaHora={partido.fecha_hora}
           />
         )}
 
