@@ -57,7 +57,21 @@ export function dibujarTarjetaTV(ctx, datos, fuente = "sans-serif") {
 
   texto("Anotado con Padelito", 90, 150, f(800, 48), C.amarillo);
   texto(fecha, W - 90, 150, f(500, 44), C.gris, "right");
-  texto(titulo, 90, 330, f(800, 88), C.blanco);
+  // D-36: la pelotita amarilla de la marca como punto de la primera i del
+  // título. Se escribe la i sin punto (ı) y el punto se dibuja aparte.
+  const iTit = titulo.indexOf("i");
+  if (iTit < 0) {
+    texto(titulo, 90, 330, f(800, 88), C.blanco);
+  } else {
+    texto(titulo.slice(0, iTit) + "ı" + titulo.slice(iTit + 1), 90, 330, f(800, 88), C.blanco);
+    const xI = 90 + ctx.measureText(titulo.slice(0, iTit)).width + ctx.measureText("ı").width / 2;
+    const alturaX = ctx.measureText("x").actualBoundingBoxAscent || 88 * 0.53;
+    const r = 88 * 0.13;
+    ctx.fillStyle = C.amarillo;
+    ctx.beginPath();
+    ctx.arc(xI, 330 - alturaX - r * 1.9, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
   // Tablero: una fila por pareja, una columna por set.
   const top = 480;

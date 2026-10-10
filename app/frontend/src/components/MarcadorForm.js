@@ -2981,7 +2981,8 @@ export default function MarcadorForm({ partidoId }) {
 
         {resultado.finalizado ? (
           <div className={styles.finalBanner}>
-            Partido para {nombreEquipo(resultado.ganador)}
+            {/* D-36: la pelotita de la marca como punto de la i de "Partido". */}
+            Part<span className="i-pelota">i</span>do para {nombreEquipo(resultado.ganador)}
             {minutosReloj > 0 && (
               <span style={{ fontSize: "0.7em", opacity: 0.8 }}>
                 {minutosReloj >= 60 ? `${Math.floor(minutosReloj / 60)} h ${String(minutosReloj % 60).padStart(2, "0")} min` : `${minutosReloj} min`}

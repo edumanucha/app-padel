@@ -63,6 +63,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-33 | `diseno-33-como-venis-amarilla` | 2026-10-09 | Perfil: la tarjeta "Cómo venís" pasa a amarilla (había exceso de verde con la tarjeta del jugador); el nivel 7ª ya no dice "(mínima)" | Pendiente de revisión |
 | D-34 | `diseno-34-i-con-pelota` | 2026-10-09 | La pelotita amarilla de Padelito como punto de la primera I en el título de cada pantalla (no en títulos con Í acentuada ni en nombres) | Pendiente de revisión |
 | D-35 | `diseno-35-celu-cerca` | 2026-10-09 | Marcadorcito: al elegir el modo, consejo con canchita para dejar el celu cerca, del lado donde jugás | Pendiente de revisión |
+| D-36 | `diseno-36-pelotita-cada-pantalla` | 2026-10-10 | La pelotita de la i en al menos un texto de cada pantalla principal (Inicio, Jugadores, Perfil, Marcadorcito) y en la imagen para compartir | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -359,6 +360,19 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** A consejo dentro de la hoja, B preguntar "¿De qué lado jugás?" y marcar el lugar en la canchita.
 - **Elegida por el usuario:** A.
 - **Notas / qué mirar en la evaluación:** que la hoja no quede más alta que la pantalla en celus chicos.
+
+### D-36 · `diseno-36-pelotita-cada-pantalla` — al menos una pelotita por pantalla principal (2026-10-10)
+
+- **Qué cambió:** la pelotita de la i (D-34) llega a las pantallas principales que no la tenían, siempre en textos que ya existían:
+  - Inicio: "Abrir Marcadorcito", con la pelotita en verde porque el botón es amarillo (clase `.i-pelota-verde`, prop `verde` de `ConPelota`).
+  - Jugadores: "Ranking" pasa de etiqueta chiquita a título de sección, con la pelotita en la I. "Jugadores" no tiene I.
+  - Perfil: la barra "Mis partidos".
+  - Marcadorcito: ya la tenía en el título. Ahora también va en el cartel del final, "Partido para…".
+  - Imagen para compartir: "Partido ganado / perdido", con la i sin punto y la pelotita dibujada en el canvas.
+- **Código:** `ConPelota.js` (prop `verde`), `globals.css`, `HomeForm.js`, `DirectorioJugadoresForm.js`, `VerPerfilForm.js`, `MarcadorForm.js`, `lib/tarjetaResultado.js`.
+- **Por qué:** pedido del usuario: "que haya al menos uno por pantalla", en lugares que ya existen, sin crear vistas nuevas.
+- **Elegida por el usuario:** sí (los tres propuestos, más al menos uno en Inicio y Jugadores).
+- **Notas / qué mirar en la evaluación:** la pelotita verde sobre el botón amarillo del Inicio; "Ranking" más grande en Jugadores; la imagen para compartir en WhatsApp.
 
 <!-- Plantilla para cada cambio nuevo:
 

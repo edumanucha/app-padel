@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import ConPelota from "@/components/ConPelota";
 import { supabase } from "@/lib/supabaseClient";
 import { usuarioActual, sinConexion } from "@/lib/marcadorOffline";
 import PelotaLoader from "@/components/PelotaLoader";
@@ -664,7 +665,7 @@ export default function HomeForm() {
         className="flex items-center justify-between gap-3 rounded-[6px] bg-accent text-accent-ink px-4 py-4 cursor-pointer text-left"
       >
         <span className="flex flex-col">
-          <span className="font-titulo font-black uppercase text-[1.75rem] leading-none">{t("home.abrirMarcadorcito")}</span>
+          <span className="font-titulo font-black uppercase text-[1.75rem] leading-none"><ConPelota verde>{t("home.abrirMarcadorcito")}</ConPelota></span>
           <span className="text-xs opacity-80 mt-1">{t("home.marcadorcitoCorto")}</span>
         </span>
         <IconoChevron width={24} height={24} style={{ transform: "rotate(-90deg)" }} aria-hidden />

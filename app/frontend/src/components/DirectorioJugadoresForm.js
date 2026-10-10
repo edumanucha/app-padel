@@ -13,11 +13,6 @@ import InfoEstadistica from "@/components/InfoEstadistica";
 import TarjetasGruposRanking from "@/components/TarjetasGruposRanking";
 
 import { IconoLupa } from "@/components/Icons";
-// Rediseño Cartel (2026-10-01): etiqueta de sección chica, sin tarjetas
-// (la lista va con líneas y el podio es la protagonista en verde tablero).
-function Subtitulo({ children }) {
-  return <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{children}</span>;
-}
 
 const NIVELES_VALORES = [1, 2, 3, 4, 5, 6, 7];
 
@@ -336,7 +331,9 @@ export default function DirectorioJugadoresForm() {
           />
         )}
         <span className="flex items-center gap-1">
-          <Subtitulo>{t("directorio.ranking")}</Subtitulo>
+          {/* D-36: "Ranking" pasa a título de sección con la pelotita en la
+              I (el título de la pantalla, "Jugadores", no tiene I). */}
+          <h2 className="font-titulo font-black uppercase text-2xl leading-none"><ConPelota>{t("directorio.ranking")}</ConPelota></h2>
           <InfoEstadistica
             texto={`${t("directorio.explicacionRanking")} El semanal y el mensual se reinician solos cada semana/mes; el histórico es la suma de toda la vida.`}
           />

@@ -954,7 +954,7 @@ export default function VerPerfilForm() {
               onClick={() => setMostrarPartidosStats((v) => !v)}
               className="w-full flex items-center justify-between gap-2 py-2 border-y-[3px] border-ink cursor-pointer"
             >
-              <span className="font-titulo font-black uppercase text-2xl leading-none">{t("estadisticas.misPartidosTitulo")}</span>
+              <span className="font-titulo font-black uppercase text-2xl leading-none"><ConPelota>{t("estadisticas.misPartidosTitulo")}</ConPelota></span>
               <span className="flex items-center gap-1.5 bg-accent text-accent-ink rounded-[6px] px-2.5 py-1 font-titulo font-black text-lg leading-none">
                 {partidosStats.length}
                 <IconoChevron width={16} height={16} className={`transition-transform ${mostrarPartidosStats ? "rotate-180" : "-rotate-90"}`} />

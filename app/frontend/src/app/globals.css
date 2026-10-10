@@ -702,6 +702,9 @@ button:not(:disabled):active {
   background: #f2c53d;
   transform: translateX(-50%);
 }
+.i-pelota-verde::after {
+  background: #154139;
+}
 
 /* Guía paso a paso (GuiaPadelito, 2026-10-09): el recuadro se desliza de un
    elemento al siguiente y el globito entra con un fundido corto. */
