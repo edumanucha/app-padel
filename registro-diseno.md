@@ -65,6 +65,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-35 | `diseno-35-celu-cerca` | 2026-10-09 | Marcadorcito: al elegir el modo, consejo con canchita para dejar el celu cerca, del lado donde jugás | Pendiente de revisión |
 | D-36 | `diseno-36-pelotita-cada-pantalla` | 2026-10-10 | La pelotita de la i en al menos un texto de cada pantalla principal (Inicio, Jugadores, Perfil, Marcadorcito) y en la imagen para compartir | Pendiente de revisión |
 | D-37 | `diseno-37-barra-botones-iguales` | 2026-10-10 | Barra de abajo: los 4 botones del mismo ancho, la marca amarilla siempre del mismo tamaño | Pendiente de revisión |
+| D-38 | `diseno-38-marcadorcito-cartel-vs` | 2026-10-10 | Formulario del Marcadorcito: menos texto, parejas en cartel verde con VS, punto de oro como interruptor, "Cargar un partido ya jugado" al final | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -383,6 +384,21 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** antes / después.
 - **Elegida por el usuario:** después ("dale aplica").
 - **Notas / qué mirar en la evaluación:** en celus angostos, que "Marcadorcito" entre sin cortarse.
+
+### D-38 · `diseno-38-marcadorcito-cartel-vs` — formulario del Marcadorcito con cartel VS (2026-10-10)
+
+- **Qué cambió:**
+  - Menos texto: salieron la explicación "Registrá un partido…", el texto de la demo y el consejo de dónde dejar el celu, que ya está en la hoja de elegir modo (D-35).
+  - La demo pasa a un botoncito "Demo" al lado del título. El "Volver" salió, porque la barra de abajo ya lleva al Inicio.
+  - Las parejas van en un cartel verde: "<tu nombre> y" + tu compañero, un VS grande en amarillo y los dos rivales. Los campos van con contorno punteado.
+  - El punto de oro es un interruptor.
+  - "Cargar un partido ya jugado" pasa al final, como link.
+  - El botón "Empezar a jugar" queda igual (al usuario le encanta).
+- **Código:** `components/MarcadorLibreForm.js` (`SlotJugador` con prop `oscuro`).
+- **Por qué:** pedido del usuario: "tiene mucho texto, vamos a simplificar".
+- **Opciones mostradas (maqueta):** A la cancha vista desde arriba, B cartel VS, C tablero de TV con 0-0.
+- **Elegida por el usuario:** B.
+- **Notas / qué mirar en la evaluación:** la lista de sugerencias de nombres al escribir, arriba del cartel verde; nombres largos en "<nombre> y"; modo oscuro.
 
 <!-- Plantilla para cada cambio nuevo:
 

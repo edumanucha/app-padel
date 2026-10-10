@@ -4,8 +4,8 @@ import ConPelota from "@/components/ConPelota";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-import GuiaCelular from "@/components/GuiaCelular";
 import PelotaLoader from "@/components/PelotaLoader";
+import Toggle from "@/components/Toggle";
 import CampoCancha from "@/components/CampoCancha";
 import { IconoPlay, IconoPelota } from "@/components/Icons";
 import { crearEstadoInicial } from "@/lib/marcadorEngine";
@@ -22,19 +22,17 @@ import {
 // líneas finas, los campos llevan contorno fino y las etiquetas van chicas
 // en mayúscula. El único botón amarillo es "Empezar a jugar".
 const inputClass = "rounded-[6px] bg-transparent border border-ink/15 px-3 py-2 text-ink text-sm";
-const tarjeta = "text-ink border-b border-ink/10 pb-4";
 const etiquetaClass = "text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted";
-
-function Subtitulo({ children }) {
-  return <span className={etiquetaClass}>{children}</span>;
-}
 
 // Un slot de jugador del plantel ad-hoc: busca por nombre contra cuentas
 // reales (buscar_jugadores); si el usuario elige una coincidencia, queda
 // vinculado (jugador_id); si sigue escribiendo texto libre sin elegir
 // ninguna, al enviar el formulario queda como invitado libre
 // (invitado_nombre), sin cuenta ni perfil asociado (US-2.8).
-export function SlotJugador({ etiqueta, valor, onChange, excluirIds = [] }) {
+// `oscuro` (D-38): versión para ir adentro del cartel verde VS -- sin
+// etiqueta arriba (va como placeholder), contorno punteado verde claro y
+// textos claros, colores fijos como el resto de los carteles.
+export function SlotJugador({ etiqueta, valor, onChange, excluirIds = [], oscuro = false }) {
   const [resultados, setResultados] = useState([]);
   const [buscando, setBuscando] = useState(false);
 
@@ -60,19 +58,26 @@ export function SlotJugador({ etiqueta, valor, onChange, excluirIds = [] }) {
 
   return (
     <label className="flex flex-col gap-1 relative">
-      <span className={etiquetaClass}>{etiqueta}</span>
+      {!oscuro && <span className={etiquetaClass}>{etiqueta}</span>}
       <input
         type="text"
         value={valor.termino}
         onChange={(e) => buscar(e.target.value)}
-        placeholder="Nombre..."
-        className={inputClass}
+        placeholder={oscuro ? `+ ${etiqueta}` : "Nombre..."}
+        aria-label={etiqueta}
+        className={
+          oscuro
+            ? `rounded-[6px] px-3 py-2.5 text-sm font-semibold text-[#eaf4f0] placeholder:text-[#c4dad3] placeholder:font-normal bg-transparent ${
+                valor.termino ? "border border-[#8fb6ae]" : "border-[1.5px] border-dashed border-[#8fb6ae]"
+              }`
+            : inputClass
+        }
       />
       {valor.jugadorId && (
-        <span className="text-xs text-muted">✓ Vinculado a una cuenta real</span>
+        <span className={`text-xs ${oscuro ? "text-[#c4dad3]" : "text-muted"}`}>✓ Vinculado a una cuenta real</span>
       )}
       {!valor.jugadorId && valor.termino.trim() !== "" && resultados.length === 0 && !buscando && (
-        <span className="text-xs text-muted">Se va a cargar como invitado libre (sin cuenta)</span>
+        <span className={`text-xs ${oscuro ? "text-[#c4dad3]" : "text-muted"}`}>Se va a cargar como invitado libre (sin cuenta)</span>
       )}
       {resultados.length > 0 && (
         <div className="absolute top-full left-0 right-0 mt-1 bg-surface rounded-[6px] border border-ink/15 z-10 overflow-hidden">
@@ -81,7 +86,7 @@ export function SlotJugador({ etiqueta, valor, onChange, excluirIds = [] }) {
               key={r.id}
               type="button"
               onClick={() => elegir(r)}
-              className="w-full text-left px-3 py-2 text-sm hover:bg-bg cursor-pointer border-b border-ink/10 last:border-b-0"
+              className="w-full text-left px-3 py-2 text-sm text-ink hover:bg-bg cursor-pointer border-b border-ink/10 last:border-b-0"
             >
               {r.nombre}
             </button>
@@ -299,90 +304,66 @@ export default function MarcadorLibreForm() {
     <div className="w-full max-w-md flex flex-col gap-5">
       <div className="flex items-start justify-between gap-3">
         <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{"Marcadorcito"}</ConPelota></h1>
+        {/* Acceso a la demo SIN pasar por el formulario (2026-09-10, a pedido
+            del usuario). Desde D-38 es un botoncito al lado del título; el
+            "Volver" salió porque la barra de abajo ya lleva al Inicio. */}
         <button
-          onClick={() => router.push("/")}
-          className="text-sm font-semibold px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer flex-shrink-0"
+          type="button"
+          onClick={() => router.push("/marcador-libre/demo")}
+          className="text-xs font-bold uppercase tracking-[0.06em] px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer flex-shrink-0 inline-flex items-center gap-1.5 mt-1"
         >
-          Volver
+          <IconoPlay width={12} height={12} /> Demo
         </button>
       </div>
 
-      <button
-        type="button"
-        onClick={() => router.push("/cargar-partido")}
-        className="self-start font-semibold text-xs px-3 py-1.5 rounded-[6px] border border-ink/15 text-ink cursor-pointer"
-      >
-        Cargar un partido ya jugado (sin Marcadorcito)
-      </button>
+      {/* D-38 (2026-10-10, opción B "Cartel VS" elegida por el usuario): menos
+          texto -- salieron la explicación de arriba y el consejo de dónde
+          dejar el celu (ya está en la hoja de elegir modo, D-35); las parejas
+          van en un cartel verde con un VS amarillo; punto de oro como
+          interruptor; "Cargar un partido ya jugado" pasa al final. */}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {/* CampoCancha ya trae su etiqueta "Cancha". */}
+        <CampoCancha value={cancha} onChange={setCancha} onElegir={(c) => setCanchaId(c?.id ?? null)} />
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        <div className={tarjeta}>
-          <p className="text-muted text-sm mb-3">
-            Registrá un partido que jugás ahora por tu cuenta, sin pasar por &quot;Crear partido&quot;. Vos quedás
-            como organizador y jugás en el equipo A junto a tu compañero/a.
-          </p>
-
-          {/* Acceso a la demo SIN pasar por el formulario -- a pedido del
-              usuario (2026-09-10): "ahí no me debería obligar a completar
-              primero, mirá la demo y después si querés pasa a usarla". */}
-          <button
-            type="button"
-            onClick={() => router.push("/marcador-libre/demo")}
-            className="w-full font-semibold text-sm px-4 py-3 rounded-[6px] border border-ink/15 text-ink cursor-pointer flex items-center justify-center gap-2"
-          >
-            <IconoPlay width={16} height={16} /> Ver cómo funciona (demo)
-          </button>
-          <p className="text-xs text-muted text-center mt-2">
-            Abre el marcador con datos de ejemplo, sin guardar nada.
-          </p>
-        </div>
-
-        {/* Sin subtítulo propio: CampoCancha ya trae su etiqueta "Cancha". */}
-        <div className="flex flex-col gap-2">
-          <div className={tarjeta}>
-            <CampoCancha value={cancha} onChange={setCancha} onElegir={(c) => setCanchaId(c?.id ?? null)} />
+        <div className="rounded-[8px] bg-[#154139] text-[#eaf4f0] px-4 py-4 flex flex-col gap-2.5">
+          <span className="font-titulo font-black uppercase text-[1.6rem] leading-none truncate">
+            {nombrePropio} <span className="text-[#8fb6ae]">y</span>
+          </span>
+          <SlotJugador
+            oscuro
+            etiqueta="Tu compañero/a"
+            valor={companero}
+            onChange={setCompanero}
+            excluirIds={[rival1.jugadorId, rival2.jugadorId].filter(Boolean)}
+          />
+          <div className="flex items-center gap-3 my-0.5" aria-hidden>
+            <span className="flex-1 h-px bg-[#eaf4f0]/20" />
+            <span className="font-titulo font-black text-[2.6rem] leading-none text-[#f2c53d]">VS</span>
+            <span className="flex-1 h-px bg-[#eaf4f0]/20" />
           </div>
+          <SlotJugador
+            oscuro
+            etiqueta="Rival 1"
+            valor={rival1}
+            onChange={setRival1}
+            excluirIds={[companero.jugadorId, rival2.jugadorId].filter(Boolean)}
+          />
+          <SlotJugador
+            oscuro
+            etiqueta="Rival 2"
+            valor={rival2}
+            onChange={setRival2}
+            excluirIds={[companero.jugadorId, rival1.jugadorId].filter(Boolean)}
+          />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <Subtitulo>Plantel</Subtitulo>
-          <div className={`${tarjeta} flex flex-col gap-3`}>
-            <div className="flex flex-col gap-1">
-              <span className={etiquetaClass}>Equipo A</span>
-              <span className="font-titulo font-extrabold uppercase text-xl leading-none">Vos: {nombrePropio}</span>
-            </div>
-
-            <SlotJugador
-              etiqueta="Tu compañero/a (Equipo A)"
-              valor={companero}
-              onChange={setCompanero}
-              excluirIds={[rival1.jugadorId, rival2.jugadorId].filter(Boolean)}
-            />
-            <SlotJugador
-              etiqueta="Rival 1 (Equipo B)"
-              valor={rival1}
-              onChange={setRival1}
-              excluirIds={[companero.jugadorId, rival2.jugadorId].filter(Boolean)}
-            />
-            <SlotJugador
-              etiqueta="Rival 2 (Equipo B)"
-              valor={rival2}
-              onChange={setRival2}
-              excluirIds={[companero.jugadorId, rival1.jugadorId].filter(Boolean)}
-            />
-          </div>
+        <div className="flex items-center justify-between gap-3 border-y border-ink/10 py-3">
+          <span className="flex flex-col">
+            <span className="font-semibold text-sm">Punto de oro</span>
+            <span className="text-xs text-muted">En 40-40 gana el próximo punto</span>
+          </span>
+          <Toggle checked={puntoDeOro} onChange={setPuntoDeOro} />
         </div>
-
-        <div className={tarjeta}>
-          <label className="flex items-start gap-2">
-            <input className="mt-0.5" type="checkbox" checked={puntoDeOro} onChange={(e) => setPuntoDeOro(e.target.checked)} />
-            <span className="text-sm">
-              Jugar con &quot;punto de oro&quot; (en 40-40 gana el próximo punto, sin ventaja)
-            </span>
-          </label>
-        </div>
-
-        <GuiaCelular />
 
         {error && <p className="text-red-600 text-sm">{error}</p>}
 
@@ -399,6 +380,14 @@ export default function MarcadorLibreForm() {
           )}
         </button>
       </form>
+
+      <button
+        type="button"
+        onClick={() => router.push("/cargar-partido")}
+        className="self-center text-sm text-muted underline underline-offset-2 cursor-pointer"
+      >
+        Cargar un partido ya jugado
+      </button>
     </div>
   );
 }
