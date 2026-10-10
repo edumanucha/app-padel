@@ -350,8 +350,10 @@ export default function DetallePartidoForm({ partidoId }) {
 
   return (
     <div className="w-full max-w-md flex flex-col gap-4 pantalla-grilla">
-      <div className="flex items-center justify-between col-completa">
-        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{t("detallePartido.titulo")}</ConPelota></h1>
+      <div className="flex items-center justify-between gap-2 col-completa">
+        {/* En una sola línea (2026-10-10): en dos, la pelotita de la i quedaba
+            sobre la L de la línea de arriba. */}
+        <h1 className="font-titulo text-[1.75rem] min-[440px]:text-4xl font-black uppercase leading-[0.95] whitespace-nowrap"><ConPelota>{t("detallePartido.titulo")}</ConPelota></h1>
         <button onClick={() => router.push("/partidos")} className={botonSuave}>
           {t("detallePartido.volver")}
         </button>
