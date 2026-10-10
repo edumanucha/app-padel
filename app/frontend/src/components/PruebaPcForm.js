@@ -166,7 +166,7 @@ function Navegador({ children }) {
         <span className="w-3 h-3 rounded-full bg-[#f2814f]" />
         <span className="w-3 h-3 rounded-full bg-[#f2c53d]" />
         <span className="w-3 h-3 rounded-full bg-[#2fb5ad]" />
-        <span className="ml-3 flex-1 bg-white rounded-full text-xs text-muted px-3 py-1">frontend-ten-theta-89.vercel.app</span>
+        <span className="ml-3 flex-1 bg-white rounded-full text-xs text-muted px-3 py-1">padelitoapp.com.ar</span>
       </div>
       <div className="bg-bg text-ink h-[600px] overflow-y-auto">{children}</div>
     </div>

@@ -12,13 +12,13 @@ import { useLocale } from "@/i18n/LocaleContext";
 //  - Se abrió desde el APK si el referrer es "android-app://<package>".
 //  - Desde la versión 3, el APK abre "/?apk=<versionCode>" (Start URL en
 //    PWABuilder). Sin ese número: el APK 1 abría la dirección vieja
-//    (frontend-ten-theta-89...) y el 2 abre padelito-app sin número.
+//    (frontend-ten-theta-89...) el 2 abre padelito-app sin número y el 3 abre padelitoapp.com.ar/?apk=3.
 // Se guarda en sessionStorage (no localStorage: el APK comparte el
 // almacenamiento con Chrome y el aviso no tiene que salir en el navegador).
 //
 // AL PUBLICAR UN APK NUEVO: subir APK_ULTIMO a su versionCode y en
 // PWABuilder poner Start URL "/?apk=<ese número>".
-export const APK_ULTIMO = 2;
+export const APK_ULTIMO = 3;
 const PAQUETE = "app.vercel.frontend_ten_theta_89.twa";
 const CLAVE_VERSION = "padelito_apk_version";
 const CLAVE_CERRADO = "padelito_apk_aviso_cerrado";
@@ -77,7 +77,7 @@ export default function ActualizarApk() {
         <span className="text-xs text-[#b9d3ca]">{t("apk.detalle")}</span>
       </span>
       <a
-        href="https://padelito-app.vercel.app/padelito.apk"
+        href="https://padelitoapp.com.ar/padelito.apk"
         download
         onClick={() => setTimeout(cerrar, 500)}
         className="rounded-[6px] bg-[#f2c53d] text-[#14261f] font-titulo font-black uppercase text-base px-3 py-2 flex-shrink-0"

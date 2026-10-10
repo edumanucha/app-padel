@@ -58,7 +58,7 @@ const archivo = Archivo({
 });
 
 export const metadata = {
-  metadataBase: new URL("https://padelito-app.vercel.app"),
+  metadataBase: new URL("https://padelitoapp.com.ar"),
   title: "Padelito",
   description: "Llevá el marcador de tu partido de pádel desde el reloj. Gratis.",
   openGraph: {

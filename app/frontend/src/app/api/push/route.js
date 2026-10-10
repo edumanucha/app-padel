@@ -31,7 +31,7 @@ export async function POST(request) {
     return Response.json({ error: "faltan datos" }, { status: 400 });
   }
 
-  webpush.setVapidDetails("https://padelito-app.vercel.app", publica, privada);
+  webpush.setVapidDetails("https://padelitoapp.com.ar", publica, privada);
   const carga = JSON.stringify({ titulo, cuerpo, url: url || "/", etiqueta });
 
   const resultados = await Promise.all(
