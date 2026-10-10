@@ -21,6 +21,7 @@ import BarraEstadistica from "@/components/BarraEstadistica";
 import Toggle from "@/components/Toggle";
 import { InterruptorAvisos } from "@/components/AvisosCelu";
 import { calcularResumenEstadisticas, calcularPuntosRanking } from "@/lib/estadisticasMarcadorcito";
+import { TuJuego } from "@/components/ConsejosPersonalizados";
 import { IconoTelefono, IconoPersona, IconoMapa, IconoPin, IconoMano, IconoPelota, IconoCampana, IconoMensaje, IconoOjo, IconoOjoTachado, IconoTrofeo, IconoChevron, IconoEstrella } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
@@ -981,6 +982,9 @@ export default function VerPerfilForm() {
           </div>
         )}
       </div>
+
+      {/* D-46: consejos personalizados según tus partidos (opción B). */}
+      <TuJuego />
 
       {/* Rediseño Cartel (2026-10-01): los datos son filas etiqueta/valor
           con línea fina, en vez de mini-tarjetas en grilla. */}

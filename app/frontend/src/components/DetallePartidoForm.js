@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import { OfrecerAvisos } from "@/components/AvisosCelu";
+import { ConsejosDelPartido, ConsejoAntesDeJugar } from "@/components/ConsejosPersonalizados";
 import { IconoPelota, IconoCompartir, IconoRepetir, IconoBilletera, IconoTelefono, IconoChevron } from "@/components/Icons";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
@@ -417,6 +418,16 @@ export default function DetallePartidoForm({ partidoId }) {
             </span>
             <IconoChevron width={24} height={24} style={{ transform: "rotate(-90deg)" }} aria-hidden />
           </button>
+        )}
+
+        {/* D-46: consejos personalizados -- "Lo que te dejó este partido"
+            si ya se jugó (A), o tu historial con esta gente si se viene (C). */}
+        {miParticipacion && partido.estado === "jugado" && <ConsejosDelPartido partidoId={partidoId} />}
+        {miParticipacion && (partido.estado === "abierto" || partido.estado === "completo") && (
+          <ConsejoAntesDeJugar
+            otros={participantes.filter((p) => p.jugador_id && p.jugador_id !== usuarioId).map((p) => ({ id: p.jugador_id, nombre: p.nombre }))}
+            fechaHora={partido.fecha_hora}
+          />
         )}
 
         {estoyEnEspera && (

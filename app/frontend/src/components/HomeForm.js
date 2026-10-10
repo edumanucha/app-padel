@@ -1,5 +1,6 @@
 "use client";
 
+import { ConsejoHome } from "@/components/ConsejosPersonalizados";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ConPelota from "@/components/ConPelota";
@@ -685,6 +686,9 @@ export default function HomeForm() {
 
       {/* D-40: vos contra el de arriba en tu grupo (no se muestra sin grupo). */}
       <DueloGrupoInicio userId={perfil.id} t={t} router={router} />
+
+      {/* D-46: tu consejo personalizado (solo si jugaste con Marcadorcito). */}
+      <ConsejoHome />
 
       {/* 3. Invitaciones pendientes: una línea, no un bloque amarillo. */}
       {resumen?.invitaciones_pendientes > 0 && (

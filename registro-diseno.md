@@ -73,6 +73,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-43 | `diseno-43-canchas-cabecera-verde` | 2026-10-10 | Canchas: bloque verde con la provincia, "Cambiar" amarillo, buscador y cuántos clubes y localidades; filas con la cantidad de canchas a la derecha | Pendiente de revisión |
 | D-44 | `diseno-44-cancha-sin-resenas` | 2026-10-10 | Ficha del club: sin reseñas; botón amarillo Ver en Google Maps | Pendiente de revisión |
 | D-45 | `diseno-45-jugadores-ejemplo-y-ficha-usuario` | 2026-10-10 | Jugadores de ejemplo con etiqueta "Ejemplo" (directorio, ranking, perfil) y estadísticas con "Quiénes son" y ficha por usuario | Pendiente de revisión |
+| D-46 | `diseno-46-consejos-personalizados` | 2026-10-10 | Consejos personalizados según tus partidos: por qué ganaste o perdiste, Tu juego en el perfil, antes de jugar y en la Home | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -494,6 +495,19 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** `docs/maquetas/maquetas-marca-demo.html`: X etiqueta "Ejemplo", Y nombre en gris y cursiva, Z etiqueta y sin puesto; y la maqueta de estadísticas.
 - **Elegida por el usuario:** X ("dejá lo del ejemplo") + la aclaración en el perfil.
 - **Notas / qué mirar en la evaluación:** que la etiqueta no corte nombres largos en el podio; que la ficha se lea bien en el celu.
+
+### D-46 · `diseno-46-consejos-personalizados` — Consejos personalizados (2026-10-10)
+
+- **Qué cambió:**
+  - Partido terminado (detalle y estadísticas): "Lo que te dejó este partido" con título "Por qué ganaron / perdieron", hasta 5 cosas bien y 5 para mejorar (quiebres, cierre de games, puntos, quiebres salvados, puntos de juego aguantados, rachas, remontadas, sets apretados, perder ganando más puntos), datos del partido (deuce, duración, punto más largo) y hasta 2 consejos con "Me sirvió / No me sirve". Barra "Padelito te está conociendo" (de 10).
+  - Perfil propio: "Tu juego" con tu fortaleza como título, medidores contra la media de Padelito, patrones desde 10 partidos (mejor dupla, segundo set, horario, remontadas) y el consejo para lo que más te cuesta.
+  - Partido que se viene: "Para este partido" con tu historial con esa gente y tu horario.
+  - Home: "Tu consejo" (del último partido si fue hace poco; si no, general). Solo aparece con partidos reales con Marcadorcito.
+- **Código:** `lib/consejosPersonalizados.js` (reglas), `components/ConsejosPersonalizados.js`, en `DetallePartidoForm`, `EstadisticasPartidoForm`, `VerPerfilForm` y `HomeForm`; textos `tuJuego.*` en es/pt/en; SQL 099 (`datos_consejos`, `valorar_consejo`, `consejos_valoraciones`).
+- **Por qué:** "según las estadísticas del partido que llevemos con Marcadorcito nos pueda dar consejos personalizados", "que me diga por qué perdí o por qué gané", "mientras más partidos, mejore". Reglas propias, nada sale de Padelito; la media de Padelito no cuenta partidos de jugadores de ejemplo ("que no invente").
+- **Opciones mostradas (maqueta):** `docs/maquetas/maquetas-consejos.html`: A al terminar, B Tu juego, C antes de jugar.
+- **Elegida por el usuario:** las tres + la Home.
+- **Notas / qué mirar en la evaluación:** que con pocos partidos no diga cosas raras; que los consejos no se repitan entre la Home y el partido.
 
 <!-- Plantilla para cada cambio nuevo:
 

@@ -10,6 +10,7 @@ import InfoEstadistica from "@/components/InfoEstadistica";
 import GraficoPuntoAPunto from "@/components/GraficoPuntoAPunto";
 import { IconoTrofeo } from "@/components/Icons";
 import BotonCompartirTarjeta from "@/components/BotonCompartirTarjeta";
+import { ConsejosDelPartido } from "@/components/ConsejosPersonalizados";
 import { vanContraRivales } from "@/lib/destacadosPerfil";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
@@ -234,6 +235,9 @@ export default function EstadisticasPartidoForm({ partidoId }) {
           </div>
         )}
       </div>
+
+      {/* D-46: "Lo que te dejó este partido" (consejos personalizados, opción A). */}
+      <ConsejosDelPartido partidoId={partidoId} />
 
       {datos.nombresMios.length > 0 && datos.nombresRivales.length > 0 && (
         <BotonCompartirTarjeta
