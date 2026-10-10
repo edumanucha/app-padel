@@ -64,8 +64,8 @@ function useDatosConsejos() {
 }
 
 const COLOR_TIPO = {
-  bien: "text-[#1f7a4c]",
-  mejorar: "text-[#a8551d]",
+  bien: "text-[#18b04a]",
+  mejorar: "text-[#ef3b3b]",
   dato: "text-[#154139]",
   consejo: "text-[#154139]",
 };
@@ -303,7 +303,7 @@ export function ConsejoAntesDeJugar({ otros }) {
 
 // Anillo de la Home (D-47, opción A de maquetas-home-tu-juego.html): el
 // porcentaje en el medio, verde si estás en la media de Padelito o arriba,
-// naranja si estás abajo.
+// rojo si estás abajo.
 function Anillo({ n }) {
   const { t } = useLocale();
   const abajo = n.media != null && n.valor < n.media;
@@ -316,7 +316,7 @@ function Anillo({ n }) {
           cy="18"
           r="15.5"
           fill="none"
-          stroke={abajo ? "#a8551d" : "#1f7a4c"}
+          stroke={abajo ? "#ef3b3b" : "#18b04a"}
           strokeWidth="4"
           strokeDasharray={`${Math.max(n.valor, 1)} 100`}
           pathLength="100"
