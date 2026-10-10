@@ -14,14 +14,12 @@ function cantidadCanchas(descripcion) {
   return descripcion?.match(/^\d+ canchas?/)?.[0] ?? null;
 }
 
-// Google Maps: con las coordenadas (088/089) cae justo en el club; si no
-// hay, busca por nombre, dirección, localidad y provincia.
+// Google Maps: busca por nombre, dirección, localidad y provincia para que
+// abra la ficha del club (con sus opiniones). Con las coordenadas solas
+// ponía un pin suelto cerca, no en el club (prueba del usuario, 2026-10-10).
 function enlaceMaps(cancha) {
   const provincia = PROVINCIAS.find((p) => p.valor === cancha.provincia)?.etiqueta;
-  const consulta =
-    cancha.lat != null && cancha.lng != null
-      ? `${cancha.lat},${cancha.lng}`
-      : [cancha.nombre, cancha.direccion, cancha.zona, provincia].filter(Boolean).join(", ");
+  const consulta = [cancha.nombre, cancha.direccion, cancha.zona, provincia].filter(Boolean).join(", ");
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(consulta)}`;
 }
 

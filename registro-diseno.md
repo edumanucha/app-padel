@@ -474,7 +474,7 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
   - Se sacaron las reseñas de la ficha del club: el puntaje promedio, la lista y el formulario para dejar una.
   - En su lugar, un botón amarillo "Ver en Google Maps" que abre el club en Maps (ahí están las opiniones).
   - La dirección ya no es un enlace: el botón la reemplaza.
-  - Arreglo: el enlace a Maps le sumaba siempre "Mendoza"; ahora usa las coordenadas del club o, si no tiene, nombre, dirección, localidad y provincia.
+  - Arreglo: el enlace a Maps le sumaba siempre "Mendoza"; ahora busca por nombre, dirección, localidad y provincia del club (con las coordenadas solas Maps ponía un pin suelto cerca y no la ficha del club, lo vio el usuario en dos de Mendoza).
 - **Código:** `DetalleCanchaForm.js`, textos `detalleCancha.*` en es/pt/en (fuera las de reseñas, nuevo `verEnMaps`). La tabla `resenas_canchas` queda en la base sin usar.
 - **Por qué:** pedido del usuario: las reseñas ya están en Google Maps.
 - **Opciones mostradas (maqueta):** ninguna; pedido directo.
