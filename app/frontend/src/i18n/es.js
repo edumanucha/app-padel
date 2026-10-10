@@ -127,7 +127,7 @@ const es = {
       sinResultados: "No se encontraron jugadores con esos filtros.",
       nivelPrefijo: "Nivel",
       opcionNivelMaxima: "1ª (máxima)",
-      opcionNivelMinima: "7ª (mínima)",
+      opcionNivelMinima: "7ª",
       opcionNivelGenerica: "{n}ª",
       jugadosVictorias: "{jugados} jugados · {porcentaje}% victorias",
       sinPartidosJugados: "Sin partidos jugados",

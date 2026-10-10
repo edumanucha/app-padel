@@ -127,7 +127,7 @@ const en = {
       sinResultados: "No players found with those filters.",
       nivelPrefijo: "Level",
       opcionNivelMaxima: "1 (highest)",
-      opcionNivelMinima: "7 (lowest)",
+      opcionNivelMinima: "7",
       opcionNivelGenerica: "{n}",
       jugadosVictorias: "{jugados} played · {porcentaje}% wins",
       sinPartidosJugados: "No matches played",

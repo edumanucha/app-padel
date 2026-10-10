@@ -60,6 +60,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-30 | `diseno-30-tablero-estadisticas` | 2026-10-09 | Tablero de estadio en el perfil (cartel verde siempre visible con % ganados, racha y quiebres), partidos de la lista con "vs rivales", gráfico punto a punto más claro; se sacan "Cuándo jugás mejor" y "Tu cancha" | Pendiente de revisión |
 | D-31 | `diseno-31-mis-partidos-y-games` | 2026-10-09 | Perfil: "Mis partidos" como barra de cartel con el último partido visible y tarjetas estilo Inicio (fecha amarilla + cartel verde); el gráfico del partido pasa a "Los games del partido" (cuadraditos verde/rojo por game y racha) | Pendiente de revisión |
 | D-32 | `diseno-32-grupos-en-ranking` | 2026-10-09 | Jugadores: tarjetas de grupo deslizables arriba del ranking (tu puesto en cada grupo y cuánto te falta o le sacás) y cartel "Competí con tus amigos" para quien no tiene grupos | Pendiente de revisión |
+| D-33 | `diseno-33-como-venis-amarilla` | 2026-10-09 | Perfil: la tarjeta "Cómo venís" pasa a amarilla (había exceso de verde con la tarjeta del jugador); el nivel 7ª ya no dice "(mínima)" | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -327,6 +328,15 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** A pestañas Global / Mis grupos, B tarjetas de grupo para deslizar, C selector en cartel; más el estado sin grupos.
 - **Elegida por el usuario:** B.
 - **Notas / qué mirar en la evaluación:** nombres de grupo largos, 5 grupos (desliza bien a 390 px), el cartel sin grupos, que al volver a Global vuelva el semanal.
+
+### D-33 · `diseno-33-como-venis-amarilla` — Cómo venís en amarillo y 7ª sin "(mínima)" (2026-10-09)
+
+- **Qué cambió:** la tarjeta "Cómo venís" del perfil pasa de verde a amarilla con texto oscuro; los cuadraditos de forma: G en verde tablero con letra amarilla, P en rojo. El texto del nivel 7 pasa de "7ª (mínima)" a "7ª" en todas las pantallas (perfil, jugadores, crear partido, completar perfil).
+- **Pantallas afectadas:** Mi perfil; textos de nivel en Jugadores, Crear partido, Completar perfil, Perfil de otro jugador.
+- **Por qué:** pedido del usuario: "exceso de verde", la tarjeta se perdía con la del jugador.
+- **Opciones mostradas (maqueta):** A amarilla, B blanca con borde, C solo líneas, D verde oscuro con franja amarilla.
+- **Elegida por el usuario:** A.
+- **Notas / qué mirar en la evaluación:** contraste del texto oscuro sobre amarillo en modo oscuro; que la tarjeta amarilla no compita con los botones amarillos de acción.
 
 <!-- Plantilla para cada cambio nuevo:
 

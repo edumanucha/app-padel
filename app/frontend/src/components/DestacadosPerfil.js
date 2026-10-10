@@ -20,20 +20,24 @@ export default function DestacadosPerfil({ destacados: d }) {
   const pendiente = d.cuentaPendiente;
   return (
     <div className="flex flex-col gap-5">
-      <div className="rounded-[6px] bg-[#154139] text-[#eaf4f0] px-4 py-4 flex flex-col gap-3">
-        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#8fb6ae]">{t("destacados.comoVenis")}</span>
+      {/* D-33 (2026-10-09, opción A): la tarjeta pasa a amarilla para que
+          no se pierda con la tarjeta verde del jugador de arriba ("exceso de
+          verde"). Colores fijos: el amarillo es el mismo en modo claro y
+          oscuro. Ganados en verde tablero, perdidos en rojo. */}
+      <div className="rounded-[6px] bg-[#f2c53d] text-[#14261f] px-4 py-4 flex flex-col gap-3">
+        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#5c4a12]">{t("destacados.comoVenis")}</span>
         <span className="font-titulo font-extrabold uppercase text-[1.6rem] leading-none text-balance">{frase}</span>
-        <div className="flex items-end justify-between gap-3 border-t border-[#eaf4f0]/15 pt-3">
+        <div className="flex items-end justify-between gap-3 border-t border-[#14261f]/20 pt-3">
           <div className="flex flex-col gap-1">
             <span className="font-numero font-bold text-[3.4rem] leading-[0.9]">{d.porcentaje}%</span>
-            <span className="text-xs text-[#c4dad3]">{t("destacados.ganadosDe", { g: d.ganados, n: d.jugados })}</span>
+            <span className="text-xs text-[#4a3d10]">{t("destacados.ganadosDe", { g: d.ganados, n: d.jugados })}</span>
           </div>
           <div className="flex gap-1.5" aria-label={t("destacados.ultimosAria", { g: d.ultimos5Ganados, n: d.forma.length })}>
             {d.forma.map((gane, i) => (
               <span
                 key={i}
                 className={`w-6 h-6 rounded-[4px] grid place-items-center font-numero font-bold text-[11px] ${
-                  gane ? "bg-accent text-accent-ink" : "border-[1.5px] border-[#eaf4f0]/25 text-[#eaf4f0]"
+                  gane ? "bg-[#154139] text-[#f2c53d]" : "bg-[#d94b4b] text-white"
                 }`}
               >
                 {gane ? t("destacados.letraGano") : t("destacados.letraPerdio")}
