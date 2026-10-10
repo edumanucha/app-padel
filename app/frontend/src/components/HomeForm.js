@@ -16,6 +16,7 @@ import ConsejoDelDia from "@/components/ConsejoDelDia";
 import HojaAbajo from "@/components/HojaAbajo";
 import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import GuiaPadelito from "@/components/GuiaPadelito";
+import DueloGrupoInicio from "@/components/DueloGrupoInicio";
 import { useEnPantalla } from "@/lib/useEnPantalla";
 import marcadorStyles from "@/components/Marcador.module.css";
 import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, IconoTrofeo, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion, IconoChevron, IconoCorazon, IconoGrupo, IconoLibro, IconoMedalla } from "@/components/Icons";
@@ -681,6 +682,9 @@ export default function HomeForm() {
           <IconoLupa width={18} height={18} aria-hidden /> {t("home.abiertos")}
         </button>
       </div>
+
+      {/* D-40: vos contra el de arriba en tu grupo (no se muestra sin grupo). */}
+      <DueloGrupoInicio userId={perfil.id} t={t} router={router} />
 
       {/* 3. Invitaciones pendientes: una línea, no un bloque amarillo. */}
       {resumen?.invitaciones_pendientes > 0 && (

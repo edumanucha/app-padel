@@ -67,6 +67,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-37 | `diseno-37-barra-botones-iguales` | 2026-10-10 | Barra de abajo: los 4 botones del mismo ancho, la marca amarilla siempre del mismo tamaño | Pendiente de revisión |
 | D-38 | `diseno-38-marcadorcito-cartel-vs` | 2026-10-10 | Formulario del Marcadorcito: menos texto, parejas en cartel verde con VS, punto de oro como interruptor, "Cargar un partido ya jugado" al final | Pendiente de revisión |
 | D-39 | `diseno-39-podio-escalones` | 2026-10-10 | Podio del ranking: las barras suben una por una desde abajo sin estirar el cartel y el 1° hace un pop amarillo | Pendiente de revisión |
+| D-40 | `diseno-40-duelo-grupo-inicio` | 2026-10-10 | Inicio: cartel VS con vos contra el que tenés arriba en tu grupo (no aparece sin grupo) | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -412,6 +413,20 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta animada):** A resorte, B escalones + festejo, C aparición sobria.
 - **Elegida por el usuario:** B.
 - **Notas / qué mirar en la evaluación:** cambiar de período o de grupo tiene que volver a animar sin que se vea bajar.
+
+### D-40 · `diseno-40-duelo-grupo-inicio` — Inicio: cartel VS de tu grupo (2026-10-10)
+
+- **Qué cambió:**
+  - Debajo de "Crear partido / Abiertos" aparece "<grupo> · vas N°" y un cartel con "Vos" y tus puntos en verde, un VS amarillo y el rival con sus puntos.
+  - El rival es el que tenés arriba en el grupo donde estás más cerca de pasarlo. Si vas 1° en todos, es el 2° del grupo donde menos le sacás.
+  - Tocarlo abre Jugadores con ese grupo elegido (`/jugadores?grupo=<id>`).
+  - Sin grupos, o si estás solo en los tuyos, no se muestra.
+  - Usa el ranking mensual, como las tarjetas de grupo (D-32).
+- **Código:** `DueloGrupoInicio.js` (nuevo), `HomeForm.js`, `DirectorioJugadoresForm.js` (lee `?grupo=`), `es.js`/`pt.js` (`grupos.vasPuesto`, `grupos.vos`).
+- **Por qué:** fomentar la competencia entre amigos desde el Inicio.
+- **Opciones mostradas (maqueta):** `docs/maquetas/maquetas-grupo-inicio.html`. Tandas 1 y 2 (A–F) descartadas; tanda 3: G cartel de luces, H calcomanía, I pie del próximo partido, J tablero del duelo, K frase gigante, L cartel VS.
+- **Elegida por el usuario:** L, "y que si no tenés grupo no se muestre".
+- **Notas / qué mirar en la evaluación:** nombres largos de grupo o de rival se cortan con "…".
 
 <!-- Plantilla para cada cambio nuevo:
 

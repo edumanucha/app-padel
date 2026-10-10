@@ -159,6 +159,10 @@ export default function DirectorioJugadoresForm() {
         return;
       }
       setUserId(user.id);
+      // D-40: desde el cartel VS del Inicio se llega con ?grupo=<id> y el
+      // ranking abre directo en ese grupo.
+      const grupoUrl = new URLSearchParams(window.location.search).get("grupo");
+      if (grupoUrl) setGrupoSel(grupoUrl);
       setVerificandoSesion(false);
     }
     verificarSesion();

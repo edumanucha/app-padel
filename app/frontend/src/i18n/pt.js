@@ -533,6 +533,8 @@ const pt = {
       leSacas: "{n} pts à frente de {quien}",
       empatadoCon: "empatado com {quien}",
       soloVos: "só você por enquanto",
+      vasPuesto: "você está em {pos}º",
+      vos: "Você",
       competiTitulo: "Compita com seus amigos",
       competiTexto: "Crie um grupo, convide-os e vejam quem está em primeiro este mês. O ranking do grupo reinicia todo mês.",
       crearMiGrupo: "Criar meu grupo",
