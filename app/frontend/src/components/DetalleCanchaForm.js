@@ -14,12 +14,18 @@ function cantidadCanchas(descripcion) {
   return descripcion?.match(/^\d+ canchas?/)?.[0] ?? null;
 }
 
-// Google Maps: busca por nombre, dirección, localidad y provincia para que
-// abra la ficha del club (con sus opiniones). Con las coordenadas solas
-// ponía un pin suelto cerca, no en el club (prueba del usuario, 2026-10-10).
+// Google Maps: busca el nombre del club con el mapa centrado en sus
+// coordenadas, así abre la ficha del lugar (con sus opiniones). Probado con
+// 15 clubes de ATC y OpenStreetMap (2026-10-10): así abrió la ficha en 11;
+// con las coordenadas solas ponía un pin suelto y con nombre + dirección +
+// localidad se quedaba en una lista la mitad de las veces. Sin coordenadas,
+// nombre + localidad + provincia (la dirección confunde a Maps).
 function enlaceMaps(cancha) {
+  if (cancha.lat != null && cancha.lng != null) {
+    return `https://www.google.com/maps/search/${encodeURIComponent(cancha.nombre)}/@${cancha.lat},${cancha.lng},17z`;
+  }
   const provincia = PROVINCIAS.find((p) => p.valor === cancha.provincia)?.etiqueta;
-  const consulta = [cancha.nombre, cancha.direccion, cancha.zona, provincia].filter(Boolean).join(", ");
+  const consulta = [cancha.nombre, cancha.zona, provincia].filter(Boolean).join(", ");
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(consulta)}`;
 }
 
