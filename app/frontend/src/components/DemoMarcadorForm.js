@@ -33,11 +33,23 @@ const GUION = ["saque", "A", "A", "B", "A", "B", "B", "A", "B", "undo", "A", "A"
 
 // Modos que muestran la cápsula sobre el marcador antes de aplicar la
 // acción: la cámara "leyendo la seña" y el reloj "apretando el botón".
-const MODO_CAMARA = 0;
-const MODO_RELOJ = 2;
+const MODO_RELOJ = 0;
+const MODO_CAMARA = 1;
 const BOTON_RELOJ = { A: "⏭", B: "⏮", undo: "⏸", saque: "⏸⏸" };
 
+// Orden Reloj, Cámara, Voz, Botones (2026-10-10, pedido del usuario).
 const MODOS = [
+  {
+    // Reloj (2026-09-30, pedido del usuario: que la demo muestre lo del
+    // reloj) -- mismos controles que MarcadorForm (Media Session).
+    label: "Reloj",
+    textos: [
+      "Modo Reloj: con el reloj conectado al celu, usás los botones de música",
+      "⏭ Siguiente = punto para tu equipo · ⏮ Anterior = punto para el rival",
+      "⏸ Pausa una vez = deshacer · ⏸⏸ dos veces rápido = cambiar el saque",
+      "También anda con auriculares Bluetooth que tengan esos botones",
+    ],
+  },
   {
     label: "Cámara",
     textos: [
@@ -55,21 +67,9 @@ const MODOS = [
     ],
   },
   {
-    // Reloj (2026-09-30, pedido del usuario: que la demo muestre lo del
-    // reloj) -- mismos controles que MarcadorForm (Media Session).
-    label: "Reloj",
-    textos: [
-      "Modo Reloj: con el reloj conectado al celu, usás los botones de música",
-      "⏭ Siguiente = punto para tu equipo · ⏮ Anterior = punto para el rival",
-      "⏸ Pausa una vez = deshacer · ⏸⏸ dos veces rápido = cambiar el saque",
-      "También anda con auriculares Bluetooth que tengan esos botones",
-    ],
-  },
-  {
     label: "Botones",
     textos: ["Modo Botones: el marcador de siempre, como respaldo si hace falta"],
-  },
-];
+  },];
 
 export default function DemoMarcadorForm() {
   const router = useRouter();
@@ -86,6 +86,9 @@ export default function DemoMarcadorForm() {
   const [, forceRender] = useReducer((x) => x + 1, 0);
 
   const [modoIdx, setModoIdx] = useState(0);
+  // Tocar un modo lo deja fijo (2026-10-10, pedido del usuario: "si marco uno
+  // que me muestre cómo se juega"); hasta que toques, va pasando solo.
+  const [modoElegido, setModoElegido] = useState(false);
   const [textoIdx, setTextoIdx] = useState(0);
   const [explicacionVisible, setExplicacionVisible] = useState(true);
 
@@ -300,7 +303,7 @@ export default function DemoMarcadorForm() {
           const modo = MODOS[modoIdx];
           const siguienteTexto = prevTexto + 1;
           if (siguienteTexto >= modo.textos.length) {
-            setModoIdx((prevModo) => (prevModo + 1) % MODOS.length);
+            if (!modoElegido) setModoIdx((prevModo) => (prevModo + 1) % MODOS.length);
             return 0;
           }
           return siguienteTexto;
@@ -309,7 +312,14 @@ export default function DemoMarcadorForm() {
       }, 150);
     }, 7000);
     return () => clearInterval(timerModo);
-  }, [modoIdx]);
+  }, [modoIdx, modoElegido]);
+
+  function elegirModo(i) {
+    setModoElegido(true);
+    setModoIdx(i);
+    setTextoIdx(0);
+    setExplicacionVisible(true);
+  }
 
   const { pA, pB, sA, sB, saque } = estadoRef.current;
 
@@ -426,9 +436,15 @@ export default function DemoMarcadorForm() {
       <div className="w-full max-w-[1180px] flex flex-col gap-3">
         <div className={styles.modoFila}>
           {MODOS.map((modo, i) => (
-            <div key={modo.label} className={`${styles.modoChip} ${i === modoIdx ? styles.modoChipOn : ""}`}>
+            <button
+              key={modo.label}
+              type="button"
+              onClick={() => elegirModo(i)}
+              aria-pressed={i === modoIdx}
+              className={`${styles.modoChip} ${i === modoIdx ? styles.modoChipOn : ""} cursor-pointer`}
+            >
               {modo.label}
-            </div>
+            </button>
           ))}
         </div>
         <div className={`${styles.explicacion} ${explicacionVisible ? "" : styles.explicacionCambiando}`}>

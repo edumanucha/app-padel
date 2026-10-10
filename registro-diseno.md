@@ -68,6 +68,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-38 | `diseno-38-marcadorcito-cartel-vs` | 2026-10-10 | Formulario del Marcadorcito: menos texto, parejas en cartel verde con VS, punto de oro como interruptor, "Cargar un partido ya jugado" al final | Pendiente de revisión |
 | D-39 | `diseno-39-podio-escalones` | 2026-10-10 | Podio del ranking: las barras suben una por una desde abajo sin estirar el cartel y el 1° hace un pop amarillo | Pendiente de revisión |
 | D-40 | `diseno-40-duelo-grupo-inicio` | 2026-10-10 | Inicio: cartel VS con vos contra el que tenés arriba en tu grupo (no aparece sin grupo) | Pendiente de revisión |
+| D-41 | `diseno-41-demo-modos-elegibles` | 2026-10-10 | Demo del Marcadorcito: los modos se pueden tocar y van en orden Reloj, Cámara, Voz, Botones | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -427,6 +428,14 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** `docs/maquetas/maquetas-grupo-inicio.html`. Tandas 1 y 2 (A–F) descartadas; tanda 3: G cartel de luces, H calcomanía, I pie del próximo partido, J tablero del duelo, K frase gigante, L cartel VS.
 - **Elegida por el usuario:** L, "y que si no tenés grupo no se muestre".
 - **Notas / qué mirar en la evaluación:** nombres largos de grupo o de rival se cortan con "…".
+
+### D-41 · `diseno-41-demo-modos-elegibles` — demo del Marcadorcito: modos para tocar (2026-10-10)
+
+- **Qué cambió:** las cuatro pastillas de modo de la demo pasan a ser botones. Tocar uno lo deja fijo y la demo muestra cómo se juega con ese modo: la cápsula del reloj o de la seña de la cámara, y sus explicaciones en loop. Hasta que tocás uno, sigue pasando sola de modo en modo. Nuevo orden: Reloj, Cámara, Voz, Botones (antes Cámara, Voz, Reloj, Botones).
+- **Código:** `DemoMarcadorForm.js`.
+- **Por qué:** pedido del usuario: "que se puedan seleccionar los botones de cámara, voz, reloj o botones, que si marco uno me muestre cómo se juega", "que el orden sea reloj, cámara, voz y botones".
+- **Opciones mostradas:** ninguna, el pedido era puntual.
+- **Notas / qué mirar en la evaluación:** el modo elegido queda resaltado (`aria-pressed`).
 
 <!-- Plantilla para cada cambio nuevo:
 
