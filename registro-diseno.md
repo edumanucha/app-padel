@@ -70,6 +70,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-40 | `diseno-40-duelo-grupo-inicio` | 2026-10-10 | Inicio: cartel VS con vos contra el que tenés arriba en tu grupo (no aparece sin grupo) | Pendiente de revisión |
 | D-41 | `diseno-41-demo-modos-elegibles` | 2026-10-10 | Demo del Marcadorcito: los modos se pueden tocar y van en orden Reloj, Cámara, Voz, Botones | Pendiente de revisión |
 | D-42 | `diseno-42-filtro-canchas` | 2026-10-10 | Canchas: cambiar de provincia, pastillas por localidad con cantidad de clubes y buscador; en Buenos Aires, primero regiones | Pendiente de revisión |
+| D-43 | `diseno-43-canchas-cabecera-verde` | 2026-10-10 | Canchas: bloque verde con la provincia, "Cambiar" amarillo, buscador y cuántos clubes y localidades; filas con la cantidad de canchas a la derecha | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -451,6 +452,20 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** `docs/maquetas/maquetas-filtro-canchas.html`: A dos desplegables, B pastillas con cantidad, C cerca mío + buscador.
 - **Elegida por el usuario:** B + el buscador de C.
 - **Notas / qué mirar en la evaluación:** en CABA el nombre de la provincia es largo y puede ocupar dos renglones.
+
+### D-43 · `diseno-43-canchas-cabecera-verde` — Canchas: cabecera verde (2026-10-10)
+
+- **Qué cambió:**
+  - Arriba, un bloque verde con "Estás viendo", la provincia en grande y un botón amarillo "Cambiar" (abre la lista de provincias del celu).
+  - El buscador va adentro del bloque, y debajo cuántos clubes y cuántas localidades hay (en la Ciudad dice barrios, en Buenos Aires partidos). Reemplaza al renglón "14 clubes en Maipú".
+  - Las pastillas de región y de localidad quedan abajo del bloque, igual que en D-42. En la Ciudad y Buenos Aires la primera dice "Todos".
+  - Cada club: nombre grande y, en una sola línea gris, localidad · dirección. A la derecha, la cantidad de canchas en número de marcador.
+  - El teléfono sale de la lista (sigue en la ficha del club, con WhatsApp).
+- **Código:** `CanchasListadoForm.js`, textos `canchas.*` en es/pt/en (se fueron `nClubes`, `unClub`, `nClubesEn`, `unClubEn`).
+- **Por qué:** al usuario D-42 le pareció fea ("quedó muy feo").
+- **Opciones mostradas (maqueta):** `docs/maquetas/maquetas-canchas-linda.html`: M cabecera verde, N agrupado por localidad, O cartel y botón Filtrar.
+- **Elegida por el usuario:** M.
+- **Notas / qué mirar en la evaluación:** "Ciudad Autónoma de Buenos Aires" ocupa dos o tres renglones en el bloque; el amarillo "Cambiar" sigue el color de acción del tema.
 
 <!-- Plantilla para cada cambio nuevo:
 

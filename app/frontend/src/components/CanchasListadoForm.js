@@ -14,7 +14,8 @@ import { PROVINCIAS, ORDEN_REGIONES, regionDe } from "@/lib/zonasPorProvincia";
 // que pongas todos esos datos, solo... la cantidad de canchas"), el resto
 // queda guardado por si se usa después.
 function cantidadCanchas(descripcion) {
-  return descripcion?.match(/^\d+ canchas?/)?.[0] ?? null;
+  const n = descripcion?.match(/^(\d+) canchas?/)?.[1];
+  return n ? Number(n) : null;
 }
 
 const sinTildes = (s) =>
@@ -58,6 +59,11 @@ function Pastilla({ activa, onClick, texto, cantidad, region = false }) {
 // buscador por nombre, localidad o dirección. En Buenos Aires (más de 200
 // clubes en 135 partidos) primero van las regiones (Zona Norte, Oeste, Sur,
 // La Plata, Costa, Interior) y, al elegir una, sus partidos.
+// Rediseño (2026-10-10, opción M de las maquetas, a pedido del usuario: "quedó
+// muy feo"): bloque verde arriba con la provincia grande, "Cambiar" amarillo,
+// el buscador y cuántos clubes y localidades hay; cada club en una fila con
+// localidad y dirección en una línea y la cantidad de canchas a la derecha.
+// El teléfono queda en la ficha del club.
 export default function CanchasListadoForm() {
   const router = useRouter();
   const { t } = useLocale();
@@ -89,7 +95,7 @@ export default function CanchasListadoForm() {
     let vivo = true;
     supabase
       .from("canchas")
-      .select("id, nombre, zona, direccion, telefono, descripcion")
+      .select("id, nombre, zona, direccion, descripcion")
       .eq("provincia", provincia)
       .order("nombre", { ascending: true })
       .then(({ data, error: canchasError }) => {
@@ -131,10 +137,10 @@ export default function CanchasListadoForm() {
   // En Buenos Aires los partidos aparecen recién al elegir una región.
   const zonas = !conRegiones || region ? contar(enRegion, (c) => c.zona) : [];
   const lista = zona ? enRegion.filter((c) => c.zona === zona) : enRegion;
-  const lugar = zona ?? region;
-  const cuenta = lugar
-    ? t(lista.length === 1 ? "canchas.unClubEn" : "canchas.nClubesEn", { n: lista.length, zona: lugar })
-    : t(lista.length === 1 ? "canchas.unClub" : "canchas.nClubes", { n: lista.length });
+  const lugares = new Set(enRegion.map((c) => c.zona).filter(Boolean)).size;
+  // En la Ciudad son barrios y en Buenos Aires partidos; en el resto, localidades.
+  const tipoLugar =
+    provincia === "ciudad_autonoma_de_buenos_aires" ? "barrios" : conRegiones ? "partidos" : "localidades";
   const nombreProvincia = PROVINCIAS.find((p) => p.valor === provincia)?.etiqueta ?? "";
 
   if (cargando && canchas.length === 0) {
@@ -161,13 +167,15 @@ export default function CanchasListadoForm() {
         </button>
       </div>
 
-      <div className="col-completa flex flex-col gap-2.5 mb-2 min-w-0">
-        <div className="flex items-baseline gap-2">
-          <span className="font-titulo font-black uppercase text-[1.7rem] leading-none">{nombreProvincia}</span>
-          {/* El select va encima de "cambiar", invisible: se abre la lista
+      <div className="col-completa rounded-[10px] bg-[#154139] text-[#eaf4f0] px-3.5 pt-3.5 pb-3 mb-3 min-w-0">
+        <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#8fb6ae]">{t("canchas.estasViendo")}</span>
+        <div className="flex items-end justify-between gap-2 mt-0.5 mb-2.5">
+          <span className="font-titulo font-black uppercase leading-[0.92] text-[2.6rem] break-words min-w-0">{nombreProvincia}</span>
+          {/* El select va encima de "Cambiar", invisible: se abre la lista
               nativa del celu sin armar una hoja aparte. */}
-          <label className="relative text-sm font-semibold underline cursor-pointer">
+          <label className="relative flex-shrink-0 mb-1 rounded-full bg-accent text-accent-ink text-[13px] font-bold px-3 py-1.5 cursor-pointer">
             {t("canchas.cambiar")}
+            <span aria-hidden className="inline-block w-[7px] h-[7px] border-r-2 border-b-2 border-current rotate-45 -translate-y-0.5 ml-1.5" />
             <select
               value={provincia ?? ""}
               onChange={(e) => cambiarProvincia(e.target.value)}
@@ -182,44 +190,59 @@ export default function CanchasListadoForm() {
             </select>
           </label>
         </div>
-
         <input
           type="search"
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           placeholder={t("canchas.buscar")}
-          className="rounded-[6px] border border-ink/20 bg-surface px-3 py-2 text-ink"
+          className="w-full rounded-[6px] border border-[#eaf4f0]/25 bg-[#eaf4f0]/10 px-3 py-2 text-[#eaf4f0] placeholder:text-[#8fb6ae]"
         />
-
-        {regiones.length > 0 && (
-          <div className="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-0.5">
-            {regiones.map(([r, n]) => (
-              <Pastilla
-                key={r}
-                region
-                activa={region === r}
-                texto={r}
-                cantidad={n}
-                onClick={() => {
-                  setRegion(region === r ? null : r);
-                  setZona(null);
-                }}
-              />
-            ))}
-          </div>
-        )}
-
-        {zonas.length > 0 && (
-          <div className="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-0.5">
-            <Pastilla activa={zona === null} texto={t("canchas.todas")} cantidad={enRegion.length} onClick={() => setZona(null)} />
-            {zonas.map(([z, n]) => (
-              <Pastilla key={z} activa={zona === z} texto={z} cantidad={n} onClick={() => setZona(zona === z ? null : z)} />
-            ))}
-          </div>
-        )}
-
-        <span className="text-xs text-muted">{cuenta}</span>
+        <div className="flex gap-4 mt-2.5 text-xs text-[#8fb6ae]">
+          <span>
+            <b className="font-numero text-[15px] text-[#eaf4f0] mr-1">{lista.length}</b>
+            {t(lista.length === 1 ? "canchas.club" : "canchas.clubes")}
+          </span>
+          <span>
+            <b className="font-numero text-[15px] text-[#eaf4f0] mr-1">{lugares}</b>
+            {t(`canchas.${tipoLugar}`)}
+          </span>
+        </div>
       </div>
+
+      {(regiones.length > 0 || zonas.length > 0) && (
+        <div className="col-completa flex flex-col gap-1.5 mb-1 min-w-0">
+          {regiones.length > 0 && (
+            <div className="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-0.5">
+              {regiones.map(([r, n]) => (
+                <Pastilla
+                  key={r}
+                  region
+                  activa={region === r}
+                  texto={r}
+                  cantidad={n}
+                  onClick={() => {
+                    setRegion(region === r ? null : r);
+                    setZona(null);
+                  }}
+                />
+              ))}
+            </div>
+          )}
+          {zonas.length > 0 && (
+            <div className="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-0.5">
+              <Pastilla
+                activa={zona === null}
+                texto={t(tipoLugar === "localidades" ? "canchas.todas" : "canchas.todos")}
+                cantidad={enRegion.length}
+                onClick={() => setZona(null)}
+              />
+              {zonas.map(([z, n]) => (
+                <Pastilla key={z} activa={zona === z} texto={z} cantidad={n} onClick={() => setZona(zona === z ? null : z)} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {error && <p className="text-red-600 text-sm col-completa mb-3">{error}</p>}
 
@@ -229,25 +252,31 @@ export default function CanchasListadoForm() {
         </p>
       )}
 
-      {lista.map((c) => (
-        <button
-          key={c.id}
-          onClick={() => router.push(`/canchas/${c.id}`)}
-          className="text-left text-ink border-b border-ink/10 py-3 flex items-center justify-between gap-3 cursor-pointer"
-        >
-          <span className="flex flex-col gap-0.5 min-w-0">
-            {c.zona && (
-              <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">{c.zona}</span>
+      {lista.map((c) => {
+        const cantidad = cantidadCanchas(c.descripcion);
+        return (
+          <button
+            key={c.id}
+            onClick={() => router.push(`/canchas/${c.id}`)}
+            className="text-left text-ink border-b border-ink/10 py-3 flex items-center gap-3 cursor-pointer min-w-0"
+          >
+            <span className="flex-1 min-w-0">
+              <span className="block font-titulo font-extrabold uppercase text-[1.45rem] leading-none">{c.nombre}</span>
+              <span className="block text-[12.5px] text-muted mt-1 truncate">
+                {[c.zona, c.direccion].filter(Boolean).join(" · ")}
+              </span>
+            </span>
+            {cantidad && (
+              <span className="flex-shrink-0 text-center min-w-[40px]">
+                <span className="block font-numero font-bold text-[22px] leading-none">{cantidad}</span>
+                <span className="text-[9.5px] font-bold uppercase tracking-[0.1em] text-muted">
+                  {t(cantidad === 1 ? "canchas.cancha" : "canchas.canchasN")}
+                </span>
+              </span>
             )}
-            <span className="font-titulo font-extrabold uppercase text-2xl leading-none">{c.nombre}</span>
-            {c.direccion && <span className="text-sm text-muted">{c.direccion}</span>}
-            {c.telefono && <span className="text-sm text-muted">{c.telefono}</span>}
-          </span>
-          {cantidadCanchas(c.descripcion) && (
-            <span className="text-xs font-semibold text-muted whitespace-nowrap flex-shrink-0">{cantidadCanchas(c.descripcion)}</span>
-          )}
-        </button>
-      ))}
+          </button>
+        );
+      })}
     </div>
   );
 }
