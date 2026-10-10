@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Guía de la app con Padelito (2026-09-30, opción 3 elegida por el usuario
 // en /pruebas-guia): la primera vez que alguien entra al inicio, la pelotita
@@ -86,6 +86,10 @@ export default function GuiaPadelito() {
   const [fase, setFase] = useState("nada");
   const [paso, setPaso] = useState(0);
   const [rect, setRect] = useState(null);
+  // Arriba o abajo para el globito: se decide cuando la pantalla terminó de
+  // moverse, así no salta de lado a mitad del desplazamiento.
+  const [globoArriba, setGloboArriba] = useState(false);
+  const rafRef = useRef(0);
 
   useEffect(() => {
     const pedida = new URLSearchParams(window.location.search).get("guia") === "1";
@@ -102,27 +106,45 @@ export default function GuiaPadelito() {
     return () => clearTimeout(t);
   }, []);
 
-  // Busca el elemento del paso actual (o el siguiente que exista).
-  const medir = useCallback(() => {
-    if (fase !== "guia") return;
-    const el = elementoVisible(PASOS[paso].guia);
-    setRect(el ? el.getBoundingClientRect() : null);
-  }, [fase, paso]);
-
+  // Paso a paso fluido (2026-10-09, el usuario: "el traslado de la guía se
+  // ve trabado"). Antes el recuadro desaparecía en cada paso, la pantalla se
+  // movía y 400 ms después el recuadro reaparecía de golpe. Ahora el
+  // recuadro sigue al elemento cuadro por cuadro mientras la pantalla se
+  // desplaza (y su transición CSS lo desliza desde el paso anterior), hasta
+  // que la posición se queda quieta.
   useEffect(() => {
     if (fase !== "guia") return;
     const el = elementoVisible(PASOS[paso].guia);
     if (!el) return;
     el.scrollIntoView({ block: "center", behavior: "smooth" });
-    const t = setTimeout(medir, 400);
+
+    let quietos = 0;
+    let ultimo = null;
+    const inicio = performance.now();
+    const seguir = () => {
+      const r = el.getBoundingClientRect();
+      setRect(r);
+      const igual = ultimo && Math.abs(ultimo.top - r.top) < 0.5 && Math.abs(ultimo.left - r.left) < 0.5;
+      quietos = igual ? quietos + 1 : 0;
+      ultimo = r;
+      if (quietos >= 6 || performance.now() - inicio > 1500) {
+        setGloboArriba(r.top + r.height / 2 > window.innerHeight / 2);
+        return;
+      }
+      rafRef.current = requestAnimationFrame(seguir);
+    };
+    rafRef.current = requestAnimationFrame(seguir);
+
+    // Si la persona mueve la pantalla o gira el celu, el recuadro la sigue.
+    const medir = () => setRect(el.getBoundingClientRect());
     window.addEventListener("resize", medir);
     window.addEventListener("scroll", medir, { passive: true });
     return () => {
-      clearTimeout(t);
+      cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", medir);
       window.removeEventListener("scroll", medir);
     };
-  }, [fase, paso, medir]);
+  }, [fase, paso]);
 
   function empezar() {
     const primero = pasoDisponible(0);
@@ -143,10 +165,7 @@ export default function GuiaPadelito() {
   function siguiente() {
     const proximo = pasoDisponible(paso + 1);
     if (proximo === -1) terminar();
-    else {
-      setRect(null);
-      setPaso(proximo);
-    }
+    else setPaso(proximo);
   }
 
   if (fase === "nada") return null;
@@ -201,12 +220,11 @@ export default function GuiaPadelito() {
 
   // fase === "guia": foco sobre el elemento + globito de Padelito.
   const margen = 8;
-  const globoArriba = rect && rect.top + rect.height / 2 > window.innerHeight / 2;
   return (
     <div className="fixed inset-0 z-[70]" onClick={(e) => e.stopPropagation()}>
       {rect ? (
         <div
-          className="fixed rounded-[8px] pointer-events-none transition-all duration-300"
+          className="fixed rounded-[8px] pointer-events-none guia-foco"
           style={{
             top: rect.top - margen,
             left: rect.left - margen,
@@ -219,7 +237,8 @@ export default function GuiaPadelito() {
         <div className="fixed inset-0 bg-black/60" />
       )}
       <div
-        className={`fixed inset-x-0 flex justify-center px-4 ${globoArriba ? "top-6" : "bottom-8"}`}
+        key={`${paso}-${globoArriba}`}
+        className={`fixed inset-x-0 flex justify-center px-4 guia-globo-entra ${globoArriba ? "top-6" : "bottom-8"}`}
       >
         <div className="w-full max-w-md flex items-end gap-2">
           <Pelotita />
