@@ -14,15 +14,17 @@ function cantidadCanchas(descripcion) {
   return descripcion?.match(/^\d+ canchas?/)?.[0] ?? null;
 }
 
-// Google Maps: busca el nombre del club con el mapa centrado en sus
-// coordenadas, así abre la ficha del lugar (con sus opiniones). Probado con
-// 15 clubes de ATC y OpenStreetMap (2026-10-10): así abrió la ficha en 11;
-// con las coordenadas solas ponía un pin suelto y con nombre + dirección +
-// localidad se quedaba en una lista la mitad de las veces. Sin coordenadas,
-// nombre + localidad + provincia (la dirección confunde a Maps).
+// Google Maps: busca "nombre, localidad" con el mapa centrado en las
+// coordenadas del club, así abre la ficha del lugar (con sus opiniones).
+// Probado (2026-10-10) con 46 clubes al azar, 2 por provincia, de ATC y
+// OpenStreetMap: con el nombre solo abrió la ficha en 30; sumando la
+// localidad se arreglaron 4 de los 8 que quedaban en una lista. Con las
+// coordenadas solas ponía un pin suelto y con la dirección se confundía.
+// Sin coordenadas: nombre, localidad y provincia.
 function enlaceMaps(cancha) {
   if (cancha.lat != null && cancha.lng != null) {
-    return `https://www.google.com/maps/search/${encodeURIComponent(cancha.nombre)}/@${cancha.lat},${cancha.lng},17z`;
+    const consulta = [cancha.nombre, cancha.zona].filter(Boolean).join(", ");
+    return `https://www.google.com/maps/search/${encodeURIComponent(consulta)}/@${cancha.lat},${cancha.lng},17z`;
   }
   const provincia = PROVINCIAS.find((p) => p.valor === cancha.provincia)?.etiqueta;
   const consulta = [cancha.nombre, cancha.zona, provincia].filter(Boolean).join(", ");

@@ -474,7 +474,7 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
   - Se sacaron las reseñas de la ficha del club: el puntaje promedio, la lista y el formulario para dejar una.
   - En su lugar, un botón amarillo "Ver en Google Maps" que abre el club en Maps (ahí están las opiniones).
   - La dirección ya no es un enlace: el botón la reemplaza.
-  - Arreglo: el enlace a Maps le sumaba siempre "Mendoza". Ahora busca el nombre del club con el mapa centrado en sus coordenadas (sin coordenadas: nombre, localidad y provincia). Probado con 15 clubes de ATC y OpenStreetMap: abrió la ficha del club en 11; los otros 4 (3 de OpenStreetMap, nombres viejos o genéricos) quedan en el mapa de la zona.
+  - Arreglo: el enlace a Maps le sumaba siempre "Mendoza". Ahora busca "nombre, localidad" con el mapa centrado en las coordenadas del club (sin coordenadas: nombre, localidad y provincia). Probado con 46 clubes al azar, 2 por provincia, de ATC y OpenStreetMap: con el nombre solo abrió la ficha en 30; sumar la localidad arregló 4 de los 8 que quedaban en lista. En 2 (Tamarindos, San Luis; Amín Padel, Santiago del Estero) Maps abre otro club, probablemente porque las coordenadas de ATC están mal.
 - **Código:** `DetalleCanchaForm.js`, textos `detalleCancha.*` en es/pt/en (fuera las de reseñas, nuevo `verEnMaps`). La tabla `resenas_canchas` queda en la base sin usar.
 - **Por qué:** pedido del usuario: las reseñas ya están en Google Maps.
 - **Opciones mostradas (maqueta):** ninguna; pedido directo.
