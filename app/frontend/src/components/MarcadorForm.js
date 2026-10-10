@@ -137,6 +137,27 @@ function ElegirModo({ modos }) {
         ))}
       </div>
       <p className="text-sm text-center text-muted min-h-[2.75em]">{actual.detalle}</p>
+      {/* Dónde dejar el celu (D-35, 2026-10-09, opción A elegida por el
+          usuario: "lo mejor es que lo dejes del lado que vas... mientras más
+          cerca mejor"). La voz llega a ~2 m y el reloj a ~9 m, así que el
+          celu va del lado donde jugás (en una silla, no hace falta pegarlo
+          al vidrio). En Manual no hace
+          falta: el celu lo tenés en la mano. */}
+      {actual.consejo && (
+        <div className="flex items-center gap-3 border-y border-ink/10 py-2.5">
+          <svg width="44" height="64" viewBox="0 0 58 84" aria-hidden="true" className="flex-shrink-0">
+            <rect x="2" y="2" width="54" height="80" rx="3" fill="#154139" />
+            <line x1="2" y1="42" x2="56" y2="42" stroke="#eaf4f0" strokeWidth="2" />
+            <line x1="2" y1="54" x2="56" y2="54" stroke="#8fb6ae" strokeWidth="1" />
+            <line x1="29" y1="54" x2="29" y2="82" stroke="#8fb6ae" strokeWidth="1" />
+            <circle cx="16" cy="66" r="5" fill="#eaf4f0" />
+            <rect x="5" y="73" width="9" height="7" rx="1.5" fill="#f2c53d" />
+          </svg>
+          <p className="text-sm leading-snug">
+            <span className="font-bold">Dejá el celu cerca tuyo.</span> Del lado donde jugás (revés o drive), en una silla o donde te quede a mano: {actual.consejo}
+          </p>
+        </div>
+      )}
       <button
         type="button"
         onClick={actual.activar}
@@ -2525,6 +2546,7 @@ export default function MarcadorForm({ partidoId }) {
                 icono: <IconoReloj width={30} height={30} />,
                 nombre: "Reloj",
                 detalle: "Es el que mejor funciona. ⏭ punto A · ⏮ punto B · ⏸ deshacer. Y el reloj te muestra el resultado.",
+                consejo: "cuanto más cerca, mejor le llega el reloj.",
                 activar: () => {
                   setModoElegido("reloj");
                   activarReloj();
@@ -2542,6 +2564,7 @@ export default function MarcadorForm({ partidoId }) {
                 icono: <IconoMicrofono width={30} height={30} />,
                 nombre: "Voz",
                 detalle: "Decí “marcador punto A” o “marcador punto B”. Para corregir: “marcador deshacer”.",
+                consejo: "cuanto más cerca, mejor te escucha.",
                 activar: () => {
                   setModoElegido("voz");
                   setEscuchando(true);
@@ -2552,6 +2575,7 @@ export default function MarcadorForm({ partidoId }) {
                 icono: <IconoMano width={30} height={30} />,
                 nombre: "Gestos",
                 detalle: "Con la cámara: mano derecha abierta = punto A · mano izquierda abierta = punto B · pulgar solo = deshacer.",
+                consejo: "cuanto más cerca, mejor te ve la mano.",
                 activar: () => {
                   setModoElegido("camara");
                   activarCamara();

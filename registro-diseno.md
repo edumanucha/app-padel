@@ -62,6 +62,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-32 | `diseno-32-grupos-en-ranking` | 2026-10-09 | Jugadores: tarjetas de grupo deslizables arriba del ranking (tu puesto en cada grupo y cuánto te falta o le sacás) y cartel "Competí con tus amigos" para quien no tiene grupos | Pendiente de revisión |
 | D-33 | `diseno-33-como-venis-amarilla` | 2026-10-09 | Perfil: la tarjeta "Cómo venís" pasa a amarilla (había exceso de verde con la tarjeta del jugador); el nivel 7ª ya no dice "(mínima)" | Pendiente de revisión |
 | D-34 | `diseno-34-i-con-pelota` | 2026-10-09 | La pelotita amarilla de Padelito como punto de la primera I en el título de cada pantalla (no en títulos con Í acentuada ni en nombres) | Pendiente de revisión |
+| D-35 | `diseno-35-celu-cerca` | 2026-10-09 | Marcadorcito: al elegir el modo, consejo con canchita para dejar el celu cerca, del lado donde jugás | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -348,6 +349,16 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** A pelotita sobre la I de los títulos, B solo en la i minúscula de textos destacados, C solo la marca y festejos.
 - **Elegida por el usuario:** A ("me parece prudente").
 - **Notas / qué mirar en la evaluación:** títulos de 2 líneas (que la pelotita no toque la línea de arriba), títulos sobre cartel verde (login), modo oscuro.
+
+### D-35 · `diseno-35-celu-cerca` — dónde dejar el celu (2026-10-09)
+
+- **Qué cambió:** en la hoja "¿Cómo llevamos los puntos?" del Marcadorcito, abajo del detalle de cada modo, una línea con una canchita chica (el jugador y el celu en amarillo de su lado): "Dejá el celu cerca tuyo. Del lado donde jugás (revés o drive), en una silla o donde te quede a mano", más una frase según el modo (el reloj le llega mejor, te escucha mejor, te ve mejor la mano). En Manual no aparece.
+- **Pantallas afectadas:** Marcadorcito, hoja de elegir modo.
+- **Código:** `components/MarcadorForm.js` (`ElegirModo` + campo `consejo` en cada modo).
+- **Por qué:** pedido del usuario: "lo mejor es que lo dejes del lado que vas… mientras más cerca mejor" (la voz llega a ~2 m y el reloj a ~9 m). Aclaró que no hace falta pegarlo al vidrio, alcanza con una silla.
+- **Opciones mostradas (maqueta):** A consejo dentro de la hoja, B preguntar "¿De qué lado jugás?" y marcar el lugar en la canchita.
+- **Elegida por el usuario:** A.
+- **Notas / qué mirar en la evaluación:** que la hoja no quede más alta que la pantalla en celus chicos.
 
 <!-- Plantilla para cada cambio nuevo:
 
