@@ -71,6 +71,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-41 | `diseno-41-demo-modos-elegibles` | 2026-10-10 | Demo del Marcadorcito: los modos se pueden tocar y van en orden Reloj, Cámara, Voz, Botones | Pendiente de revisión |
 | D-42 | `diseno-42-filtro-canchas` | 2026-10-10 | Canchas: cambiar de provincia, pastillas por localidad con cantidad de clubes y buscador; en Buenos Aires, primero regiones | Pendiente de revisión |
 | D-43 | `diseno-43-canchas-cabecera-verde` | 2026-10-10 | Canchas: bloque verde con la provincia, "Cambiar" amarillo, buscador y cuántos clubes y localidades; filas con la cantidad de canchas a la derecha | Pendiente de revisión |
+| D-44 | `diseno-44-cancha-sin-resenas` | 2026-10-10 | Ficha del club: sin reseñas; botón amarillo Ver en Google Maps | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -466,6 +467,19 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** `docs/maquetas/maquetas-canchas-linda.html`: M cabecera verde, N agrupado por localidad, O cartel y botón Filtrar.
 - **Elegida por el usuario:** M.
 - **Notas / qué mirar en la evaluación:** "Ciudad Autónoma de Buenos Aires" ocupa dos o tres renglones en el bloque; el amarillo "Cambiar" sigue el color de acción del tema.
+
+### D-44 · `diseno-44-cancha-sin-resenas` — Ficha del club sin reseñas (2026-10-10)
+
+- **Qué cambió:**
+  - Se sacaron las reseñas de la ficha del club: el puntaje promedio, la lista y el formulario para dejar una.
+  - En su lugar, un botón amarillo "Ver en Google Maps" que abre el club en Maps (ahí están las opiniones).
+  - La dirección ya no es un enlace: el botón la reemplaza.
+  - Arreglo: el enlace a Maps le sumaba siempre "Mendoza"; ahora usa las coordenadas del club o, si no tiene, nombre, dirección, localidad y provincia.
+- **Código:** `DetalleCanchaForm.js`, textos `detalleCancha.*` en es/pt/en (fuera las de reseñas, nuevo `verEnMaps`). La tabla `resenas_canchas` queda en la base sin usar.
+- **Por qué:** pedido del usuario: las reseñas ya están en Google Maps.
+- **Opciones mostradas (maqueta):** ninguna; pedido directo.
+- **Elegida por el usuario:** sacar las reseñas.
+- **Notas / qué mirar en la evaluación:** que el botón abra el club correcto en canchas de otras provincias.
 
 <!-- Plantilla para cada cambio nuevo:
 
