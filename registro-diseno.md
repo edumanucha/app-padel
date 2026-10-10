@@ -59,6 +59,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-29 | `diseno-29-estadisticas-avanzadas` | 2026-10-08 | Estadísticas avanzadas punto a punto: gráfico del partido, saque, presión, games dados vuelta, ritmo; en el perfil rachas de partidos con niveles, por compañero y cuándo jugás mejor; nivel de racha en el Inicio | Pendiente de revisión |
 | D-30 | `diseno-30-tablero-estadisticas` | 2026-10-09 | Tablero de estadio en el perfil (cartel verde siempre visible con % ganados, racha y quiebres), partidos de la lista con "vs rivales", gráfico punto a punto más claro; se sacan "Cuándo jugás mejor" y "Tu cancha" | Pendiente de revisión |
 | D-31 | `diseno-31-mis-partidos-y-games` | 2026-10-09 | Perfil: "Mis partidos" como barra de cartel con el último partido visible y tarjetas estilo Inicio (fecha amarilla + cartel verde); el gráfico del partido pasa a "Los games del partido" (cuadraditos verde/rojo por game y racha) | Pendiente de revisión |
+| D-32 | `diseno-32-grupos-en-ranking` | 2026-10-09 | Jugadores: tarjetas de grupo deslizables arriba del ranking (tu puesto en cada grupo y cuánto te falta o le sacás) y cartel "Competí con tus amigos" para quien no tiene grupos | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -315,6 +316,17 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** gráfico A con escala / B set por set / C game por game; partidos A fecha amarilla + tarjeta verde / B tarjeta por resultado / C récord + filtros; perfil A botón amarillo / B barra de cartel / C últimos 3 + botón.
 - **Elegida por el usuario:** gráfico C, perfil B (la pantalla Mis partidos aparte quedó sin cambios).
 - **Notas / qué mirar en la evaluación:** partidos con muchos games (3 sets) a 390 px, tie-breaks y súper tie-break, nombres de rivales largos en la tarjeta.
+
+### D-32 · `diseno-32-grupos-en-ranking` — grupos en el ranking de Jugadores (2026-10-09)
+
+- **Qué cambió:** en Jugadores, los botoncitos "Global / grupo" (que solo aparecían si ya estabas en un grupo) pasan a tarjetas deslizables: una "Global" y una verde por grupo con tu puesto en grande ("2° de 8") y "a 40 pts de Mati" / "le sacás 90 pts a Gastón" / "empatado con…"; la tarjeta elegida lleva borde amarillo y cambia el ranking de abajo; al final, un "+" amarillo lleva a crear grupo. Sin grupos: cartel verde "Competí con tus amigos" y botón amarillo "Crear mi grupo".
+- **Pantallas afectadas:** Jugadores / ranking.
+- **Código:** `components/TarjetasGruposRanking.js` (nuevo; pide `ranking_grupo` por cada grupo, máx. 5), `DirectorioJugadoresForm.js`, i18n es/en/pt.
+- **Datos:** sin SQL nuevo (usa `mis_grupos` y `ranking_grupo` de 069). Las tarjetas usan el período elegido (semanal cuenta como mensual).
+- **Por qué:** pedido del usuario: fomentar la competencia entre amigos. Se descartó una "lista de amigos con estrella" (privada, no genera competencia) a favor de los grupos (tabla compartida).
+- **Opciones mostradas (maqueta):** A pestañas Global / Mis grupos, B tarjetas de grupo para deslizar, C selector en cartel; más el estado sin grupos.
+- **Elegida por el usuario:** B.
+- **Notas / qué mirar en la evaluación:** nombres de grupo largos, 5 grupos (desliza bien a 390 px), el cartel sin grupos, que al volver a Global vuelva el semanal.
 
 <!-- Plantilla para cada cambio nuevo:
 

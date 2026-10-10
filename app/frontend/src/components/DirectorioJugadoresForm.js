@@ -9,6 +9,7 @@ import PelotaLoader from "@/components/PelotaLoader";
 import { useLocale } from "@/i18n/LocaleContext";
 import ContadorNumero from "@/components/ContadorNumero";
 import InfoEstadistica from "@/components/InfoEstadistica";
+import TarjetasGruposRanking from "@/components/TarjetasGruposRanking";
 
 import { IconoLupa } from "@/components/Icons";
 // Rediseño Cartel (2026-10-01): etiqueta de sección chica, sin tarjetas
@@ -107,6 +108,7 @@ export default function DirectorioJugadoresForm() {
   // solo entre sus miembros (ranking_grupo, 069_grupos_de_amigos.sql).
   const [grupos, setGrupos] = useState([]);
   const [grupoSel, setGrupoSel] = useState("global");
+  const [gruposCargados, setGruposCargados] = useState(false);
   // Barras de puntos proporcionales al máximo de la lista, animadas desde
   // 0 (2026-09-13, a pedido del usuario) -- arrancan en 0% y un instante
   // después pasan a su ancho real, para que la transición CSS se vea.
@@ -154,7 +156,11 @@ export default function DirectorioJugadoresForm() {
   // Mis grupos, para el selector (si la persona no está en ninguno, no se muestra).
   useEffect(() => {
     if (verificandoSesion) return;
-    supabase.rpc("mis_grupos").then(({ data }) => setGrupos(data ?? []));
+    supabase.rpc("mis_grupos").then(({ data, error: errGrupos }) => {
+      setGrupos(data ?? []);
+      // Si la RPC falla no se muestran ni las tarjetas ni el cartel de "armá tu grupo".
+      setGruposCargados(!errGrupos);
+    });
   }, [verificandoSesion]);
 
   function elegirGrupo(id) {
@@ -315,22 +321,18 @@ export default function DirectorioJugadoresForm() {
       {error && <p className="text-red-600 text-sm col-completa">{error}</p>}
 
       <div className="flex flex-col gap-3">
-        {grupos.length > 0 && (
-          <div className="flex flex-wrap gap-1.5" role="tablist" aria-label={t("directorio.ranking")}>
-            {[{ id: "global", nombre: "Global" }, ...grupos.map((g) => ({ id: g.grupo_id, nombre: g.nombre }))].map((o) => (
-              <button
-                key={o.id}
-                role="tab"
-                aria-selected={grupoSel === o.id}
-                onClick={() => elegirGrupo(o.id)}
-                className={`text-xs font-semibold px-3 py-1.5 rounded-[6px] border cursor-pointer ${
-                  grupoSel === o.id ? "bg-ink text-bg border-ink" : "border-ink/15"
-                }`}
-              >
-                {o.nombre}
-              </button>
-            ))}
-          </div>
+        {/* D-32 (opción B): tarjetas de grupo con tu puesto en cada uno; sin
+            grupos, cartel para armar el primero. */}
+        {gruposCargados && (
+          <TarjetasGruposRanking
+            grupos={grupos}
+            grupoSel={grupoSel}
+            onElegir={elegirGrupo}
+            periodo={periodo}
+            userId={userId}
+            t={t}
+            router={router}
+          />
         )}
         <span className="flex items-center gap-1">
           <Subtitulo>{t("directorio.ranking")}</Subtitulo>
