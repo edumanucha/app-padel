@@ -6,11 +6,21 @@ export default function ConPelota({ children, verde = false }) {
   if (typeof children !== "string" || /[íÍ]/.test(children)) return children;
   const i = children.search(/[iI]/);
   if (i < 0) return children;
+  // La palabra con la pelotita va entera en un nowrap (2026-10-10: en el
+  // celu "PARTIDO" se cortaba en "PARTI / DO", porque el inline-block de la
+  // i deja cortar la línea ahí).
+  const desde = children.lastIndexOf(" ", i) + 1;
+  const espacio = children.indexOf(" ", i);
+  const hasta = espacio < 0 ? children.length : espacio;
   return (
     <>
-      {children.slice(0, i)}
-      <span className={verde ? "i-pelota i-pelota-verde" : "i-pelota"}>{children[i]}</span>
-      {children.slice(i + 1)}
+      {children.slice(0, desde)}
+      <span className="whitespace-nowrap">
+        {children.slice(desde, i)}
+        <span className={verde ? "i-pelota i-pelota-verde" : "i-pelota"}>{children[i]}</span>
+        {children.slice(i + 1, hasta)}
+      </span>
+      {children.slice(hasta)}
     </>
   );
 }
