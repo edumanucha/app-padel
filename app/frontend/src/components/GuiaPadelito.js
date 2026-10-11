@@ -28,7 +28,11 @@ const PASOS = [
   },
   {
     guia: "jugar",
-    texto: "Con 'Crear partido' armás uno e invitás gente. En 'Abiertos' te sumás a partidos a los que les falta alguien.",
+    texto: "Con 'Crear partido' armás uno e invitás gente.",
+  },
+  {
+    guia: "cancha",
+    texto: "Si te falta gente, pedila acá y les avisamos a tus grupos. Si querés jugar, avisá que estás disponible. Y si a alguien de tus grupos le falta uno, te sumás con un toque.",
   },
   { guia: "numeros", texto: "Tus números: racha de victorias, tu puesto en el ranking y el % de partidos ganados." },
   { guia: "comunidad", texto: "Acá encontrás a otros jugadores, tus mensajes y las invitaciones a partidos." },

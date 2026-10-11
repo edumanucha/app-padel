@@ -7,6 +7,7 @@ import { supabase, usuarioRapido } from "@/lib/supabaseClient";
 import PelotaLoader from "@/components/PelotaLoader";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
+import { TeSumaste, textoCategorias } from "@/components/CanchaInicio";
 
 // US-6.7: vista pública mínima de un partido, para quien llega por un
 // link compartido sin tener cuenta todavía. Si ya tiene sesión, puede
@@ -20,6 +21,9 @@ export default function PartidoPublicoForm({ partidoId }) {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [sumando, setSumando] = useState(false);
+  // D-48: si el partido busca jugador (SQL 100), "Sumarme" entra directo
+  // (confirmado) y después propone escribirle a quien armó.
+  const [sumado, setSumado] = useState(null);
 
   useEffect(() => {
     async function cargar() {
@@ -49,6 +53,17 @@ export default function PartidoPublicoForm({ partidoId }) {
     setSumando(true);
     setError("");
 
+    if (partido?.busca_jugador) {
+      const { data, error: rpcError } = await supabase.rpc("sumarme_a_partido", { p_partido: partidoId });
+      setSumando(false);
+      if (rpcError) {
+        setError(t("partidoPublico.noPudisteSumar", { mensaje: rpcError.message }));
+        return;
+      }
+      setSumado(data);
+      return;
+    }
+
     const { error: insertError } = await supabase
       .from("partido_jugadores")
       .insert({ partido_id: partidoId, jugador_id: usuarioId, estado: "anotado" });
@@ -77,20 +92,46 @@ export default function PartidoPublicoForm({ partidoId }) {
 
   const estaCompleto = partido.lugares_ocupados >= partido.cantidad_jugadores;
   const cancelado = partido.estado === "cancelado";
+  const libres = Math.max(0, partido.cantidad_jugadores - partido.lugares_ocupados);
+  const pedido = partido.busca_jugador && !cancelado && !estaCompleto;
+  const detalle = [
+    partido.tipo_partido && t(`faltaUno.${partido.tipo_partido}`),
+    textoCategorias(partido.nivel_min, partido.nivel_max),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  if (sumado) {
+    return (
+      <div className="w-full max-w-sm flex flex-col gap-4">
+        <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{t("faltaUno.teSumaste")}</ConPelota></h1>
+        <TeSumaste datos={sumado} t={t} router={router} enHoja={false} />
+      </div>
+    );
+  }
 
   // Rediseño Cartel (2026-10-01): sin tarjeta -- título, protagonista verde
   // tablero (fecha amarilla, cancha y cupo, como el próximo partido del
   // Inicio) y abajo un solo botón amarillo (Sumarme o Iniciá sesión).
   return (
     <div className="w-full max-w-sm flex flex-col gap-4">
-      <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]"><ConPelota>{t("partidoPublico.titulo")}</ConPelota></h1>
+      <h1 className="font-titulo text-4xl font-black uppercase leading-[0.95]">
+        <ConPelota>
+          {pedido
+            ? `${t(libres > 1 ? "faltaUno.aLeFaltan" : "faltaUno.aLeFalta", { nombre: partido.organizador ?? "" })} ${libres}`
+            : t("partidoPublico.titulo")}
+        </ConPelota>
+      </h1>
+      {pedido && detalle && <p className="text-sm text-muted -mt-2">{detalle}</p>}
       {(() => {
         const fecha = new Date(partido.fecha_hora);
         const intl = INTL_LOCALE[locale] ?? "es-AR";
         const diaSemana = fecha.toLocaleDateString(intl, { weekday: "short" }).replace(".", "");
         const dia = fecha.toLocaleDateString(intl, { day: "2-digit" });
         const mes = fecha.toLocaleDateString(intl, { month: "short" }).replace(".", "").toUpperCase();
-        const hora = fecha.toLocaleTimeString(intl, { hour: "2-digit", minute: "2-digit", hour12: false });
+        const hora = partido.hora_a_definir
+          ? t("faltaUno.horaADefinir")
+          : fecha.toLocaleTimeString(intl, { hour: "2-digit", minute: "2-digit", hour12: false });
         return (
           <div className="flex rounded-[6px] overflow-hidden bg-[#154139] text-[#eaf4f0]">
             <span className="bg-accent text-accent-ink flex flex-col items-center justify-center px-3 py-3 min-w-[72px] font-titulo font-extrabold uppercase tracking-wide leading-none">
@@ -100,8 +141,10 @@ export default function PartidoPublicoForm({ partidoId }) {
             </span>
             <div className="flex flex-col justify-center gap-1 px-4 py-3 min-w-0">
               <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#8fb6ae]">{hora}</span>
-              <span className="font-titulo font-extrabold uppercase text-[1.7rem] leading-none truncate">{partido.cancha}</span>
-              <span className="text-xs text-[#c4dad3]">{fecha.toLocaleString(intl)}</span>
+              <span className="font-titulo font-extrabold uppercase text-[1.7rem] leading-none truncate">
+                {partido.cancha_a_definir ? t("faltaUno.canchaADefinir") : partido.cancha}
+              </span>
+              {!partido.hora_a_definir && <span className="text-xs text-[#c4dad3]">{fecha.toLocaleString(intl)}</span>}
               <span className="text-sm font-semibold mt-1">
                 {t("partidoPublico.jugadoresTemplate", { ocupados: partido.lugares_ocupados, cantidad: partido.cantidad_jugadores })}
                 {cancelado && ` ${t("partidoPublico.canceladoSufijo")}`}

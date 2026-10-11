@@ -18,9 +18,10 @@ import HojaAbajo from "@/components/HojaAbajo";
 import { leerPantalla, guardarPantalla } from "@/lib/cachePantalla";
 import GuiaPadelito from "@/components/GuiaPadelito";
 import DueloGrupoInicio from "@/components/DueloGrupoInicio";
+import CanchaInicio from "@/components/CanchaInicio";
 import { useEnPantalla } from "@/lib/useEnPantalla";
 import marcadorStyles from "@/components/Marcador.module.css";
-import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoLupa, IconoTrofeo, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion, IconoChevron, IconoCorazon, IconoGrupo, IconoLibro, IconoMedalla } from "@/components/Icons";
+import { IconoMenu, IconoCampana, IconoPelota, IconoCalendario, IconoTrofeo, IconoMensaje, IconoSobre, IconoRadar, IconoDuo, IconoPin, IconoLista, IconoPersona, IconoLlave, IconoEngranaje, IconoSinConexion, IconoChevron, IconoCorazon, IconoGrupo, IconoLibro, IconoMedalla } from "@/components/Icons";
 import HomeVisitante from "@/components/HomeVisitante";
 import { useLocale } from "@/i18n/LocaleContext";
 import { INTL_LOCALE } from "@/i18n/config";
@@ -147,14 +148,9 @@ export default function HomeForm() {
   // celular no hay hover, así que sin esto el ícono animado de estos 2
   // botones ni se alcanza a ver antes de cambiar de pantalla).
   const [animandoCrear, setAnimandoCrear] = useState(false);
-  const [animandoAbiertos, setAnimandoAbiertos] = useState(false);
   function irACrearPartido() {
     setAnimandoCrear(true);
     setTimeout(() => router.push("/crear-partido"), 180);
-  }
-  function irAPartidosAbiertos() {
-    setAnimandoAbiertos(true);
-    setTimeout(() => router.push("/partidos"), 180);
   }
 
   // Animación de entrada al aparecer en pantalla (no hover/tap -- ver
@@ -407,6 +403,8 @@ export default function HomeForm() {
       router.push("/mensajes");
     } else if (n.tipo === "invitacion_partido") {
       router.push("/invitaciones");
+    } else if (n.tipo === "pedido_jugador" && n.partido_id) {
+      router.push(`/p/${n.partido_id}`);
     } else if (n.tipo === "usuario_nuevo") {
       router.push("/admin/estadisticas");
     } else if (n.tipo === "marcadorcito_nuevo" && n.partido_id) {
@@ -623,7 +621,9 @@ export default function HomeForm() {
           const fecha = new Date(resumen.proximo_partido.fecha_hora);
           const intl = INTL_LOCALE[locale] ?? "es-AR";
           const diaSemana = fecha.toLocaleDateString(intl, { weekday: "short" }).replace(".", "");
-          const hora = fecha.toLocaleTimeString(intl, { hour: "2-digit", minute: "2-digit", hour12: false });
+          const horaReloj = fecha.toLocaleTimeString(intl, { hour: "2-digit", minute: "2-digit", hour12: false });
+          // D-48: "hora a definir" se guarda como las 23:59 (SQL 100).
+          const hora = horaReloj === "23:59" ? t("faltaUno.horaADefinir") : horaReloj;
           const { dia, mes } = diaYMesCorto(resumen.proximo_partido.fecha_hora, locale);
           return (
             <button
@@ -669,20 +669,18 @@ export default function HomeForm() {
         <IconoChevron width={24} height={24} style={{ transform: "rotate(-90deg)" }} aria-hidden />
       </button>
 
-      <div data-guia="jugar" className="grid grid-cols-2 border-y-2 border-ink">
-        <button
-          onClick={irACrearPartido}
-          className="flex items-center justify-center gap-2 py-3 font-semibold text-sm cursor-pointer"
-        >
-          <IconoCalendario width={18} height={18} aria-hidden /> {t("home.crearPartido")}
-        </button>
-        <button
-          onClick={irAPartidosAbiertos}
-          className="flex items-center justify-center gap-2 py-3 font-semibold text-sm cursor-pointer border-l-2 border-ink"
-        >
-          <IconoLupa width={18} height={18} aria-hidden /> {t("home.abiertos")}
-        </button>
-      </div>
+      {/* D-48: "Abiertos" sale del Inicio (queda en el menú); la cancha de
+          abajo lo reemplaza. Crear partido queda como una sola línea. */}
+      <button
+        data-guia="jugar"
+        onClick={irACrearPartido}
+        className="flex items-center justify-center gap-2 py-3 font-semibold text-sm cursor-pointer border-y-2 border-ink"
+      >
+        <IconoCalendario width={18} height={18} aria-hidden /> {t("home.crearPartido")}
+      </button>
+
+      {/* D-48: la cancha (Me falta uno / Estoy disponible), siempre visible. */}
+      <CanchaInicio perfil={perfil} t={t} router={router} />
 
       {/* D-40: vos contra el de arriba en tu grupo (no se muestra sin grupo). */}
       <DueloGrupoInicio userId={perfil.id} t={t} router={router} />

@@ -75,6 +75,7 @@ Pedido del usuario (2026-10-01): *"por cada cambio de diseño armes una bandera 
 | D-45 | `diseno-45-jugadores-ejemplo-y-ficha-usuario` | 2026-10-10 | Jugadores de ejemplo con etiqueta "Ejemplo" (directorio, ranking, perfil) y estadísticas con "Quiénes son" y ficha por usuario | Pendiente de revisión |
 | D-46 | `diseno-46-consejos-personalizados` | 2026-10-10 | Consejos personalizados según tus partidos: por qué ganaste o perdiste, Tu juego en el perfil, antes de jugar y en la Home | Pendiente de revisión |
 | D-47 | `diseno-47-home-anillos-tu-juego` | 2026-10-10 | Home: tus números de Marcadorcito en 4 anillos (verde arriba de la media, naranja abajo) + consejo; porcentajes concretos en vez de horario/duración | Pendiente de revisión |
+| D-48 | `diseno-48-cancha-me-falta-uno` | 2026-10-11 | Inicio: la cancha siempre visible (Me falta uno / Estoy disponible / Me sumo) para tus grupos + link por WhatsApp; sale "Abiertos" del Inicio | Pendiente de revisión |
 | | `antes-sin-animaciones` | 2026-09-30 | (anterior) Antes de sacar las animaciones entre pantallas | Histórica |
 
 ---
@@ -521,6 +522,19 @@ Plan propuesto (en orden): **A** sacar emojis → **B** tipografía de títulos 
 - **Opciones mostradas (maqueta):** `docs/maquetas/maquetas-home-tu-juego.html`: A anillos, B tablero verde, C tendencia.
 - **Elegida por el usuario:** A ("el a me gustó").
 - **Notas / qué mirar en la evaluación:** que los 4 anillos entren en el ancho del celu sin cortar las etiquetas.
+
+### D-48 · `diseno-48-cancha-me-falta-uno` — La cancha del Inicio: Me falta uno / Estoy disponible (2026-10-11)
+
+- **Qué cambió:**
+  - Inicio: "Abiertos" sale (queda en el menú) y "Crear partido" queda como una sola línea. Debajo, una cancha verde siempre visible con 4 estados: (1) a tu próximo partido le falta gente: "Te falta 1" + Buscar jugador; (2) alguien de tus grupos busca: "A Juli le falta 1" + Me sumo + Ver todos; (3) no pasa nada: "¿Jugamos?" con Estoy disponible / Me falta gente; (4) avisaste que estás disponible: te ves en la cancha con los demás disponibles de tus grupos y "Ya no".
+  - Hoja "Me falta gente / Buscar jugador": cuántos faltan, femenino/masculino/mixto (en mixto: una chica, un chico o cualquiera), categorías hasta 2 seguidas, Hoy/Mañana/Otro día + franja de turnos con "A definir" primero, cancha opcional.
+  - Al publicar: aviso a tus grupos (campana + celu) y hoja para compartir por WhatsApp o copiar el link /p/<id>.
+  - Me sumo entra directo y propone un mensaje ya escrito para quien armó; a quien armó le llega "X se sumó a tu partido". El link público muestra el pedido y suma directo.
+- **Código:** `CanchaInicio.js` (cancha, hojas, `TeSumaste`), `HomeForm.js`, `PartidoPublicoForm.js`, `GuiaPadelito.js`, textos `faltaUno.*`, SQL `100_me_falta_uno.sql`.
+- **Por qué:** idea del usuario (MEJ-025 + MEJ-023): avisar cuando falta uno y que se pueda armar partido sin cancha ni hora fija.
+- **Opciones mostradas (maqueta):** `docs/maquetas/maquetas-falta-uno*.html`, `maquetas-selector-hora.html`, `maquetas-cancha-siempre.html`.
+- **Elegida por el usuario:** versión simple solo para grupos, cancha en posición 2 con 4 estados, franja de turnos (opción A).
+- **Notas / qué mirar en la evaluación:** que la cancha no empuje demasiado hacia abajo lo demás del Inicio; que la franja de turnos se deslice bien con el dedo; "hora a definir" se guarda como 23:59.
 
 <!-- Plantilla para cada cambio nuevo:
 
