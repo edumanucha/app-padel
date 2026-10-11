@@ -14,7 +14,7 @@ import CampoCancha from "@/components/CampoCancha";
 //   2. Alguien de tus grupos busca jugador   -> "A Juli le falta 1" + Me sumo
 //   3. No pasa nada                          -> Estoy disponible / Me falta gente
 //   4. Avisaste que estás disponible         -> te ves en la cancha esperando
-// Los pedidos y el "disponible" los ven solo tus grupos (SQL 100), más el
+// Los pedidos y el "disponible" los ven los de tu provincia (SQL 101 y 102), más el
 // link para WhatsApp (/p/<id>).
 
 const VERDE = "bg-[#154139] text-[#eaf4f0]";
