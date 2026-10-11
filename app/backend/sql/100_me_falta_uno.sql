@@ -2,7 +2,7 @@
 -- 100 · Me falta uno / Estoy disponible (2026-10-11, MEJ-025 + MEJ-023)
 -- =========================================================
 -- La cancha del Inicio (D-48): siempre está y cambia según lo que pasa.
---   1. A tu próximo partido le falta gente  -> "Te falta 1" + Buscar jugador
+--   1. Publicaste "Me falta gente"         -> "Te falta 1" + Compartir
 --   2. Alguien de tus grupos busca jugador   -> "A Juli le falta 1" + Me sumo
 --   3. No pasa nada                          -> Estoy disponible / Me falta gente
 --   4. Avisaste que estás disponible         -> te ves en la cancha esperando
@@ -586,22 +586,21 @@ begin
   if v_uid is null then return null; end if;
   select id, sexo, nivel into v_yo from public.perfiles where id = v_uid;
 
-  -- 1. Tu próximo partido (los próximos 7 días) al que le falta gente.
+  -- 1. Tu pedido publicado ("Me falta gente") que todavía tiene lugar.
+  --    No se adivina nada de los partidos armados con "Crear partido".
   select jsonb_build_object(
            'id', p.id, 'fecha_hora', p.fecha_hora, 'hora_a_definir', p.hora_a_definir,
            'cancha', p.cancha, 'cancha_a_definir', p.cancha_a_definir,
            'busca_jugador', p.busca_jugador, 'tipo_partido', p.tipo_partido, 'falta_sexo', p.falta_sexo,
            'nivel_min', p.nivel_min, 'nivel_max', p.nivel_max,
            'cantidad', p.cantidad_jugadores, 'reservados', p.lugares_reservados,
-           'libres', public._lugares_libres(p.id),
-           'jugadores', public._jugadores_cancha(p.id))
+           'libres', public._lugares_libres(p.id))
     into v_mi
     from public.partidos p
    where p.organizador_id = v_uid
      and p.estado = 'abierto'
-     and not coalesce(p.es_adhoc, false)
+     and p.busca_jugador
      and p.fecha_hora > now()
-     and p.fecha_hora < now() + interval '7 days'
      and public._lugares_libres(p.id) > 0
    order by p.fecha_hora
    limit 1;
@@ -616,13 +615,13 @@ begin
                'nivel_min', p.nivel_min, 'nivel_max', p.nivel_max,
                'libres', public._lugares_libres(p.id),
                'reservados', p.lugares_reservados,
+               'cantidad', p.cantidad_jugadores,
                'organizador_id', p.organizador_id,
                'organizador', split_part(btrim(org.nombre), ' ', 1),
                'grupo', (select g.nombre from public.grupos g
                            join public.grupo_miembros a on a.grupo_id = g.id and a.jugador_id = v_uid
                            join public.grupo_miembros b on b.grupo_id = g.id and b.jugador_id = p.organizador_id
-                          order by g.created_at limit 1),
-               'jugadores', public._jugadores_cancha(p.id)) as x
+                          order by g.created_at limit 1)) as x
         from public.partidos p
         join public.perfiles org on org.id = p.organizador_id
        where p.busca_jugador

@@ -113,16 +113,12 @@ function Cancha({ lugares }) {
   );
 }
 
-// Lugares de un partido: los que están, los reservados y los libres.
-function lugaresDePartido(p, { textoLibre, onLibre, yoId, t }) {
-  const lugares = (p.jugadores ?? []).map((j) => ({
-    tipo: j.id && j.id === yoId ? "yo" : "jugador",
-    inicial: primerNombre(j.nombre).charAt(0).toUpperCase() || "?",
-    texto: j.id && j.id === yoId ? t("faltaUno.vos") : primerNombre(j.nombre),
-    avatar: j.avatar_url,
-  }));
-  const reservados = Math.min(p.reservados ?? 0, 4 - lugares.length);
-  for (let i = 0; i < reservados; i++) lugares.push({ tipo: "reservado", inicial: "", texto: t("faltaUno.reservado") });
+// Lugares de un pedido: sin nombres (pedido del usuario: lo único que
+// importa es cuántos faltan), los ocupados llenos y los libres con "+".
+function lugaresDePartido(p, { textoLibre, onLibre }) {
+  const lugares = [];
+  const ocupados = Math.min(4, Math.max(0, (p.cantidad ?? 4) - p.libres));
+  for (let i = 0; i < ocupados; i++) lugares.push({ tipo: "jugador", inicial: "" });
   for (let i = 0; i < p.libres && lugares.length < 4; i++)
     lugares.push({ tipo: "libre", inicial: "+", texto: i === 0 ? textoLibre : "", onClick: onLibre });
   while (lugares.length < 4) lugares.push({ tipo: "vacio", inicial: "", texto: "" });
@@ -592,13 +588,11 @@ export default function CanchaInicio({ perfil, t, router }) {
           </span>
           <span className={`${etiqueta} text-[#8fb6ae] text-right`}>{textoCuando(mi.fecha_hora, mi.hora_a_definir, t)}</span>
         </div>
-        {mi.busca_jugador && <span className="text-xs text-[#8fb6ae] -mt-1.5">{t("faltaUno.yaAvisamos")}</span>}
+        <span className="text-xs text-[#8fb6ae] -mt-1.5">{t("faltaUno.yaAvisamos")}</span>
         <Cancha
           lugares={lugaresDePartido(mi, {
-            yoId: userId,
-            t,
-            textoLibre: mi.busca_jugador ? t("faltaUno.compartir") : t("faltaUno.buscarJugador"),
-            onLibre: () => setHoja(mi.busca_jugador ? { tipo: "compartir", pedido: { ...mi, faltan: mi.libres } } : { tipo: "pedido", partido: mi }),
+            textoLibre: t("faltaUno.compartir"),
+            onLibre: () => setHoja({ tipo: "compartir", pedido: { ...mi, faltan: mi.libres } }),
           })}
         />
         <div className="flex justify-between gap-2 text-xs text-[#8fb6ae]">
@@ -623,8 +617,6 @@ export default function CanchaInicio({ perfil, t, router }) {
         <span className="text-xs text-[#8fb6ae] -mt-1.5">{detallePedido(pedido, t)}</span>
         <Cancha
           lugares={lugaresDePartido(pedido, {
-            yoId: userId,
-            t,
             textoLibre: sumando === pedido.id ? "..." : t("faltaUno.meSumo"),
             onLibre: () => !sumando && meSumo(pedido),
           })}
