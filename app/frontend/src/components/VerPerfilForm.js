@@ -99,6 +99,9 @@ export default function VerPerfilForm() {
   const [errorReactivacion, setErrorReactivacion] = useState("");
 
   const [partidosStats, setPartidosStats] = useState(null);
+  // 2026-10-18: la lista "Mis partidos" suma los cargados a mano (sin
+  // Marcadorcito); las estadísticas siguen usando solo partidosStats.
+  const [partidosJugados, setPartidosJugados] = useState(null);
   // Destacados "Cara a cara" (2026-10-02): null hasta que llegan, o si no
   // hay partidos terminados (o la RPC 068 todavía no se corrió).
   const [destacados, setDestacados] = useState(null);
@@ -160,6 +163,7 @@ export default function VerPerfilForm() {
         setPerfil(copia.perfil);
         if (copia.partidosStats !== undefined) {
           setPartidosStats(copia.partidosStats);
+          setPartidosJugados(copia.partidosJugados ?? copia.partidosStats);
           setCargandoEstadisticas(false);
         }
         if (copia.destacados !== undefined) setDestacados(copia.destacados);
@@ -269,11 +273,32 @@ export default function VerPerfilForm() {
           };
         });
 
+      // Mis partidos: los del Marcadorcito más los cargados a mano, por fecha.
+      const jugados = (partidosData ?? [])
+        .filter((p) => p.estadisticas_partido || (p.resultados_partido?.finalizado && p.resultados_partido?.estado?.cargadoAMano))
+        .map((p) => {
+          const conStats = partidosConStats.find((x) => x.id === p.id);
+          if (conStats) return conStats;
+          const miEquipo = equipoPorPartido[p.id];
+          const gane = p.resultados_partido?.ganador === miEquipo;
+          return {
+            id: p.id,
+            fechaHora: p.fecha_hora,
+            cancha: p.cancha,
+            miEquipo,
+            gane,
+            aMano: true,
+            puntosRankingGanados: calcularPuntosRanking(p.resultados_partido?.estado, miEquipo, gane),
+          };
+        });
+
       setPartidosStats(partidosConStats.length > 0 ? partidosConStats : null);
+      setPartidosJugados(jugados.length > 0 ? jugados : null);
       setCargandoEstadisticas(false);
       guardarPantalla("perfil", jugadorId, {
         ...(leerPantalla("perfil", jugadorId) ?? {}),
         partidosStats: partidosConStats.length > 0 ? partidosConStats : null,
+        partidosJugados: jugados.length > 0 ? jugados : null,
       });
 
       // Estadísticas avanzadas (D-29): con los mismos datos de arriba (la RLS
@@ -282,7 +307,8 @@ export default function VerPerfilForm() {
       // no estadisticas_partido; el compañero de cada partido sale de
       // mis_cruces_partidos (si la RPC no está, no se muestra "por compañero").
       const terminados = (partidosData ?? [])
-        .filter((p) => p.resultados_partido?.finalizado && p.resultados_partido?.ganador)
+        // Los cargados a mano no cuentan para las estadísticas (2026-10-18).
+        .filter((p) => p.resultados_partido?.finalizado && p.resultados_partido?.ganador && !p.resultados_partido?.estado?.cargadoAMano)
         .map((p) => {
           const miEquipo = equipoPorPartido[p.id];
           return {
@@ -943,7 +969,7 @@ export default function VerPerfilForm() {
             tarjetas usan el estilo de "Tu próximo partido" del Inicio. Tocar
             una lleva a su propia vista (2026-09-13: "que vaya a una nueva
             vista"). */}
-        {partidosStats && !cargandoEstadisticas && (
+        {partidosJugados && !cargandoEstadisticas && (
           <div className="flex flex-col gap-2 mt-4">
             <button
               type="button"
@@ -952,12 +978,12 @@ export default function VerPerfilForm() {
             >
               <span className="font-titulo font-black uppercase text-2xl leading-none"><ConPelota>{t("estadisticas.misPartidosTitulo")}</ConPelota></span>
               <span className="flex items-center gap-1.5 bg-accent text-accent-ink rounded-[6px] px-2.5 py-1 font-titulo font-black text-lg leading-none">
-                {partidosStats.length}
+                {partidosJugados.length}
                 <IconoChevron width={16} height={16} className={`transition-transform ${mostrarPartidosStats ? "rotate-180" : "-rotate-90"}`} />
               </span>
             </button>
 
-            {(mostrarPartidosStats ? partidosStats : partidosStats.slice(0, 1)).map((p, i) => (
+            {(mostrarPartidosStats ? partidosJugados : partidosJugados.slice(0, 1)).map((p, i) => (
               <TarjetaPartidoPerfil
                 key={p.id}
                 p={p}
@@ -966,11 +992,11 @@ export default function VerPerfilForm() {
                 t={t}
                 delay={i * 35}
                 etiqueta={i === 0 && !mostrarPartidosStats ? t("estadisticas.ultimoPartido") : null}
-                onClick={() => router.push(`/partido/${p.id}/estadisticas`)}
+                onClick={() => router.push(p.aMano ? `/partido/${p.id}` : `/partido/${p.id}/estadisticas`)}
               />
             ))}
 
-            {partidosStats.length > 1 && (
+            {partidosJugados.length > 1 && (
               <button
                 type="button"
                 onClick={() => setMostrarPartidosStats((v) => !v)}

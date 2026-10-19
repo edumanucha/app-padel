@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import BotonCompartirTarjeta from "@/components/BotonCompartirTarjeta";
+import { vanContraRivales } from "@/lib/destacadosPerfil";
+import { formatoSets } from "@/lib/estadisticasMarcadorcito";
 
 const inputClass = "rounded-[6px] bg-transparent border border-ink/15 px-3 py-2 text-ink text-center font-numero text-lg w-full min-w-0";
 
@@ -19,6 +22,11 @@ export default function PartidoCargadoAMano({ partidoId, usuarioId }) {
   const [error, setError] = useState("");
   const [trabajando, setTrabajando] = useState(false);
   const [confirmaSalir, setConfirmaSalir] = useState(false);
+  // 2026-10-18 (pedido del usuario): el partido cargado a mano también se
+  // comparte con la tarjeta, como los del Marcadorcito (sin duración).
+  const [tarjeta, setTarjeta] = useState(null); // { mios, rivales, fechaHora, cancha, van }
+  // Viene de "Cargar un partido jugado" (?cargado=1): se muestra "Partido cargado".
+  const [recienCargado] = useState(() => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("cargado") === "1");
 
   async function cargar() {
     const [{ data: r }, { data: pj }] = await Promise.all([
@@ -27,6 +35,27 @@ export default function PartidoCargadoAMano({ partidoId, usuarioId }) {
     ]);
     setRes(r ?? null);
     setMiEquipo(pj?.equipo ?? null);
+    if (!r?.estado?.cargadoAMano || !pj?.equipo) return;
+
+    // Nombres para la tarjeta: perfiles solo deja leer la propia fila, así
+    // que salen de ver_participantes_partido (igual que en las estadísticas).
+    const [{ data: partido }, { data: filas }, { data: participantes }, { data: cruces }] = await Promise.all([
+      supabase.from("partidos").select("fecha_hora, cancha").eq("id", partidoId).maybeSingle(),
+      supabase.from("partido_jugadores").select("jugador_id, invitado_nombre, equipo").eq("partido_id", partidoId),
+      supabase.rpc("ver_participantes_partido", { p_partido_id: partidoId }),
+      supabase.rpc("mis_cruces_partidos"),
+    ]);
+    const nombrePorId = Object.fromEntries((participantes ?? []).map((x) => [x.jugador_id, x.nombre]));
+    const primerNombre = (f) =>
+      String((f.jugador_id ? nombrePorId[f.jugador_id] : null) ?? f.invitado_nombre ?? "").trim().split(/\s+/)[0] || "?";
+    const nombresDe = (lado) => (filas ?? []).filter((f) => f.equipo && (lado === "mios" ? f.equipo === pj.equipo : f.equipo !== pj.equipo)).map(primerNombre);
+    setTarjeta({
+      mios: nombresDe("mios"),
+      rivales: nombresDe("rivales"),
+      fechaHora: partido?.fecha_hora,
+      cancha: partido?.cancha,
+      van: vanContraRivales(cruces, partidoId),
+    });
   }
 
   useEffect(() => {
@@ -93,10 +122,26 @@ export default function PartidoCargadoAMano({ partidoId, usuarioId }) {
 
   return (
     <div className="flex flex-col gap-3 border-y border-ink/10 py-4 text-ink">
+      {recienCargado && (
+        <span className="font-titulo font-black uppercase text-3xl leading-none">Partido cargado</span>
+      )}
       <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted">Partido cargado a mano</span>
       <p className="text-base font-semibold">
         {gane ? "Ganaron ustedes" : "Ganaron ellos"} · {nuestros.map((n, i) => `${n}-${ellos[i]}`).join("  ")}
       </p>
+      <p className="text-xs text-muted">Lo cargaste sin Marcadorcito: suma a tus partidos jugados, pero no a tus estadísticas.</p>
+      {tarjeta && tarjeta.mios.length > 0 && tarjeta.rivales.length > 0 && (
+        <BotonCompartirTarjeta
+          gane={gane}
+          mios={tarjeta.mios}
+          rivales={tarjeta.rivales}
+          sets={formatoSets(res.estado, miEquipo)}
+          fechaHora={tarjeta.fechaHora}
+          duracionMin={null}
+          cancha={tarjeta.cancha}
+          van={tarjeta.van}
+        />
+      )}
       <p className="text-xs text-muted">
         Si el resultado está bien, no hace falta hacer nada: queda guardado. Si algo no es así, podés corregirlo o avisar que no jugaste.
       </p>

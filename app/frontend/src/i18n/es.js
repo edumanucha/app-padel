@@ -644,6 +644,7 @@ const es = {
       },
     },
     estadisticas: {
+      cargadoAMano: "Cargado a mano",
       titulo: "Estadísticas de Marcadorcito",
       cargando: "Cargando estadísticas...",
       sinPartidos: "Todavía no tenés partidos con estadísticas — se generan al terminar un partido con Marcadorcito.",

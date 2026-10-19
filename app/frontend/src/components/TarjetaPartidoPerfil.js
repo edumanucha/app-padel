@@ -43,6 +43,13 @@ export default function TarjetaPartidoPerfil({ p, cruce, locale, t, onClick, del
 
         {rivales && <span className="text-[1.02rem] font-extrabold leading-tight break-words">{rivales}</span>}
 
+        {/* 2026-10-18: partido cargado sin Marcadorcito (no suma a estadísticas). */}
+        {p.aMano && (
+          <span className="self-start text-[10px] font-bold uppercase tracking-[0.08em] border border-[#8fb6ae]/50 text-[#c4dad3] rounded-[4px] px-1.5 py-0.5">
+            {t("estadisticas.cargadoAMano")}
+          </span>
+        )}
+
         <span className="flex items-center justify-between gap-2">
           <span className="font-titulo font-extrabold uppercase text-[1.15rem] leading-none text-accent break-words">
             {cruce?.sets || ""}

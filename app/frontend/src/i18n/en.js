@@ -642,6 +642,7 @@ const en = {
       },
     },
     estadisticas: {
+      cargadoAMano: "Added manually",
       titulo: "Marcadorcito stats",
       cargando: "Loading stats...",
       sinPartidos: "You don't have any match stats yet — they're generated when you finish a match with Marcadorcito.",

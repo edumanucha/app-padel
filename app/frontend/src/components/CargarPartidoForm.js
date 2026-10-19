@@ -162,7 +162,8 @@ export default function CargarPartidoForm() {
     // Avisa a los otros jugadores con cuenta (si falla, el partido igual queda cargado).
     await supabase.rpc("avisar_partido_cargado", { p_partido: partido.id });
     registrar("cargar_partido");
-    router.replace("/mis-partidos");
+    // 2026-10-18: va al detalle con "Partido cargado" y "Compartir tarjeta".
+    router.replace(`/partido/${partido.id}?cargado=1`);
   }
 
   if (!yo) return <p className="text-muted p-6">Cargando…</p>;

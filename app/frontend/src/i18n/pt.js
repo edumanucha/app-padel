@@ -644,6 +644,7 @@ const pt = {
       },
     },
     estadisticas: {
+      cargadoAMano: "Lançado à mão",
       titulo: "Estatísticas do Marcadorcito",
       cargando: "Carregando estatísticas...",
       sinPartidos: "Você ainda não tem estatísticas de partidas — são geradas ao terminar uma partida com o Marcadorcito.",
