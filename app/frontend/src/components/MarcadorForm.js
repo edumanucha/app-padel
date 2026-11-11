@@ -1797,7 +1797,7 @@ export default function MarcadorForm({ partidoId }) {
   // El reloj a veces no aplica un cambio si el texto es idéntico al anterior.
   // Por eso se publica cada 3 s (2026-10-06, pedido del usuario; antes 1,5 s, se subió para cuidar la batería) y el
   // renglón de abajo ALTERNA en cada envío: "Games · Sets · minutos" y
-  // "puntos Marcadorcito". El puntaje de arriba no se toca.
+  // "Puntos 0-0 · Games 3-2" (2026-11-11: antes "0-0 Marcadorcito"; el "0-0" suelto se leía como el resultado). El puntaje de arriba no se toca.
   const [pulsoReloj, setPulsoReloj] = useState(0);
     useEffect(() => {
     if (!relojActivo) return;
@@ -1840,7 +1840,7 @@ export default function MarcadorForm({ partidoId }) {
     const ptsSinSaque = resultado.finalizado ? `Final ${a}-${b}` : `${tb}${textoA}-${textoB}`;
     let [titulo, subtitulo] =
       formatoReloj === "corto-letras"
-        ? [pts, pulsoReloj % 2 === 0 ? `Games ${gA}-${gB} · Sets ${a}-${b} · ${minutosReloj}'` : `${ptsSinSaque} Marcadorcito`]
+        ? [pts, pulsoReloj % 2 === 0 ? `Games ${gA}-${gB} · Sets ${a}-${b} · ${minutosReloj}'` : `Puntos ${ptsSinSaque} · Games ${gA}-${gB}`]
         : formatoReloj === "puntos-solos"
         ? [pts, `${gA}-${gB} · S ${a}-${b} · ${minutosReloj}' · Marcadorcito`]
         : formatoReloj === "puntos-y-todo"
