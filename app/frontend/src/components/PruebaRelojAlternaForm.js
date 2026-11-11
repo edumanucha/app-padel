@@ -6,7 +6,8 @@ import { crearEstadoInicial, sumarPunto, formatearPuntos, setsGanados } from "@/
 
 // Herramienta de QA (2026-10-06): copia de /pruebas-distancia con el ENVÍO
 // NUEVO al reloj: cada 3 s, con el renglón de arriba fijo (puntaje) y el de
-// abajo alternando entre "Games · Sets · minutos" y "puntos Marcadorcito".
+// abajo alternando entre "Games · Sets · minutos" y "Puntos 0-0 · Games 3-2"
+// (2026-11-11: antes "0-0 Marcadorcito"; el "0-0" suelto se leía como el resultado).
 // Además lleva un registro de cada envío (hora, si anduvo o falló) y de los
 // cambios de pantalla/segundo plano, para ver por qué el reloj se atrasa.
 // (Base) Herramienta de QA (2026-10-04, pedido del usuario): probar con el reloj
@@ -32,7 +33,7 @@ function textoReloj(est, pulso = 0, minutos = 0) {
   const tb = est.tiebreak ? "TB " : "";
   const pts = est.saque === "B" ? `${tb}${textoA}-${textoB}●` : `${tb}●${textoA}-${textoB}`;
   const ptsSinSaque = `${tb}${textoA}-${textoB}`;
-  return { titulo: pts, subtitulo: pulso % 2 === 0 ? `Games ${gA}-${gB} · Sets ${a}-${b} · ${minutos}'` : `${ptsSinSaque} Marcadorcito` };
+  return { titulo: pts, subtitulo: pulso % 2 === 0 ? `Games ${gA}-${gB} · Sets ${a}-${b} · ${minutos}'` : `Puntos ${ptsSinSaque} · Games ${gA}-${gB}` };
 }
 
 const CADA_MS = 3000;
